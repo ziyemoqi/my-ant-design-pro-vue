@@ -46,25 +46,25 @@ export default {
       default: false
     }
   },
-  data () {
+  data() {
     return {
       stepLoading: false,
 
       form: null
-    }
+    };
   },
   methods: {
-    handleStepOk () {
+    handleStepOk() {
       const vm = this
       this.stepLoading = true
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('values', values)
-          setTimeout(() => {
+          setTimeout( () => {
             vm.stepLoading = false
             vm.$emit('success', { values })
           }, 2000)
-          return
+          return;
         }
         this.stepLoading = false
         this.$emit('error', { err })
@@ -74,13 +74,13 @@ export default {
       this.visible = false
       this.$emit('cancel')
     },
-    onForgeStepCode () {
-
+    onForgeStepCode() {
+      
     }
   }
-}
+};
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
   .step-form-wrapper {
     margin: 0 auto;
     width: 80%;

@@ -112,8 +112,7 @@
 <script>
 import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
-
-import { PageView } from '@/layouts'
+import PageView from '@/components/page/PageLayout'
 import HeadInfo from '@/components/tools/HeadInfo'
 import { Radar } from '@/components'
 

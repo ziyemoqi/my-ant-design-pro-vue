@@ -1,6 +1,5 @@
 const path = require('path')
 const webpack = require('webpack')
-const createThemeColorReplacerPlugin = require('./config/plugin.config')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -72,7 +71,6 @@ const vueConfig = {
 // preview.pro.loacg.com only do not use in your production;
 if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true') {
   // add `ThemeColorReplacer` plugin to webpack plugins
-  vueConfig.configureWebpack.plugins.push(createThemeColorReplacerPlugin())
 }
 
 module.exports = vueConfig

@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import { UserLayout,TabLayout, BasicLayout, RouteView, BlankLayout, PageView } from '@/layouts'
+import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
 
 /**
  * 走菜单，走权限控制

@@ -7,30 +7,30 @@
 </template>
 
 <script>
-export default {
-  name: 'HeadInfo',
-  props: {
-    title: {
-      type: String,
-      default: ''
-    },
-    content: {
-      type: String,
-      default: ''
-    },
-    bordered: {
-      type: Boolean,
-      default: false
-    },
-    center: {
-      type: Boolean,
-      default: true
+  export default {
+    name: "HeadInfo",
+    props: {
+      title: {
+        type: String,
+        default: ''
+      },
+      content: {
+        type: String,
+        default: ''
+      },
+      bordered: {
+        type: Boolean,
+        default: false
+      },
+      center: {
+        type: Boolean,
+        default: true
+      }
     }
   }
-}
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
   .head-info {
     position: relative;
     text-align: left;

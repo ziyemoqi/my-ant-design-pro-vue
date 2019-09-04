@@ -49,8 +49,9 @@
 </template>
 
 <script>
-import { PageView, RouteView } from '@/layouts'
 import { mixinDevice } from '@/utils/mixin.js'
+import PageView from '@/components/page/PageLayout'
+import RouteView from "@/components/layouts/RouteView"
 
 export default {
   components: {
