@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
+// import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
 
 /**
  * 走菜单，走权限控制
@@ -10,7 +10,7 @@ export const asyncRouterMap = [
   {
     path: '/',
     name: 'dashboard',
-    component: TabLayout,
+    component: '',
     meta: { title: '首页' },
     redirect: '/dashboard/workplace',
     children: [
@@ -28,44 +28,44 @@ export const asyncRouterMap = [
 export const constantRouterMap = [
   {
     path: '/user',
-    component: UserLayout,
+    component: '',
     redirect: '/user/login',
-    hidden: true,
-    children: [
-      {
-        path: 'login',
-        name: 'login',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
-      },
-      {
-        path: 'register',
-        name: 'register',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
-      },
-      {
-        path: 'register-result',
-        name: 'registerResult',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/RegisterResult')
-      }
-    ]
+    hidden: true
+    // children: [
+    //   {
+    //     path: 'login',
+    //     name: 'login',
+    //     component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
+    //   },
+    //   {
+    //     path: 'register',
+    //     name: 'register',
+    //     component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
+    //   },
+    //   {
+    //     path: 'register-result',
+    //     name: 'registerResult',
+    //     component: () => import(/* webpackChunkName: "user" */ '@/views/user/RegisterResult')
+    //   }
+    // ]
   },
 
   {
     path: '/test',
-    component: BlankLayout,
-    redirect: '/test/home',
-    children: [
-      {
-        path: 'home',
-        name: 'TestHome',
-        component: () => import('@/views/Home')
-      }
-    ]
+    component: 'BlankLayout',
+    redirect: '/test/home'
+    // children: [
+    //   {
+    //     path: 'home',
+    //     name: 'TestHome',
+    //     component: () => import('@/views/Home')
+    //   }
+    // ]
   },
 
   {
-    path: '/404',
-    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
+    path: '/404'
+    // component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
   }
 
 ]
