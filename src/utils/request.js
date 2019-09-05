@@ -53,6 +53,52 @@ service.interceptors.response.use((response) => {
   return response.data
 }, err)
 
+// 封装get请求
+export function get (url, params = {}) {
+  params.t = new Date().getTime(); //get方法加一个时间参数,解决ie下可能缓存问题.
+  return service({
+    url: url,
+    method: 'get',
+    headers: {
+    },
+    params
+  })
+}
+
+// 封装post请求
+export function post (url, data = {}) {
+  const sendObject = {
+    url: url,
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    data: data
+  }
+  sendObject.data = JSON.stringify(data)
+  return service(sendObject)
+}
+
+// 封装put方法 (resfulAPI常用)
+export function put (url, data = {}) {
+  return service({
+    url: url,
+    method: 'put',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    data: JSON.stringify(data)
+  })
+}
+// 删除方法(resfulAPI常用)
+export function deletes (url) {
+  return service({
+    url: url,
+    method: 'delete',
+    headers: {}
+  })
+}
+
 const installer = {
   vm: {},
   install (Vue) {
@@ -62,5 +108,5 @@ const installer = {
 
 export {
   installer as VueAxios,
-  service as axios
+  service
 }

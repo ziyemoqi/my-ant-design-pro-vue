@@ -103,7 +103,7 @@ export default {
       },
       verifiedCode: '',
       inputCodeContent: '',
-      inputCodeNull: true,
+      inputCodeNull: true
     }
   },
   created () {

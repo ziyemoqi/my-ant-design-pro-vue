@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "build:preview": "vue-cli-service build --mode preview",
     "lint": "vue-cli-service lint",
@@ -135,5 +135,6 @@
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/ant-design-pro-vue"
-  }
+  },
+  "__npminstall_done": false
 }

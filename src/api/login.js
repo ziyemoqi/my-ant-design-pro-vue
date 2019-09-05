@@ -1,6 +1,6 @@
 // y
 import api from './index'
-import { axios } from '@/utils/request'
+import { service } from '@/utils/request'
 
 /**
  * login func
@@ -13,16 +13,21 @@ import { axios } from '@/utils/request'
  * @param parameter
  * @returns {*}
  */
-export function login (parameter) {
-  return axios({
-    url: '/auth/login',
-    method: 'post',
-    data: parameter
-  })
+// export function login (parameter) {
+//   return service({
+//     url: '/auth/login',
+//     method: 'post',
+//     data: parameter
+//   })
+// }
+
+export function login (payload) {
+  console.log(payload)
+  return service.post('/sys/login', payload)
 }
 
 export function getSmsCaptcha (parameter) {
-  return axios({
+  return service({
     url: api.SendSms,
     method: 'post',
     data: parameter
@@ -30,7 +35,7 @@ export function getSmsCaptcha (parameter) {
 }
 
 export function getInfo () {
-  return axios({
+  return service({
     url: '/user/info',
     method: 'get',
     headers: {
@@ -40,7 +45,7 @@ export function getInfo () {
 }
 
 export function logout () {
-  return axios({
+  return service({
     url: '/auth/logout',
     method: 'post',
     headers: {
@@ -54,7 +59,7 @@ export function logout () {
  * @param parameter {*}
  */
 export function get2step (parameter) {
-  return axios({
+  return service({
     url: api.twoStepCode,
     method: 'post',
     data: parameter
