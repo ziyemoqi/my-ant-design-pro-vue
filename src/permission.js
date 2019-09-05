@@ -12,9 +12,7 @@ const whiteList = ['/user/login', '/user/register', '/user/register-result'] // 
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
-
   if (Vue.ls.get(ACCESS_TOKEN)) {
-    console.log(222)
     /* has token */
     if (to.path === '/user/login') {
       next({ path: '/dashboard/workplace' })
@@ -58,15 +56,10 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
-    console.log(1)
-    console.log(to.path)
-    console.log(1)
     if (whiteList.indexOf(to.path) !== -1) {
       // 在免登录白名单，直接进入
-      console.log(2)
       next()
     } else {
-      console.log(3)
       next({ path: '/user/login', query: { redirect: to.fullPath } })
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }

@@ -6,13 +6,17 @@ import App from './App.vue'
 import router from './router'
 import store from './store/'
 import { VueAxios } from './utils/request'
+import Storage from 'vue-ls'
+import config from '@/defaultSettings'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.less'
 
 import './permission' // permission control
 import './utils/filter' // global filter
 
 Vue.config.productionTip = false
-
-// mount axios Vue.$http and this.$http
+Vue.use(Storage, config.storageOptions)
+Vue.use(Antd)
 Vue.use(VueAxios)
 
 new Vue({

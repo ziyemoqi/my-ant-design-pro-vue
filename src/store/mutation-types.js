@@ -1,3 +1,4 @@
+// y
 // 访问TOKEN
 export const ACCESS_TOKEN = 'Access-Token'
 // 侧边栏类型
@@ -20,6 +21,11 @@ export const DEFAULT_FIXED_HEADER_HIDDEN = 'DEFAULT_FIXED_HEADER_HIDDEN'
 export const DEFAULT_CONTENT_WIDTH_TYPE = 'DEFAULT_CONTENT_WIDTH_TYPE'
 // 默认多Tab
 export const DEFAULT_MULTI_TAB = 'DEFAULT_MULTI_TAB'
+
+export const USER_NAME = 'Login_Username'
+export const USER_INFO = 'Login_Userinfo'
+export const USER_AUTH = 'LOGIN_USER_BUTTON_AUTH'
+export const SYS_BUTTON_AUTH = 'SYS_BUTTON_AUTH'
 
 export const CONTENT_WIDTH_TYPE = {
   Fluid: 'Fluid',

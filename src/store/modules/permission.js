@@ -1,3 +1,4 @@
+// y
 import { asyncRouterMap, constantRouterMap } from '@/config/router.config'
 
 /**
@@ -63,6 +64,9 @@ const permission = {
   },
   actions: {
     GenerateRoutes ({ commit }, data) {
+      console.log('受不了啦！！！')
+      console.log('受不了啦！！！')
+      console.log('受不了啦！！！')
       return new Promise(resolve => {
         const { roles } = data
         const accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
