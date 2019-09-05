@@ -12,7 +12,7 @@ Overview
 
 
 #### 前端技术
- 
+
 - 基础框架：[ant-design-vue](https://github.com/vueComponent/ant-design-vue) - Ant Design Of Vue 实现
 - JavaScript框架：Vue
 - Webpack
@@ -84,14 +84,12 @@ yarn run lint
 
 
 
-附属文档
+文档解析
 ----
 
-- [路由/菜单说明](/src/router/README.md)
-
-- [ANTD 默认配置项](src/config/defaultSettings.js)
-
-
+* views和components 文件夹
+  * views是页面级组件，一般views组件不被复用
+  * components是小组件，小组件可被引用在views中
 
 备注
 ----
