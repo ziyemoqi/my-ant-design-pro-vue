@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import GlobalLayout from '@/components/page/GlobalLayout'
+import GlobalLayout from '@/components/layouts/GlobalLayout'
 import Contextmenu from '@/components/menu/Contextmenu'
 import { mixin, mixinDevice } from '@/utils/mixin.js'
 

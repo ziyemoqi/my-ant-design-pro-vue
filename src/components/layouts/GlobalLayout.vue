@@ -81,8 +81,8 @@
 
 <script>
 import SideMenu from '@/components/menu/SideMenu'
-import GlobalHeader from '@/components/page/GlobalHeader'
-import GlobalFooter from '@/components/page/GlobalFooter'
+import GlobalHeader from '@/components/layouts/GlobalLayoutHeader'
+import GlobalFooter from '@/components/layouts/GlobalLayoutFooter'
 import SettingDrawer from '@/components/setting/SettingDrawer'
 import { triggerWindowResizeEvent } from '@/utils/util'
 import { mapState, mapActions } from 'vuex'

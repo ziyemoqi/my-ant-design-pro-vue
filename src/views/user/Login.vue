@@ -45,9 +45,9 @@
             </a-input>
           </a-form-item>
         </a-col>
-        <!-- <a-col :span="10">
-              <j-graphic-code @success="generateCode" style="float: right"></j-graphic-code>
-        </a-col>-->
+        <a-col :span="10">
+          <picture-verify-code @success="generateCode" style="float: right"></picture-verify-code>
+        </a-col>
       </a-row>
 
       <a-form-item>
@@ -79,11 +79,11 @@ import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-// import JGraphicCode from '@/components/jeecg/JGraphicCode'
+import PictureVerifyCode from '@/components/user/PictureVerifyCode'
 
 export default {
   components: {
-    // JGraphicCode
+    PictureVerifyCode
   },
   data () {
     return {
@@ -91,14 +91,9 @@ export default {
       // login type: 0 email, 1 username, 2 telephone
       loginType: 0,
       form: this.$form.createForm(this),
-      state: {
-        time: 60,
-        smsSendBtn: false
-      },
       formLogin: {
         username: '',
         password: '',
-        mobile: '',
         rememberMe: true
       },
       validatorRules: {
@@ -109,12 +104,6 @@ export default {
       verifiedCode: '',
       inputCodeContent: '',
       inputCodeNull: true,
-
-      departList: [],
-      departVisible: false,
-      departSelected: '',
-      currentUsername: '',
-      validate_status: ''
     }
   },
   created () {

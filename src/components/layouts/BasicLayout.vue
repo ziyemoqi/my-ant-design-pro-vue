@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import GlobalLayout from '@/components/page/GlobalLayout'
+import GlobalLayout from '@/components/layouts/GlobalLayout'
 
 export default {
   name: 'BasicLayout',
