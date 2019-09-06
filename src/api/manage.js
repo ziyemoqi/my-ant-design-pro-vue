@@ -1,5 +1,5 @@
 // y
-import { axios } from '@/utils/request'
+import { service } from '@/utils/request'
 
 const api = {
   user: '/api/user',
@@ -13,7 +13,7 @@ export default api
 
 // post
 export function postAction (url, parameter) {
-  return axios({
+  return service({
     url: url,
     method: 'post',
     data: parameter
@@ -22,7 +22,7 @@ export function postAction (url, parameter) {
 
 // post method= {post | put}
 export function httpAction (url, parameter, method) {
-  return axios({
+  return service({
     url: url,
     method: method,
     data: parameter
@@ -31,7 +31,7 @@ export function httpAction (url, parameter, method) {
 
 // put
 export function putAction (url, parameter) {
-  return axios({
+  return service({
     url: url,
     method: 'put',
     data: parameter
@@ -40,7 +40,7 @@ export function putAction (url, parameter) {
 
 // get
 export function getAction (url, parameter) {
-  return axios({
+  return service({
     url: url,
     method: 'get',
     params: parameter
@@ -49,7 +49,7 @@ export function getAction (url, parameter) {
 
 // deleteAction
 export function deleteAction (url, parameter) {
-  return axios({
+  return service({
     url: url,
     method: 'delete',
     params: parameter
@@ -57,7 +57,7 @@ export function deleteAction (url, parameter) {
 }
 
 export function getUserList (parameter) {
-  return axios({
+  return service({
     url: api.user,
     method: 'get',
     params: parameter
@@ -65,7 +65,7 @@ export function getUserList (parameter) {
 }
 
 export function getRoleList (parameter) {
-  return axios({
+  return service({
     url: api.role,
     method: 'get',
     params: parameter
@@ -73,7 +73,7 @@ export function getRoleList (parameter) {
 }
 
 export function getServiceList (parameter) {
-  return axios({
+  return service({
     url: api.service,
     method: 'get',
     params: parameter
@@ -81,7 +81,7 @@ export function getServiceList (parameter) {
 }
 
 export function getPermissions (parameter) {
-  return axios({
+  return service({
     url: api.permissionNoPager,
     method: 'get',
     params: parameter
@@ -91,7 +91,7 @@ export function getPermissions (parameter) {
 // id == 0 add     post
 // id != 0 update  put
 export function saveService (parameter) {
-  return axios({
+  return service({
     url: api.service,
     method: parameter.id === 0 ? 'post' : 'put',
     data: parameter
@@ -105,7 +105,7 @@ export function saveService (parameter) {
  * @returns {*}
  */
 export function downFile (url, parameter) {
-  return axios({
+  return service({
     url: url,
     params: parameter,
     method: 'get',

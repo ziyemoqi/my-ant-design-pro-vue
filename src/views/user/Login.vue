@@ -134,7 +134,8 @@ export default {
           that
             .Login(loginParams)
             .then(res => {
-              this.departConfirm(res)
+              // this.departConfirm(res)
+              this.$message.success('登录成功！')
             })
             .catch(err => {
               that.requestFailed(err)

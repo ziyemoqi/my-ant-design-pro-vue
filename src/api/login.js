@@ -1,4 +1,3 @@
-// y
 import api from './index'
 import { service } from '@/utils/request'
 
@@ -13,18 +12,19 @@ import { service } from '@/utils/request'
  * @param parameter
  * @returns {*}
  */
-// export function login (parameter) {
-//   return service({
-//     url: '/auth/login',
-//     method: 'post',
-//     data: parameter
-//   })
-// }
-
-export function login (payload) {
-  console.log(payload)
-  return service.post('/sys/login', payload)
+export function login (parameter) {
+  console.log(parameter)
+  return service({
+    url: '/sys/login',
+    method: 'post',
+    data: parameter
+  })
 }
+
+// export function login (payload) {
+//   console.log(payload)
+//   return service.post('/sys/login', payload)
+// }
 
 export function getSmsCaptcha (parameter) {
   return service({
