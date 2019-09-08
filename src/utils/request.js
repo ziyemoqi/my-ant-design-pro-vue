@@ -163,5 +163,5 @@ const installer = {
 
 export {
   installer as VueAxios,
-  service
+  service as axios
 }

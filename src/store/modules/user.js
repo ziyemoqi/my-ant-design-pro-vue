@@ -1,16 +1,17 @@
-// y
 import Vue from 'vue'
-import { login, getInfo, logout } from '@/api/login'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { login, logout } from '@/api/login'
+import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH } from "@/store/mutation-types"
 import { welcome } from '@/utils/util'
+import { queryPermissionsByUser } from '@/api/api'
 
 const user = {
   state: {
     token: '',
-    name: '',
+    username: '',
+    realname: '',
     welcome: '',
     avatar: '',
-    roles: [],
+    permissionList: [],
     info: {}
   },
 
@@ -18,61 +19,64 @@ const user = {
     SET_TOKEN: (state, token) => {
       state.token = token
     },
-    SET_NAME: (state, { name, welcome }) => {
-      state.name = name
+    SET_NAME: (state, { username, realname, welcome }) => {
+      state.username = username
+      state.realname = realname
       state.welcome = welcome
     },
     SET_AVATAR: (state, avatar) => {
       state.avatar = avatar
     },
-    SET_ROLES: (state, roles) => {
-      state.roles = roles
+    SET_PERMISSIONLIST: (state, permissionList) => {
+      state.permissionList = permissionList
     },
     SET_INFO: (state, info) => {
       state.info = info
-    }
+    },
   },
 
   actions: {
-    // 登录
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
-          const result = response.result
-          Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-          commit('SET_TOKEN', result.token)
-          resolve()
+          if(response.code =='200'){
+            let result = response.result
+            let userInfo = result.userInfo
+            Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_NAME, userInfo.username,7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            commit('SET_TOKEN', result.token)
+            commit('SET_INFO', userInfo)
+            commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+            commit('SET_AVATAR', userInfo.avatar)
+            resolve(response)
+          }else{
+            reject(response)
+          }
         }).catch(error => {
           reject(error)
         })
       })
     },
 
+
     // 获取用户信息
-    GetInfo ({ commit }) {
+    GetPermissionList({ commit }) {
       return new Promise((resolve, reject) => {
-        getInfo().then(response => {
-          const result = response.result
-
-          if (result.role && result.role.permissions.length > 0) {
-            const role = result.role
-            role.permissions = result.role.permissions
-            role.permissions.map(per => {
-              if (per.actionEntitySet != null && per.actionEntitySet.length > 0) {
-                const action = per.actionEntitySet.map(action => { return action.action })
-                per.actionList = action
-              }
-            })
-            role.permissionList = role.permissions.map(permission => { return permission.permissionId })
-            commit('SET_ROLES', result.role)
-            commit('SET_INFO', result)
+        let v_token = Vue.ls.get(ACCESS_TOKEN);
+        let params = {token:v_token};
+        queryPermissionsByUser(params).then(response => {
+          const menuData = response.result.menu;
+          const authData = response.result.auth;
+          const allAuthData = response.result.allAuth;
+          //Vue.ls.set(USER_AUTH,authData);
+          sessionStorage.setItem(USER_AUTH,JSON.stringify(authData));
+          sessionStorage.setItem(SYS_BUTTON_AUTH,JSON.stringify(allAuthData));
+          if (menuData && menuData.length > 0) {
+            commit('SET_PERMISSIONLIST', menuData)
           } else {
-            reject(new Error('getInfo: roles must be a non-null array !'))
+            reject('getPermissionList: permissions must be a non-null array !')
           }
-
-          commit('SET_NAME', { name: result.name, welcome: welcome() })
-          commit('SET_AVATAR', result.avatar)
-
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -81,19 +85,19 @@ const user = {
     },
 
     // 登出
-    Logout ({ commit, state }) {
-      return new Promise((resolve) => {
-        logout(state.token).then(() => {
-          resolve()
+    Logout({ commit, state }) {
+      return new Promise((resolve,reject) => {
+        let logoutToken = state.token;
+        commit('SET_TOKEN', '')
+        commit('SET_PERMISSIONLIST', [])
+        Vue.ls.remove(ACCESS_TOKEN)
+        logout(logoutToken).then(() => {
+          // resolve()
         }).catch(() => {
-          resolve()
-        }).finally(() => {
-          commit('SET_TOKEN', '')
-          commit('SET_ROLES', [])
-          Vue.ls.remove(ACCESS_TOKEN)
+          reject()
         })
       })
-    }
+    },
 
   }
 }

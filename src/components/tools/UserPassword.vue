@@ -40,7 +40,7 @@
 
 <script>
 
-import { putAction } from '@/api/manage'
+// import { putAction } from '@/api/manage'
 
 export default {
   name: 'UserPassword',
@@ -113,17 +113,18 @@ export default {
           that.confirmLoading = true
           const params = Object.assign({ username: this.username }, values)
           console.log('修改密码提交数据', params)
-          putAction(this.url, params).then((res) => {
-            if (res.success) {
-              console.log(res)
-              that.$message.success(res.message)
-              that.close()
-            } else {
-              that.$message.warning(res.message)
-            }
-          }).finally(() => {
-            that.confirmLoading = false
-          })
+          this.$message.success('修改密码提交数据!')
+          // putAction(this.url, params).then((res) => {
+          //   if (res.success) {
+          //     console.log(res)
+          //     that.$message.success(res.message)
+          //     that.close()
+          //   } else {
+          //     that.$message.warning(res.message)
+          //   }
+          // }).finally(() => {
+          //   that.confirmLoading = false
+          // })
         }
       })
     },

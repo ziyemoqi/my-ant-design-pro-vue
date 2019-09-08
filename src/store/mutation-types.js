@@ -1,4 +1,3 @@
-// y
 // 访问TOKEN
 export const ACCESS_TOKEN = 'Access-Token'
 // 侧边栏类型

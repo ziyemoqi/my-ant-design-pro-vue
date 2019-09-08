@@ -1,5 +1,4 @@
-import api from './index'
-import { service } from '@/utils/request'
+import { axios } from '@/utils/request'
 
 /**
  * login func
@@ -12,31 +11,18 @@ import { service } from '@/utils/request'
  * @param parameter
  * @returns {*}
  */
-export function login (parameter) {
-  console.log(parameter)
-  return service({
+export function login(parameter) {
+  return axios({
     url: '/sys/login',
     method: 'post',
     data: parameter
   })
 }
 
-// export function login (payload) {
-//   console.log(payload)
-//   return service.post('/sys/login', payload)
-// }
 
-export function getSmsCaptcha (parameter) {
-  return service({
-    url: api.SendSms,
-    method: 'post',
-    data: parameter
-  })
-}
-
-export function getInfo () {
-  return service({
-    url: '/user/info',
+export function getInfo() {
+  return axios({
+    url: '/api/user/info',
     method: 'get',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
@@ -44,24 +30,13 @@ export function getInfo () {
   })
 }
 
-export function logout () {
-  return service({
-    url: '/auth/logout',
+export function logout(logoutToken) {
+  return axios({
+    url: '/sys/logout',
     method: 'post',
     headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
+      'Content-Type': 'application/json;charset=UTF-8',
+      'X-Access-Token':  logoutToken
     }
-  })
-}
-
-/**
- * get user 2step code open?
- * @param parameter {*}
- */
-export function get2step (parameter) {
-  return service({
-    url: api.twoStepCode,
-    method: 'post',
-    data: parameter
   })
 }

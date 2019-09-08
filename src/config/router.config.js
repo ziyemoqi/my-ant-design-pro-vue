@@ -1,11 +1,9 @@
-// y
-// eslint-disable-next-line
 import { UserLayout, TabLayout } from '@/components/layouts'
 
-// /**
-//  * 走菜单，走权限控制
-//  * @type {[null,null]}
-//  */
+/**
+ * 走菜单，走权限控制
+ * @type {[null,null]}
+ */
 export const asyncRouterMap = [
 
   {
@@ -22,10 +20,10 @@ export const asyncRouterMap = [
   }
 ]
 
-// /**
-//  * 白名单路由
-//  * @type { *[] }
-//  */
+/**
+ * 白名单路由
+ * @type { *[] }
+ */
 export const constantRouterMap = [
 
   {
@@ -40,5 +38,6 @@ export const constantRouterMap = [
         component: () => import('@/views/user/Login')
       }
     ]
-  }
+  },
+  
 ]

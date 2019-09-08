@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { getAction, putAction } from '@/api/manage'
+// import { getAction, putAction } from '@/api/manage'
 import ShowAnnouncement from './ShowAnnouncement'
 
 export default {
@@ -119,16 +119,17 @@ export default {
     loadData () {
       try {
         // 获取系统消息
-        getAction(this.url.listCementByUser).then((res) => {
-          if (res.success) {
-            this.announcement1 = res.result.anntMsgList
-            this.msg1Count = res.result.anntMsgTotal
-            this.msg1Title = '通知(' + res.result.anntMsgTotal + ')'
-            this.announcement2 = res.result.sysMsgList
-            this.msg2Count = res.result.sysMsgTotal
-            this.msg2Title = '系统消息(' + res.result.sysMsgTotal + ')'
-          }
-        })
+        // getAction(this.url.listCementByUser).then((res) => {
+        //   if (res.success) {
+        //     this.announcement1 = res.result.anntMsgList
+        //     this.msg1Count = res.result.anntMsgTotal
+        //     this.msg1Title = '通知(' + res.result.anntMsgTotal + ')'
+        //     this.announcement2 = res.result.sysMsgList
+        //     this.msg2Count = res.result.sysMsgTotal
+        //     this.msg2Title = '系统消息(' + res.result.sysMsgTotal + ')'
+        //   }
+        // })
+        this.$message.success('成功调用获取系统消息接口！')
       } catch (err) {
       }
     },
@@ -143,13 +144,14 @@ export default {
       }, 200)
     },
     showAnnouncement (record) {
-      putAction(this.url.editCementSend, { anntId: record.id }).then((res) => {
-        if (res.success) {
-          this.loadData()
-        }
-      })
-      this.hovered = false
-      this.$refs.ShowAnnouncement.detail(record)
+      // putAction(this.url.editCementSend, { anntId: record.id }).then((res) => {
+      //   if (res.success) {
+      //     this.loadData()
+      //   }
+      // })
+      // this.hovered = false
+      // this.$refs.ShowAnnouncement.detail(record)
+      this.$message.success('showAnnouncement接口调用成功！')
     },
     toMyAnnouncement () {
       this.$router.push({

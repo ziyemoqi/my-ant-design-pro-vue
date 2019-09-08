@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <div class="main">
     <a-form :form="form" class="user-layout-login" ref="formLogin" id="formLogin">
@@ -134,8 +133,7 @@ export default {
           that
             .Login(loginParams)
             .then(res => {
-              // this.departConfirm(res)
-              this.$message.success('登录成功！')
+              this.loginSuccess()
             })
             .catch(err => {
               that.requestFailed(err)

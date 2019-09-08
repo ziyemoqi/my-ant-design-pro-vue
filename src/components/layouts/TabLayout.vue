@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <global-layout @dynamicRouterShow="dynamicRouterShow">
     <contextmenu :itemList="menuItemList" :visible.sync="menuVisible" @select="onMenuSelect"/>

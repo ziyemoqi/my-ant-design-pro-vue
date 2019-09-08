@@ -1,4 +1,3 @@
-// y
 import Vue from 'vue'
 import { USER_INFO } from '@/store/mutation-types'
 const getters = {
