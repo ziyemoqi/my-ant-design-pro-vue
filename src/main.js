@@ -1,4 +1,3 @@
-// ie polyfill
 import '@babel/polyfill'
 
 import Vue from 'vue'
@@ -10,9 +9,10 @@ import Storage from 'vue-ls'
 import config from '@/defaultSettings'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.less'
-
+import Viser from 'viser-vue'
 import './permission' // permission control
 import './utils/filter' // global filter
+import VueApexCharts from 'vue-apexcharts'
 
 
 import {
@@ -32,6 +32,9 @@ Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)
 Vue.use(Antd)
 Vue.use(VueAxios)
+Vue.use(VueApexCharts)
+Vue.component('apexchart', VueApexCharts)
+Vue.use(Viser)
 
 new Vue({
   router,

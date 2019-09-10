@@ -154,9 +154,9 @@
               </a-menu-item>
             </a-menu>
           </a-dropdown>
-          <p>card content</p>
-          <p>card content</p>
-          <p>card content</p>
+          <p>card content1</p>
+          <p>card content2</p>
+          <p>card content3</p>
         </a-card>
       </a-col>
     </a-row>
