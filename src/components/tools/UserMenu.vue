@@ -68,8 +68,7 @@ export default {
       return window._CONFIG['imgDomainURL'] + '/' + this.avatar()
     },
     handleLogout () {
-      const that = this
-
+      let that = this
       this.$confirm({
         title: '提示',
         content: '真的要注销登录吗 ?',

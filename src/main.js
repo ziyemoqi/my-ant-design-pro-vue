@@ -26,7 +26,6 @@ import {
   DEFAULT_FIXED_HEADER_HIDDEN,
   DEFAULT_FIXED_SIDEMENU,
   DEFAULT_CONTENT_WIDTH_TYPE,
-  DEFAULT_MULTI_PAGE
 } from "@/store/mutation-types"
 
 Vue.config.productionTip = false
