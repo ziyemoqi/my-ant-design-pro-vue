@@ -11,7 +11,7 @@ const api = {
 export default api
 
 //post
-export function postAction(url,parameter) {
+export function post(url,parameter) {
   return axios({
     url: url,
     method:'post' ,
@@ -29,7 +29,7 @@ export function httpAction(url,parameter,method) {
 }
 
 //put
-export function putAction(url,parameter) {
+export function put(url,parameter) {
   return axios({
     url: url,
     method:'put',
@@ -38,7 +38,7 @@ export function putAction(url,parameter) {
 }
 
 //get
-export function getAction(url,parameter) {
+export function get(url,parameter) {
   return axios({
     url: url,
     method: 'get',
@@ -46,7 +46,7 @@ export function getAction(url,parameter) {
   })
 }
 
-//deleteAction
+//delete
 export function deleteAction(url,parameter) {
   return axios({
     url: url,
@@ -89,7 +89,7 @@ export function getPermissions(parameter) {
 
 // id == 0 add     post
 // id != 0 update  put
-export function saveService(parameter) {
+export function save(parameter) {
   return axios({
     url: api.service,
     method: parameter.id == 0 ? 'post' : 'put',

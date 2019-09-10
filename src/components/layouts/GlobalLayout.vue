@@ -74,7 +74,6 @@
       </a-layout-footer>
     </a-layout>
 
-    <setting-drawer></setting-drawer>
   </a-layout>
 </template>
 
@@ -82,7 +81,6 @@
 import SideMenu from '@/components/menu/SideMenu'
 import GlobalHeader from '@/components/layouts/GlobalLayoutHeader'
 import GlobalFooter from '@/components/layouts/GlobalLayoutFooter'
-import SettingDrawer from '@/components/setting/SettingDrawer'
 import { triggerWindowResizeEvent } from '@/utils/util'
 import { mapState, mapActions } from 'vuex'
 import { mixin, mixinDevice } from '@/utils/mixin.js'
@@ -92,8 +90,7 @@ export default {
   components: {
     SideMenu,
     GlobalHeader,
-    GlobalFooter,
-    SettingDrawer
+    GlobalFooter
   },
   mixins: [mixin, mixinDevice],
   data () {

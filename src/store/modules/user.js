@@ -1,8 +1,7 @@
 import Vue from 'vue'
-import { login, logout } from '@/api/login'
+import { login, logout, queryPermissionsByToken} from '@/api/user'
 import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH } from "@/store/mutation-types"
 import { welcome } from '@/utils/util'
-import { queryPermissionsByUser } from '@/api/api'
 
 const user = {
   state: {
@@ -63,12 +62,12 @@ const user = {
     // 获取用户信息
     GetPermissionList({ commit }) {
       return new Promise((resolve, reject) => {
-        let v_token = Vue.ls.get(ACCESS_TOKEN);
-        let params = {token:v_token};
-        queryPermissionsByUser(params).then(response => {
-          const menuData = response.result.menu;
-          const authData = response.result.auth;
-          const allAuthData = response.result.allAuth;
+        let v_token = Vue.ls.get(ACCESS_TOKEN)
+        let params = {token:v_token}
+        queryPermissionsByToken(params).then(response => {
+          let menuData = response.result.menu;
+          let authData = response.result.auth;
+          let allAuthData = response.result.allAuth;
           //Vue.ls.set(USER_AUTH,authData);
           sessionStorage.setItem(USER_AUTH,JSON.stringify(authData));
           sessionStorage.setItem(SYS_BUTTON_AUTH,JSON.stringify(allAuthData));

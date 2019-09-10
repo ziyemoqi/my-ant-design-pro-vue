@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <a-modal
     :title="title"

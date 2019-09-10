@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <div class="user-wrapper" :class="theme">
     <span class="action">
@@ -29,17 +28,6 @@
           <a-icon type="setting"/>
           <span>密码修改</span>
         </a-menu-item>
-        <!-- <a-menu-item key="2" disabled>
-          <a-icon type="setting"/>
-          <span>测试</span>
-        </a-menu-item>
-        <a-menu-divider/>
-        <a-menu-item key="3">
-          <a href="javascript:;" @click="handleLogout">
-            <a-icon type="logout"/>
-            <span>退出登录</span>
-          </a>
-        </a-menu-item>-->
       </a-menu>
     </a-dropdown>
     <span class="action">

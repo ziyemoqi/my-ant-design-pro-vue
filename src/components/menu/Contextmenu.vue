@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <a-menu :style="style" class="contextmenu" v-show="visible" @click="handleClick" :selectedKeys="selectedKeys">
     <a-menu-item :key="item.key" v-for="item in itemList">

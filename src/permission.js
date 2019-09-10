@@ -3,7 +3,6 @@ import router from './router'
 import store from './store'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import notification from 'ant-design-vue/es/notification'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { generateIndexRouter } from "@/utils/util"
 
@@ -27,6 +26,7 @@ router.beforeEach((to, from, next) => {
               if (menuData === null || menuData === "" || menuData === undefined) {
                 return;
               }
+              
               let constRoutes = [];
               constRoutes = generateIndexRouter(menuData);
               // 添加主界面路由
@@ -49,7 +49,6 @@ router.beforeEach((to, from, next) => {
               message: '系统提示',
               description: '请求用户信息失败，请重试！'
             })*/
-
             console.log('请求用户信息失败，请重试！！！')
             store.dispatch('Logout').then(() => {
               next({ path: '/user/login', query: { redirect: to.fullPath } })
