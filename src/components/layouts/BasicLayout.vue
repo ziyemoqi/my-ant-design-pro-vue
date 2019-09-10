@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <global-layout>
     <transition name="page-transition">

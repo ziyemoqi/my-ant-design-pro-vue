@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <div id="userLayout" :class="['user-layout-wrapper', device]">
     <div class="container">

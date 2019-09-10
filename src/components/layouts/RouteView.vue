@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <keep-alive v-if="keepAlive">
     <router-view />

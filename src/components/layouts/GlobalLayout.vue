@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <a-layout class="layout" :class="[device]">
 

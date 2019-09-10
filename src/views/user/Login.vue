@@ -1,14 +1,20 @@
 <template>
   <div class="main">
-    <a-form :form="form" class="user-layout-login" ref="formLogin" id="formLogin">
+    <a-form
+      :form="form"
+      class="user-layout-login"
+      ref="formLogin"
+      id="formLogin"
+      @submit="handleSubmit"
+    >
       <a-form-item>
         <a-input
           size="large"
           v-decorator="['username',validatorRules.username,{ validator: this.handleUsernameOrEmail }]"
           type="text"
-          placeholder="请输入帐户名 / jeecg"
+          placeholder="请输入帐户名"
         >
-          <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }" />
+        <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }" />
         </a-input>
       </a-form-item>
 
@@ -18,9 +24,9 @@
           size="large"
           type="password"
           autocomplete="false"
-          placeholder="密码 / 123456"
+          placeholder="请输入密码"
         >
-          <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
+        <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
         </a-input>
       </a-form-item>
 
@@ -50,7 +56,7 @@
       </a-row>
 
       <a-form-item>
-        <a-checkbox v-model="formLogin.rememberMe">自动登陆</a-checkbox>
+        <a-checkbox v-model="rememberMe">自动登陆</a-checkbox>
         <router-link
           :to="{ name: 'recover', params: { user: 'aaa'} }"
           class="forge-password"
@@ -64,9 +70,7 @@
           type="primary"
           htmlType="submit"
           class="login-button"
-          :loading="loginBtn"
-          @click.stop.prevent="handleSubmit"
-          :disabled="loginBtn"
+          :loading="submitting"
         >确定</a-button>
       </a-form-item>
     </a-form>
@@ -84,17 +88,13 @@ export default {
   components: {
     PictureVerifyCode
   },
-  data () {
+  data() {
     return {
-      loginBtn: false,
-      // login type: 0 email, 1 username, 2 telephone
+      submitting: false,
+      // loginType: 0 email, 1 username
       loginType: 0,
       form: this.$form.createForm(this),
-      formLogin: {
-        username: '',
-        password: '',
-        rememberMe: true
-      },
+      rememberMe: true,
       validatorRules: {
         username: { rules: [{ required: true, message: '请输入用户名!', validator: 'click' }] },
         password: { rules: [{ required: true, message: '请输入密码!', validator: 'click' }] },
@@ -105,14 +105,16 @@ export default {
       inputCodeNull: true
     }
   },
-  created () {
+  created() {
     Vue.ls.remove(ACCESS_TOKEN)
   },
   methods: {
     ...mapActions(['Login', 'Logout']),
-    // handler
-    handleUsernameOrEmail (rule, value, callback) {
-      const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/
+    generateCode(value) {
+      this.verifiedCode = value.toLowerCase()
+    },
+    handleUsernameOrEmail(rule, value, callback) {
+      let regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/
       if (regex.test(value)) {
         this.loginType = 0
       } else {
@@ -120,54 +122,54 @@ export default {
       }
       callback()
     },
-    handleSubmit () {
-      const that = this
-      const loginParams = {
-        remember_me: that.formLogin.rememberMe
-      }
-      that.form.validateFields(['username', 'password', 'inputCode'], { force: true }, (err, values) => {
+    handleSubmit(e) {
+      e.preventDefault()
+      let that = this
+      this.form.validateFields(async (err, values) => {
         if (!err) {
-          loginParams.username = values.username
-          // loginParams.password = md5(values.password)
-          loginParams.password = values.password
+          that.submitting = true
+          let loginParams = {
+            ...values,
+            remember_me: that.rememberMe,
+            loginType: that.loginType
+          }
           that
             .Login(loginParams)
             .then(res => {
-              this.loginSuccess()
+              that.loginSuccess()
             })
             .catch(err => {
-              that.requestFailed(err)
+              that.loginFailed(err)
             })
         }
       })
     },
-    loginSuccess () {
-      this.loginBtn = false
+    loginSuccess() {
+      this.submitting = false
       this.$router.push({ name: 'dashboard' })
       this.$notification.success({
         message: '欢迎',
         description: `${timeFix()}，欢迎回来`
       })
     },
-    requestFailed (err) {
+    loginFailed(err) {
       this.$notification['error']({
         message: '登录失败',
         description: ((err.response || {}).data || {}).message || err.message || '请求出现错误，请稍后再试',
         duration: 4
       })
-      this.loginBtn = false
+      this.submitting = false
     },
-    validateInputCode (rule, value, callback) {
+
+    validateInputCode(rule, value, callback) {
       if (!value || this.verifiedCode === this.inputCodeContent) {
         callback()
       } else {
         callback(new Error('您输入的验证码不正确!'))
       }
     },
-    generateCode (value) {
-      this.verifiedCode = value.toLowerCase()
-    },
-    inputCodeChange (e) {
+    
+    inputCodeChange(e) {
       this.inputCodeContent = e.target.value
       if (!e.target.value || e.target.value === 0) {
         this.inputCodeNull = true

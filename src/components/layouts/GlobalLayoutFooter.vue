@@ -1,8 +1,7 @@
-<!-- y -->
 <template>
   <div class="footer">
     <div class="links">
-      <a href="http://www.jeecg.org" target="_blank">JEECG LionHerding首页</a>
+      <a href="http://www.jeecg.org" target="_blank">JEECG 首页</a>
       <a href="https://github.com/zhangdaiscott/jeecg-boot" target="_blank">
         <a-icon type="github"/>
       </a>
@@ -10,9 +9,9 @@
       <a href="https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/">Vue Antd</a>
     </div>
     <div class="copyright">
-      Copyright LionHerding
+      Copyright 
       <a-icon type="copyright"/>
-      2019 <span>JEECG开源社区 LionHerding出品</span>
+      2019 <span>JEECG开源社区 出品</span>
     </div>
   </div>
 </template>
