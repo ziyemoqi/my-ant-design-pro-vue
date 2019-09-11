@@ -11,8 +11,8 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 const whiteList = ['/user/login', '/user/register', '/user/register-result'] // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
+  console.log('------------------------路由守卫前置---------------------')
   NProgress.start() // start progress bar
-
   if (Vue.ls.get(ACCESS_TOKEN)) {
     /* has token */
     if (to.path === '/user/login') {
@@ -22,14 +22,15 @@ router.beforeEach((to, from, next) => {
       if (store.getters.permissionList.length === 0) {
         store.dispatch('GetPermissionList').then(res => {
               const menuData = res.result.menu;
-              console.log(res.message)
               if (menuData === null || menuData === "" || menuData === undefined) {
                 return;
               }
               
               let constRoutes = [];
+              console.log('-------------------开始生成路由-------------------')
               constRoutes = generateIndexRouter(menuData);
               // 添加主界面路由
+              console.log('-------------------结束生成路由-------------------')
               store.dispatch('UpdateAppRouter',  { constRoutes }).then(() => {
                 // 根据roles权限生成可访问的路由表
                 // 动态添加可访问路由表
@@ -45,10 +46,10 @@ router.beforeEach((to, from, next) => {
               })
             })
           .catch(() => {
-           /* notification.error({
+            notification.error({
               message: '系统提示',
-              description: '请求用户信息失败，请重试！'
-            })*/
+              description: '请求用户信息失败，请联系系统管理员！'
+            })
             console.log('请求用户信息失败，请重试！！！')
             store.dispatch('Logout').then(() => {
               next({ path: '/user/login', query: { redirect: to.fullPath } })
@@ -70,5 +71,6 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach(() => {
+  console.log('------------------------路由守卫后置---------------------')
   NProgress.done() // finish progress bar
 })
