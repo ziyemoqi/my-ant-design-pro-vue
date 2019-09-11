@@ -1,8 +1,11 @@
 <template>
   <div class="footer">
     <div class="links">
-      <a href="http://www.jeecg.org" target="_blank">JEECG 首页</a>
-      <a href="https://github.com/zhangdaiscott/jeecg-boot" target="_blank">
+      <a href="https://weibo.com/" target="_blank"> 
+        <a-icon type="weibo" />
+        微博
+      </a>
+      <a href="https://github.com/sendya/ant-design-pro-vue" target="_blank">
         <a-icon type="github" />
       </a>
       <a href="https://ant.design/">Ant Design</a>
@@ -11,7 +14,7 @@
     <div class="copyright">
       Copyright
       <a-icon type="copyright" />2019
-      <span>JEECG开源社区 出品</span>
+      <span>VERSION 0.0.1</span>
     </div>
   </div>
 </template>

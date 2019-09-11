@@ -76,7 +76,7 @@
 </template>
 
 <script>
-// import { getAction, putAction } from '@/api/manage'
+import { get, put } from '@/api/manage'
 import ShowAnnouncement from './UserMenuNoticeDetail'
 
 export default {
@@ -118,17 +118,16 @@ export default {
     loadData () {
       try {
         // 获取系统消息
-        // getAction(this.url.listCementByUser).then((res) => {
-        //   if (res.success) {
-        //     this.announcement1 = res.result.anntMsgList
-        //     this.msg1Count = res.result.anntMsgTotal
-        //     this.msg1Title = '通知(' + res.result.anntMsgTotal + ')'
-        //     this.announcement2 = res.result.sysMsgList
-        //     this.msg2Count = res.result.sysMsgTotal
-        //     this.msg2Title = '系统消息(' + res.result.sysMsgTotal + ')'
-        //   }
-        // })
-        this.$message.success('成功调用获取系统消息接口！')
+        get(this.url.listCementByUser).then((res) => {
+          if (res.success) {
+            this.announcement1 = res.result.anntMsgList
+            this.msg1Count = res.result.anntMsgTotal
+            this.msg1Title = '通知(' + res.result.anntMsgTotal + ')'
+            this.announcement2 = res.result.sysMsgList
+            this.msg2Count = res.result.sysMsgTotal
+            this.msg2Title = '未读(' + res.result.sysMsgTotal + ')'
+          }
+        })
       } catch (err) {
       }
     },

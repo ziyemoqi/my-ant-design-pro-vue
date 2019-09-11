@@ -28,7 +28,7 @@
           </router-link>
         </a-menu-item>
         <a-menu-item key="2" @click="updatePassword">
-          <a-icon type="setting"/>
+          <a-icon type="unlock" />
           <span>密码修改</span>
         </a-menu-item>
       </a-menu>
@@ -36,7 +36,7 @@
     <!-- 登出 -->
     <span class="action">
       <a class="logout_title" href="javascript:;" @click="handleLogout">
-        <a-icon type="logout"/>
+        <a-icon type="logout"/>&nbsp;
         <span v-if="isDesktop()">&nbsp;退出登录</span>
       </a>
     </span>
