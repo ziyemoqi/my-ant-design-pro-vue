@@ -13,7 +13,7 @@ import Viser from 'viser-vue'
 import './permission' // permission control
 import './utils/filter' // global filter
 import VueApexCharts from 'vue-apexcharts'
-
+import VueRouter from 'vue-router';
 
 import {
   ACCESS_TOKEN,
@@ -35,6 +35,11 @@ Vue.use(VueAxios)
 Vue.use(VueApexCharts)
 Vue.component('apexchart', VueApexCharts)
 Vue.use(Viser)
+
+const routerPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch(error=> error)
+}
 
 new Vue({
   router,

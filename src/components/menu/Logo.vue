@@ -1,8 +1,8 @@
 <template>
   <div class="logo">
     <router-link :to="{name:'dashboard'}">
-      <img src="~@/assets/logo.svg" alt="logo">
-      <h1 v-if="showTitle">{{ title + '哈哈哈！！' }}</h1>
+      <img src="~@/assets/icons/menuLogo1.svg" alt="logo">
+      <h1 v-if="showTitle">{{ title }}</h1>
     </router-link>
   </div>
 </template>
@@ -13,7 +13,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: 'Jeecg-Boot Pro',
+      default: '紫色年华',
       required: false
     },
     showTitle: {
@@ -45,7 +45,7 @@ export default {
     }
 
     &.light .logo {
-      background-color: #1890ff;
+      background-color: #003cd8;
     }
   }
 </style>

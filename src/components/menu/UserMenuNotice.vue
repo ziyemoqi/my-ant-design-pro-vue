@@ -1,4 +1,3 @@
-<!-- y -->
 <template>
   <a-popover
     trigger="click"
@@ -12,7 +11,7 @@
       <a-spin :spinning="loadding">
         <a-tabs>
           <a-tab-pane :tab="msg1Title" key="1">
-            <!--<a-list>
+            <a-list>
               <a-list-item>
                 <a-list-item-meta title="你收到了 14 份新周报" description="一年前">
                   <a-avatar style="background-color: white" slot="avatar" src="https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png"/>
@@ -28,7 +27,7 @@
                   <a-avatar style="background-color: white" slot="avatar" src="https://gw.alipayobjects.com/zos/rmsportal/kISTdvpyTAhtGxpovNWd.png"/>
                 </a-list-item-meta>
               </a-list-item>
-            </a-list>-->
+            </a-list>
             <a-list>
               <a-list-item :key="index" v-for="(record, index) in announcement1">
                 <div style="margin-left: 5%;width: 80%">
@@ -78,7 +77,7 @@
 
 <script>
 // import { getAction, putAction } from '@/api/manage'
-import ShowAnnouncement from './ShowAnnouncement'
+import ShowAnnouncement from './UserMenuNoticeDetail'
 
 export default {
   name: 'HeaderNotice',

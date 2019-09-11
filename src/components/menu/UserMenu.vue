@@ -1,11 +1,14 @@
 <template>
   <div class="user-wrapper" :class="theme">
-    <span class="action">
+    <!-- 客服支持 -->
+    <!-- <span class="action">
       <a class="logout_title" target="_blank" href="http://jeecg-boot.mydoc.io">
         <a-icon type="question-circle-o"></a-icon>
       </a>
-    </span>
+    </span> -->
+    <!-- 即时消息 -->
     <header-notice class="action"/>
+    <!-- 设置 -->
     <a-dropdown>
       <span class="action action-full ant-dropdown-link user-dropdown-menu">
         <a-avatar class="avatar" size="small" :src="getAvatar()"/>
@@ -30,6 +33,7 @@
         </a-menu-item>
       </a-menu>
     </a-dropdown>
+    <!-- 登出 -->
     <span class="action">
       <a class="logout_title" href="javascript:;" @click="handleLogout">
         <a-icon type="logout"/>
@@ -41,8 +45,8 @@
 </template>
 
 <script>
-import HeaderNotice from './HeaderNotice'
-import UserPassword from './UserPassword'
+import HeaderNotice from './UserMenuNotice'
+import UserPassword from './UserMenuPassword'
 import { mapActions, mapGetters } from 'vuex'
 import { mixinDevice } from '@/utils/mixin.js'
 
