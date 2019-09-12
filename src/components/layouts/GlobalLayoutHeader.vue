@@ -2,7 +2,7 @@
   <a-layout-header
     v-if="!headerBarFixed"
     :class="[fixedHeader && 'ant-header-fixedHeader', sidebarOpened ? 'ant-header-side-opened' : 'ant-header-side-closed', ]"
-    :style="{ padding: '0' }"
+    :style="{ padding: '0'}"
   >
     <div v-if="mode === 'sidemenu'" class="header" :class="theme">
       <a-icon

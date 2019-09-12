@@ -68,7 +68,6 @@ const user = {
           let menuData = response.result.menu;
           let authData = response.result.auth;
           let allAuthData = response.result.allAuth;
-          //Vue.ls.set(USER_AUTH,authData);
           sessionStorage.setItem(USER_AUTH,JSON.stringify(authData));
           sessionStorage.setItem(SYS_BUTTON_AUTH,JSON.stringify(allAuthData));
           if (menuData && menuData.length > 0) {

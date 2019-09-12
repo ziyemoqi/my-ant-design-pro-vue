@@ -64,7 +64,6 @@ export default {
     }
   },
   created () {
-    console.log('装载tablayout页面')
     if (this.$route.path !== indexKey) {
       this.pageList.push({
         name: 'dashboard-analysis',
