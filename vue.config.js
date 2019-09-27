@@ -34,7 +34,7 @@ module.exports = {
     port: 3000,
     proxy: {
       '/jeecg-boot': {
-        target: 'http://192.168.0.250:8081', // 接口地址
+        target: 'http://127.0.0.1:8080', // 接口地址
         ws: false,
         changeOrigin: true
       }

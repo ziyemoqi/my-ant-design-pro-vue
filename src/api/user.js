@@ -7,7 +7,7 @@ import { get} from '@/api/manage'
  */
 export function login(parameter) {
   return axios({
-    url: '/sys/login',
+    url: '/sysUser/login',
     method: 'post',
     data: parameter
   })

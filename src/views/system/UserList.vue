@@ -13,7 +13,7 @@
           <a-col :md="6" :sm="8">
             <a-form-item label="性别">
               <a-select v-model="queryParam.sex" placeholder="请选择性别查询">
-                <a-select-option value>请选择性别查询</a-select-option>
+                <a-select-option value>请选择性别查询</a-select-option> 
                 <a-select-option value="1">男性</a-select-option>
                 <a-select-option value="2">女性</a-select-option>
               </a-select>

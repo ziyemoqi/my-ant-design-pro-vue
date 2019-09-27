@@ -10,7 +10,7 @@
       <a-form-item>
         <a-input
           size="large"
-          v-decorator="['username',validatorRules.username,{ validator: this.handleUsernameOrEmail }]"
+          v-decorator="['loginName',validatorRules.loginName,{ validator: this.handleUsernameOrEmail }]"
           type="text"
           placeholder="请输入帐户名"
         >
@@ -96,7 +96,7 @@ export default {
       form: this.$form.createForm(this),
       rememberMe: true,
       validatorRules: {
-        username: { rules: [{ required: true, message: '请输入用户名!', validator: 'click' }] },
+        loginName: { rules: [{ required: true, message: '请输入用户名!', validator: 'click' }] },
         password: { rules: [{ required: true, message: '请输入密码!', validator: 'click' }] },
         inputCode: { rules: [{ required: true, message: '请输入验证码!' }, { validator: this.validateInputCode }] }
       },
@@ -107,6 +107,7 @@ export default {
   },
   created() {
     Vue.ls.remove(ACCESS_TOKEN)
+    
   },
   methods: {
     ...mapActions(['Login', 'Logout']),
@@ -155,7 +156,7 @@ export default {
     loginFailed(err) {
       this.$notification['error']({
         message: '登录失败',
-        description: ((err.response || {}).data || {}).message || err.message || '请求出现错误，请稍后再试',
+        description:  err.msg || '请求出现错误，请稍后再试',
         duration: 4
       })
       this.submitting = false

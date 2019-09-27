@@ -38,7 +38,7 @@ const err = (error) => {
         }
         break
       case 404:
-        notification.error({message: '系统提示', description: '很抱歉，资源未找到!', duration: 4})
+        notification.error({message: '系统提示', description: '很抱歉，请求资源未找到!', duration: 4})
         break
       case 504:
         notification.error({message: '系统提示', description: '网络超时'})

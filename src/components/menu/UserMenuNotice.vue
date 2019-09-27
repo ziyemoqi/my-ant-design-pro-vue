@@ -111,9 +111,9 @@ export default {
   },
   methods: {
     timer () {
-      return setInterval(() => {
-        this.loadData()
-      }, 60000)
+     return setInterval(() => {
+      this.loadData()
+     }, 60000)
     },
     loadData () {
       try {
@@ -182,3 +182,4 @@ export default {
     }
   }
 </style>
+
