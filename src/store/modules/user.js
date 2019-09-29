@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { login, logout, queryPermissionsByToken} from '@/api/user'
-import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH } from "@/store/mutation-types"
+import { login, logout, queryPermissionsByToken } from '@/api/user'
+import { ACCESS_TOKEN, USER_NAME, USER_INFO, USER_AUTH, SYS_BUTTON_AUTH } from "@/store/mutation-types"
 import { welcome } from '@/utils/util'
 
 const user = {
@@ -35,21 +35,21 @@ const user = {
   },
 
   actions: {
-    Login ({ commit }, userInfo) {
+    Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
-          if(response.code =='200'){
+          if (response.code == '200') {
             let result = response.data
             let userInfo = result.userInfo
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-            Vue.ls.set(USER_NAME, userInfo.userName,7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_NAME, userInfo.userName, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', result.token)
             commit('SET_INFO', userInfo)
-            commit('SET_NAME', { userName: userInfo.userName,nickName: userInfo.nickName, welcome: welcome() })
+            commit('SET_NAME', { userName: userInfo.userName, nickName: userInfo.nickName, welcome: welcome() })
             commit('SET_PICTURE', userInfo.picture)
             resolve(response)
-          }else{
+          } else {
             reject(response)
           }
         }).catch(error => {
@@ -63,19 +63,23 @@ const user = {
     GetPermissionList({ commit }) {
       return new Promise((resolve, reject) => {
         let v_token = Vue.ls.get(ACCESS_TOKEN)
-        let params = {token:v_token}
+        let params = { token: v_token }
         queryPermissionsByToken(params).then(response => {
-          let menuData = response.result.menu;
-          let authData = response.result.auth;
-          let allAuthData = response.result.allAuth;
-          sessionStorage.setItem(USER_AUTH,JSON.stringify(authData));
-          sessionStorage.setItem(SYS_BUTTON_AUTH,JSON.stringify(allAuthData));
-          if (menuData && menuData.length > 0) {
-            commit('SET_PERMISSIONLIST', menuData)
+          if (response.code == '200') {
+            let menuData = response.data.menu;
+            let authData = response.data.auth;
+            let allAuthData = response.data.allAuth;
+            sessionStorage.setItem(USER_AUTH, JSON.stringify(authData));
+            sessionStorage.setItem(SYS_BUTTON_AUTH, JSON.stringify(allAuthData));
+            if (menuData && menuData.length > 0) {
+              commit('SET_PERMISSIONLIST', menuData)
+            } else {
+              reject('getPermissionList: permissions must be a non-null array !')
+            }
+            resolve(response)
           } else {
-            reject('getPermissionList: permissions must be a non-null array !')
+            reject(response.msg)
           }
-          resolve(response)
         }).catch(error => {
           reject(error)
         })
@@ -84,7 +88,7 @@ const user = {
 
     // 登出
     Logout({ commit, state }) {
-      return new Promise((resolve,reject) => {
+      return new Promise((resolve, reject) => {
         let logoutToken = state.token;
         commit('SET_TOKEN', '')
         commit('SET_PERMISSIONLIST', [])

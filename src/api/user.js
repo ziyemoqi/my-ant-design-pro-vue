@@ -19,7 +19,7 @@ export function login(parameter) {
  */
 export function logout(logoutToken) {
   return axios({
-    url: '/sys/logout',
+    url: '/sysUser/logout',
     method: 'post',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
@@ -33,7 +33,7 @@ export function logout(logoutToken) {
  * @param {*} params 
  */
 export function queryPermissionsByToken(params){
-  return get("/sys/permission/getUserPermissionByToken",params)
+  return get("/sysPermission/getUserPermissionByToken",params)
 }
 
 // const queryPermissionsByUser = (params)=>get("/sys/permission/getUserPermissionByToken",params);

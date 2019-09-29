@@ -31,7 +31,6 @@ const queryTreeListForRole = (params)=>get("/sys/role/queryTreeList",params);
 const queryListAsync = (params)=>get("/sys/permission/queryListAsync",params);
 const queryRolePermission = (params)=>get("/sys/permission/queryRolePermission",params);
 const saveRolePermission = (params)=>post("/sys/permission/saveRolePermission",params);
-const queryPermissionsByUser = (params)=>get("/sys/permission/getUserPermissionByToken",params);
 const loadAllRoleIds = (params)=>get("/sys/permission/loadAllRoleIds",params);
 const getPermissionRuleList = (params)=>get("/sys/permission/getPermRuleListByPermId",params);
 const queryPermissionRule = (params)=>get("/sys/permission/queryPermissionRule",params);
@@ -92,7 +91,6 @@ export {
   queryListAsync,
   queryRolePermission,
   saveRolePermission,
-  queryPermissionsByUser,
   loadAllRoleIds,
   getPermissionRuleList,
   queryPermissionRule,

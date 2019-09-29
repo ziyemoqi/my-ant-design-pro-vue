@@ -21,7 +21,7 @@ router.beforeEach((to, from, next) => {
     } else {
       if (store.getters.permissionList.length === 0) {
         store.dispatch('GetPermissionList').then(res => {
-          const menuData = res.result.menu;
+          const menuData = res.data.menu;
           if (menuData === null || menuData === "" || menuData === undefined) {
             return;
           }
