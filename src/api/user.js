@@ -1,5 +1,5 @@
 import { axios } from '@/utils/request'
-import { get} from '@/api/manage'
+import { get,post} from '@/api/manage'
 
 /**
  * 登录
@@ -36,8 +36,16 @@ export function queryPermissionsByToken(params){
   return get("/sysPermission/getUserPermissionByToken",params)
 }
 
-// const queryPermissionsByUser = (params)=>get("/sys/permission/getUserPermissionByToken",params);
 
-// export {
-//   queryPermissionsByUser
-// }
+
+/**
+ * 临时接口 -- 测试websocket 推送
+ * @param {*} params 
+ */
+export function tempApi2(params) {
+  return axios({
+    url: '/remind/remind-message/sendUser',
+    method: 'post',
+    data: params
+  })
+}

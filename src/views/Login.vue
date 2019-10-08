@@ -156,7 +156,7 @@ export default {
     loginFailed(err) {
       this.$notification['error']({
         message: '登录失败',
-        description:  err.msg || '请求出现错误，请稍后再试',
+        description:  err.msg || '系统错误，请稍后再试',
         duration: 4
       })
       this.submitting = false

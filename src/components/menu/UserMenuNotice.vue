@@ -106,15 +106,15 @@ export default {
     }
   },
   created () {
-    this.loadData()
-    this.timer()
+    // this.loadData()
+    // this.timer()
   },
   methods: {
-    timer () {
-     return setInterval(() => {
-      this.loadData()
-     }, 60000)
-    },
+    // timer () {
+    //  return setInterval(() => {
+    //   this.loadData()
+    //  }, 60000)
+    // },
     loadData () {
       try {
         // 获取系统消息
