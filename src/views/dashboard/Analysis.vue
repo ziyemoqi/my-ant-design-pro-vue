@@ -237,7 +237,7 @@ export default {
       this.loading = !this.loading
     }, 1000)
     this.initLogInfo()
-    this.timer()
+    // this.timer()
   },
   mounted() {
     //初始化websocket
@@ -247,11 +247,11 @@ export default {
     this.websocketclose();
   },
   methods: {
-    timer () {
-     return setInterval(() => {
-      this.testWebsocket()
-     }, 6000)
-    },
+    // timer () {
+    //  return setInterval(() => {
+    //   this.testWebsocket()
+    //  }, 1000 * 60 * 10)
+    // },
     initLogInfo() {
       getLoginfo(null).then(res => {
         if (res.code === 200) {
@@ -296,7 +296,7 @@ export default {
         message: '系统消息',
         description:'第'+ this.num+'次推送,'+ data.content
       })
-      // console.log(new Date())
+      console.log(new Date())
     },
     websocketclose: function(e) {
       console.log('connection closed (' + e.code + ')')
