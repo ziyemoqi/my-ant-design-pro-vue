@@ -296,7 +296,7 @@ export default {
         message: '系统消息',
         description:'第'+ this.num+'次推送,'+ data.content
       })
-      console.log(new Date())
+      console.log('第'+ this.num+'次推送,'+ new Date())
     },
     websocketclose: function(e) {
       console.log('connection closed (' + e.code + ')')
