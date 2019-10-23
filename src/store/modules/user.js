@@ -35,6 +35,7 @@ const user = {
   },
 
   actions: {
+    // 登录
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
