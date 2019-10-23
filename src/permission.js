@@ -1,20 +1,19 @@
 import Vue from 'vue'
 import router from './router'
 import store from './store'
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar style
+import NProgress from 'nprogress' 
+import 'nprogress/nprogress.css'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { generateIndexRouter } from "@/utils/util"
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/user/login', '/user/register', '/user/register-result'] // no redirect whitelist
+const whiteList = ['/user/login', '/user/register', '/user/register-result']
 
 router.beforeEach((to, from, next) => {
   console.log('------------------------路由守卫前置---------------------')
-  NProgress.start() // start progress bar
+  NProgress.start()
   if (Vue.ls.get(ACCESS_TOKEN)) {
-    /* has token */
     if (to.path === '/user/login') {
       next({ path: '/dashboard/workplace' })
       NProgress.done()

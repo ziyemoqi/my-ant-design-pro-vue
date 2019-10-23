@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import UserMenu from '../menu/UserMenu'
+import UserMenu from '../headerRightMenu/UserMenu'
 import SMenu from '../menu/'
 import Logo from '../menu/Logo'
 

@@ -7,7 +7,7 @@
       </a>
     </span> -->
     <!-- 即时消息 -->
-    <header-notice class="action"/>
+    <notice class="action"/>
     <!-- 设置 -->
     <a-dropdown>
       <span class="action action-full ant-dropdown-link user-dropdown-menu">
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import HeaderNotice from './UserMenuNotice'
+import Notice from './UserMenuNotice'
 import UserPassword from './UserMenuPassword'
 import { mapActions, mapGetters } from 'vuex'
 import { mixinDevice } from '@/utils/mixin.js'
@@ -54,7 +54,7 @@ export default {
   name: 'UserMenu',
   mixins: [mixinDevice],
   components: {
-    HeaderNotice,
+    Notice,
     UserPassword
   },
   props: {
