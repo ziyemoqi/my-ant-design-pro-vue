@@ -194,7 +194,7 @@ import Bar from '@/components/chart/Bar'
 import Trend from '@/components/Trend'
 import { getLoginfo } from '@/api/log'
 import * as userApi from '@/api/user'
-import { deleteAction, getAction,downFile } from '@/api/manage'
+import { deleteAction, get,downFile } from '@/api/manage'
 
 const rankList = []
 for (let i = 0; i < 7; i++) {

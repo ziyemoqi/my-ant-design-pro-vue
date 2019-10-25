@@ -12,7 +12,7 @@
           size="large"
           v-decorator="['loginName',validatorRules.loginName,{ validator: this.handleUsernameOrEmail }]"
           type="text"
-          placeholder="请输入帐户名"
+          placeholder="Account"
         >
         <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }" />
         </a-input>
@@ -24,7 +24,7 @@
           size="large"
           type="password"
           autocomplete="false"
-          placeholder="请输入密码"
+          placeholder="Password"
         >
         <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
         </a-input>
@@ -38,7 +38,7 @@
               size="large"
               type="text"
               @change="inputCodeChange"
-              placeholder="请输入验证码"
+              placeholder="Verify Code"
             >
               <a-icon
                 slot="prefix"
@@ -134,8 +134,7 @@ export default {
             remember_me: that.rememberMe,
             loginType: that.loginType
           }
-          that
-            .Login(loginParams)
+          that.Login(loginParams)
             .then(res => {
               that.loginSuccess()
             })

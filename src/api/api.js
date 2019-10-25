@@ -25,7 +25,6 @@ const changPassword = (params)=>put("/sys/user/changPassword",params);
 //权限管理
 const addPermission= (params)=>post("/sys/permission/add",params);
 const editPermission= (params)=>put("/sys/permission/edit",params);
-const getPermissionList = (params)=>get("/sys/permission/list",params);
 const queryTreeList = (params)=>get("/sys/permission/queryTreeList",params);
 const queryTreeListForRole = (params)=>get("/sys/role/queryTreeList",params);
 const queryListAsync = (params)=>get("/sys/permission/queryListAsync",params);
@@ -84,7 +83,6 @@ export {
   frozenBatch,
   checkUsername,
   changPassword,
-  getPermissionList,
   addPermission,
   editPermission,
   queryTreeList,

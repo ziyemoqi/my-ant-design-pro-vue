@@ -6,14 +6,14 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
             <a-form-item label="账号">
-              <a-input placeholder="请输入账号查询" ></a-input>
+              <a-input placeholder="请输入账号查询"></a-input>
             </a-form-item>
           </a-col>
 
           <a-col :md="6" :sm="8">
             <a-form-item label="性别">
               <a-select v-model="queryParam.sex" placeholder="请选择性别查询">
-                <a-select-option value>请选择性别查询</a-select-option> 
+                <a-select-option value>请选择性别查询</a-select-option>
                 <a-select-option value="1">男性</a-select-option>
                 <a-select-option value="2">女性</a-select-option>
               </a-select>
@@ -123,7 +123,7 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)" >编辑</a>
+          <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
 
@@ -184,7 +184,8 @@
 //   import moment from "moment"
 //   import axios from 'axios';
 //   import { getRoleList, getServiceList } from '@/api/manage'
-import Vue from 'vue'
+// import Vue from 'vue'
+import { userList } from '@/api/user'
 
 export default {
   name: 'TableList',
@@ -198,21 +199,21 @@ export default {
       /* 查询折叠 */
       toggleSearchStatus: false,
       /* 数据源 */
-      dataSource:[],
+      dataSource: [],
       /* 分页参数 */
-      ipagination:{
+      ipagination: {
         current: 1,
         pageSize: 10,
         pageSizeOptions: ['10', '20', '30'],
         showTotal: (total, range) => {
-          return range[0] + "-" + range[1] + " 共" + total + "条"
+          return range[0] + '-' + range[1] + ' 共' + total + '条'
         },
         showQuickJumper: true,
         showSizeChanger: true,
         total: 0
       },
       /* table加载状态 */
-      loading:false,
+      loading: false,
       // 查询参数
       queryParam: {},
       // ===============================
@@ -229,7 +230,7 @@ export default {
 
       // 高级搜索 展开/关闭
       advanced: false,
-      
+
       // 表头
       columns: [
         {
@@ -268,7 +269,27 @@ export default {
       selectedRows: []
     }
   },
+  created() {
+    this.loadData()
+  },
   methods: {
+    async loadData() {
+      let that = this
+      this.dataSource = []
+      let obj = {
+        page: {
+          pageNo: 1,
+          pageSize: 10
+        }
+      }
+      let { code, data, msg } = await userList(obj)
+      if (code === 200) {
+        console.log(data)
+        that.dataSource = data
+      } else {
+        that.$message.error(msg || '数据获取失败,请联系系统管理员')
+      }
+    },
     // 展开隐藏
     handleToggleSearch() {
       this.toggleSearchStatus = !this.toggleSearchStatus
@@ -311,24 +332,24 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       console.log('分页、排序、筛选变化时触发')
     },
-    searchReset(){
+    searchReset() {
       console.log(1234)
     },
-    handleAdd(){
+    handleAdd() {
       console.log('handleAdd')
     },
-    tokenHeader(){
+    tokenHeader() {
       console.log('tokenHeader')
     },
-    importExcelUrl(){
+    importExcelUrl() {
       console.log('importExcelUrl')
     },
-    onClearSelected(){
+    onClearSelected() {
       console.log('清空')
     },
     onSelectChange(selectedRowKeys, selectionRows) {
       console.log('123')
-    },
+    }
   }
 }
 </script>

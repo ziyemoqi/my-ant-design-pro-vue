@@ -1,11 +1,11 @@
 <template>
   <div class="user-wrapper" :class="theme">
     <!-- 客服支持 -->
-    <!-- <span class="action">
-      <a class="logout_title" target="_blank" href="http://jeecg-boot.mydoc.io">
+    <span class="action">
+      <a class="logout_title" target="_blank" href="https://github.com/Kroos-x">
         <a-icon type="question-circle-o"></a-icon>
       </a>
-    </span> -->
+    </span>
     <!-- 即时消息 -->
     <notice class="action"/>
     <!-- 设置 -->

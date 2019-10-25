@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import { login, logout, queryPermissionsByToken } from '@/api/user'
+import { login, logout } from '@/api/user'
+import { queryPermissionsByToken } from '@/api/permission'
 import { ACCESS_TOKEN, USER_NAME, USER_INFO, USER_AUTH, SYS_BUTTON_AUTH } from "@/store/mutation-types"
 import { welcome } from '@/utils/util'
 
@@ -60,7 +61,7 @@ const user = {
     },
 
 
-    // 获取用户信息
+    // 获取用户权限信息
     GetPermissionList({ commit }) {
       return new Promise((resolve, reject) => {
         let v_token = Vue.ls.get(ACCESS_TOKEN)
@@ -79,6 +80,7 @@ const user = {
             }
             resolve(response)
           } else {
+            console.log(response.msg)
             reject(response.msg)
           }
         }).catch(error => {
@@ -95,9 +97,11 @@ const user = {
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
         logout(logoutToken).then(() => {
+          console.log(123)
           resolve()
         }).catch(() => {
-          reject()
+          console.log(1234)
+          resolve()
         })
       })
     },

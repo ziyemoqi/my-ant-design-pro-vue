@@ -28,12 +28,13 @@ export function logout(logoutToken) {
   })
 }
 
+
 /**
- * 根据Token获取权限
+ * 加载用户数据
  * @param {*} params 
  */
-export function queryPermissionsByToken(params){
-  return get("/sysPermission/getUserPermissionByToken",params)
+export function userList(params){
+  return post("/sysUser/list",params)
 }
 
 

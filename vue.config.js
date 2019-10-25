@@ -33,7 +33,7 @@ module.exports = {
   devServer: {
     port: 3000,
     proxy: {
-      '/jeecg-boot': {
+      '/lionherding': {
         target: 'http://localhost:8080', // 接口地址
         ws: false,
         changeOrigin: true

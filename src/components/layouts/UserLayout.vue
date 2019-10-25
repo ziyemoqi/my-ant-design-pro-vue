@@ -5,11 +5,11 @@
         <div class="header">
           <a href="/">
             <img src="~@/assets/icons/logo.svg" class="logo" alt="logo">
-            <span class="title">Jeecg Boot</span>
+            <span class="title">Deep Learning</span>
           </a>
         </div>
         <div class="desc">
-          Jeecg Boot 是中国最具影响力的 企业级 快速开发平台
+          At Your Fingertips, You Have The Power To Change The World
         </div>
       </div>
 
