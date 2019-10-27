@@ -79,7 +79,7 @@
 <script>
 //   import PermissionModal from './modules/PermissionModal'
   import {getPermissionList} from '@/api/permission'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  // import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 //   import PermissionDataRuleList from './PermissionDataRuleList'
 //   import JEllipsis from '@/components/jeecg/JEllipsis'
 
@@ -126,8 +126,8 @@
     },
     {
       title: '排序',
-      dataIndex: 'sortNo',
-      key: 'sortNo'
+      dataIndex: 'sort',
+      key: 'sort'
     },
     {
       title: '操作',
@@ -140,7 +140,6 @@
 
   export default {
     name: 'PermissionList',
-    mixins: [JeecgListMixin],
     // components: {
     //   PermissionDataRuleList,
     //   PermissionModal,
@@ -156,10 +155,20 @@
           list: '/sys/permission/list',
           delete: '/sys/permission/delete',
           deleteBatch: '/sys/permission/deleteBatch'
-        }
+        },
+         /* table选中keys*/
+        selectedRowKeys: [],
+        /* table选中records*/
+        selectionRows: [],
+         /* 数据源 */
+      dataSource:[],
       }
     },
+    mounted(){
+      this.loadData()
+    },
     methods: {
+      // 加载数据
       async loadData() {
         let that = this
         this.dataSource = []
@@ -179,7 +188,52 @@
         this.$refs.modalForm.localMenuType = 1;
         this.$refs.modalForm.disableSubmit = false;
         this.$refs.modalForm.edit({status:'1',permsType:'1',route:true,'parentId':record.id});
+      },
+      // 新增
+      handleAdd: function () {
+        this.$refs.modalForm.add();
+        this.$refs.modalForm.title = "新增";
+        this.$refs.modalForm.disableSubmit = false;
+      },
+      onClearSelected() {
+      this.selectedRowKeys = [];
+      this.selectionRows = [];
+    },
+    onSelectChange(selectedRowKeys, selectionRows) {
+      this.selectedRowKeys = selectedRowKeys;
+      this.selectionRows = selectionRows;
+    },
+    batchDel: function () {
+      if(!this.url.deleteBatch){
+        this.$message.error("请设置url.deleteBatch属性!")
+        return
       }
+      if (this.selectedRowKeys.length <= 0) {
+        this.$message.warning('请选择一条记录！');
+        return;
+      } else {
+        var ids = "";
+        for (var a = 0; a < this.selectedRowKeys.length; a++) {
+          ids += this.selectedRowKeys[a] + ",";
+        }
+        var that = this;
+        this.$confirm({
+          title: "确认删除",
+          content: "是否删除选中数据?",
+          onOk: function () {
+            deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.loadData();
+                that.onClearSelected();
+              } else {
+                that.$message.warning(res.message);
+              }
+            });
+          }
+        });
+      }
+    },
     }
   }
 </script>

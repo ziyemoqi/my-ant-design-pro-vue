@@ -83,7 +83,7 @@ export default {
       }
     }
   },
-  
+
   mounted() {
     this.loadData()
   },
@@ -95,7 +95,7 @@ export default {
       that.treeData = []
       that.departTree = []
       queryDepartTreeList().then(res => {
-        if (res.code === 200 ) {
+        if (res.code === 200) {
           for (let i = 0; i < res.data.length; i++) {
             let temp = res.data[i]
             that.treeData.push(temp)
@@ -111,9 +111,9 @@ export default {
       let that = this
       if (value) {
         searchByKeywords({ keyWord: value }).then(res => {
-          if (res.code === 200 ) {
+          if (res.code === 200) {
             that.departTree = []
-            if(res.data){
+            if (res.data) {
               for (let i = 0; i < res.data.length; i++) {
                 let temp = res.data[i]
                 that.departTree.push(temp)
@@ -128,7 +128,7 @@ export default {
       }
     },
     // 选择tree节点
-     onSelect(selectedKeys, e) {
+    onSelect(selectedKeys, e) {
       if (this.selectedKeys[0] !== selectedKeys[0]) {
         this.selectedKeys = [selectedKeys[0]]
       }
@@ -138,11 +138,7 @@ export default {
       this.$refs.UserBaseInfo.onClearSelected()
       this.$refs.UserBaseInfo.open(record)
     },
-    // =====================
-
-
     setThisExpandedKeys(node) {
-      console.log('setThisExpandedKeys')
       if (node.children && node.children.length > 0) {
         this.iExpandedKeys.push(node.key)
         for (let a = 0; a < node.children.length; a++) {
@@ -150,6 +146,9 @@ export default {
         }
       }
     },
+    // =====================
+
+    
 
     onExpand(expandedKeys) {
       console.log('onExpand')
@@ -160,7 +159,6 @@ export default {
       this.autoExpandParent = false
     },
 
-    
     onCheck(checkedKeys, e) {
       console.log('onCheck')
       let record = e.node.dataRef
@@ -170,9 +168,8 @@ export default {
       this.$refs.DeptBaseInfo.open(record)
       this.$refs.UserBaseInfo.open(record)
       this.hiding = false
-    },
-   
-  },
+    }
+  }
 }
 </script>
 <style scoped>

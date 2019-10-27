@@ -30,14 +30,19 @@ export function logout(logoutToken) {
 
 
 /**
- * 加载用户数据
+ * 根据部门ID加载有效用户
  * @param {*} params 
  */
 export function userList(params){
-  return post("/sysUser/list",params)
+  return post("/sysUser/departUserList",params)
 }
 
 
+// url: {
+//   edit: '/sys/user/editSysDepartWithUser',
+//   delete: '/sys/user/deleteUserInDepart',
+//   deleteBatch: '/sys/user/deleteUserInDepartBatch'
+// },
 
 /**
  * 临时接口 -- 测试websocket 推送

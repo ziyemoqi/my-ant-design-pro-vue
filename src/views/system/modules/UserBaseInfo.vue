@@ -1,19 +1,23 @@
 <template>
   <a-card :bordered="false">
-    <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
-      <!-- 搜索区域 -->
+      <!-- FORM搜索区域 -->
       <a-form layout="inline" :form="screenForm" @submit.prevent="handleScreenSubmit">
         <a-row :gutter="10">
           <a-col :md="10" :sm="12">
             <a-form-item label="用户账号" style="margin-left:8px">
-              <a-input placeholder="请输入名称查询"  v-decorator="['loginName',{}]" ></a-input>
+              <a-input placeholder="请输入名称查询" v-decorator="['loginName',{}]"></a-input>
             </a-form-item>
           </a-col>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
-              <a-button type="primary" icon="search" style="margin-left: 18px">查询</a-button>
-              <a-button type="primary" icon="reload" style="margin-left: 8px" @click="handleReset">重置</a-button>
+              <a-button type="primary" icon="search" style="margin-left: 18px" html-type="submit">查询</a-button>
+              <a-button
+                type="primary"
+                icon="reload"
+                style="margin-left: 8px"
+                @click="handleReset"
+              >重置</a-button>
             </a-col>
           </span>
         </a-row>
@@ -22,9 +26,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator" :md="24" :sm="24" style="margin: -46px 0px 10px 2px">
       <a-button @click="handleAdd" type="primary" icon="plus" style="margin-top: 16px">用户录入</a-button>
-      <!--<a-button @click="handleEdit" type="primary" icon="edit" style="margin-top: 16px">用户编辑</a-button>-->
       <a-button @click="handleAddUserDepart" type="primary" icon="plus">添加已有用户</a-button>
-
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel">
@@ -89,15 +91,16 @@
     <!-- table区域-end -->
 
     <!-- 表单区域 -->
-    <!-- <user-modal ref="modalForm" @ok="modalFormOk"></user-modal> -->
+    <user-modal ref="modalForm" @ok="modalFormOk"></user-modal>
     <!-- <Select-User-Modal ref="selectUserModal" @selectFinished="selectOK"></Select-User-Modal> -->
   </a-card>
 </template>
 
 <script>
 import { get, post, deleteAction } from '@/api/manage'
+import { userList } from '@/api/user'
 //   import SelectUserModal from './SelectUserModal'
-//   import UserModal from './UserModal'
+import UserModal from './UserModal'
 const columns = [
   {
     title: '用户账号',
@@ -121,7 +124,7 @@ export default {
   name: 'UserBaseInfo',
   components: {
     //   SelectUserModal,
-    //   UserModal
+    UserModal
   },
 
   data() {
@@ -130,19 +133,12 @@ export default {
       currentDeptId: '',
       dataSource: [],
       columns,
-      url: {
-        list: '/sysUser/departUserList',
-        edit: '/sys/user/editSysDepartWithUser',
-        delete: '/sys/user/deleteUserInDepart',
-        deleteBatch: '/sys/user/deleteUserInDepartBatch'
-      },
       /* table选中keys*/
       selectedRowKeys: [],
       /* table选中records*/
       selectionRows: [],
-      /* 分页参数 */
       ipagination: {
-        pageNo: 1,
+        current: 1,
         pageSize: 10,
         pageSizeOptions: ['10', '20', '30'],
         showTotal: (total, range) => {
@@ -154,7 +150,7 @@ export default {
       },
       /* table加载状态 */
       loading: false,
-      screenForm: this.$form.createForm(this),
+      screenForm: this.$form.createForm(this)
     }
   },
   mounted() {
@@ -167,20 +163,19 @@ export default {
       if (that.currentDeptId === '') return
       let obj = {
         page: {
-          pageNo: that.ipagination.pageNo,
+          pageNo: that.ipagination.current,
           pageSize: that.ipagination.pageSize
         },
         params: {
-            ...screenData,
+          ...screenData,
           deptId: this.currentDeptId
         }
       }
       this.loading = true
-      console.log(param)
-      post(this.url.list, obj).then(res => {
+      userList(obj).then(res => {
         if (res.code === 200) {
-          this.dataSource = res.data
-          this.ipagination.total = res.page.total
+          that.dataSource = res.data
+          that.ipagination.total = res.page.total
         }
       })
       this.loading = false
@@ -188,102 +183,136 @@ export default {
     // 选中某个部门tree节点后调用
     open(record) {
       this.currentDeptId = record.id
-      this.ipagination.pageNo = 1
+      this.ipagination.current = 1
+      this.screenForm.resetFields()
       this.loadData()
     },
-    // form表单条件查询
-handleScreenSubmit(e) {
-      e.preventDefault();
-      this.ipagination.pageNo = 1;
-      let { ...others } = this.screenForm.getFieldsValue();
-      this.loadData({
-        ...others
-      });
-    },
-    // 重置
-    handleReset() {
-      this.screenForm.resetFields();
-      this.getTableData();
-    },
-    // ===================
+    // 初始化
     onClearSelected() {
       this.selectedRowKeys = []
       this.selectionRows = []
     },
+    // 全选单选后的回调
     onSelectChange(selectedRowKeys, selectionRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectionRows = selectionRows
     },
+    // form表单条件查询
+    handleScreenSubmit(e) {
+      e.preventDefault()
+      this.ipagination.pageNo = 1
+      let { ...others } = this.screenForm.getFieldsValue()
+      this.loadData({
+        ...others
+      })
+    },
+    // 重置
+    handleReset() {
+      this.screenForm.resetFields()
+      this.loadData()
+    },
+    //分页、排序、筛选变化时触发
     handleTableChange(pagination, filters, sorter) {
-      //分页、排序、筛选变化时触发
-      //TODO 筛选
-      if (Object.keys(sorter).length > 0) {
-        this.isorter.column = sorter.field
-        this.isorter.order = 'ascend' == sorter.order ? 'asc' : 'desc'
-      }
       this.ipagination = pagination
       this.loadData()
     },
-
-    // ===================
-    batchDel: function() {
-      console.log(1)
-      if (!this.url.deleteBatch) {
-        this.$message.error('请设置url.deleteBatch属性!')
-        return
-      }
-      if (this.selectedRowKeys.length <= 0) {
-        this.$message.warning('请选择一条记录！')
-        return
-      } else {
-        var ids = ''
-        for (var a = 0; a < this.selectedRowKeys.length; a++) {
-          ids += this.selectedRowKeys[a] + ','
-        }
-        var that = this
-        console.log(this.currentDeptId)
-        this.$confirm({
-          title: '确认删除',
-          content: '是否删除选中数据?',
-          onOk: function() {
-            deleteAction(that.url.deleteBatch, { depId: that.currentDeptId, userIds: ids }).then(res => {
-              if (res.success) {
-                that.$message.success(res.message)
-                that.loadData()
-                that.onClearSelected()
-              } else {
-                that.$message.warning(res.message)
-              }
-            })
-          }
-        })
-      }
+    // 编辑
+    handleEdit: function(record) {
+      console.log('handleEdit')
+      this.$message.info('功能开发中,敬请期待！')
+      // this.$refs.modalForm.title = '编辑'
+      // this.$refs.modalForm.departDisabled = true
+      // this.$refs.modalForm.disableSubmit = false
+      // this.$refs.modalForm.edit(record)
     },
+    // 新增/修改 回调
+    modalFormOk() {
+      this.loadData()
+    },
+    // 用户增加
+    handleAdd: function() {
+      console.log('handleAdd')
+      this.$message.info('功能开发者,敬请期待！')
+      // if (this.currentDeptId == '') {
+      //   this.$message.error('请选择一个部门!')
+      // } else {
+      //   this.$refs.modalForm.departDisabled = true
+      //   this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId] //传入一个部门id
+      //   this.$refs.modalForm.add()
+      //   this.$refs.modalForm.title = '新增'
+      // }
+    },
+    // 添加已有用户
+    handleAddUserDepart() {
+      // if (this.currentDeptId == '') {
+      //   this.$message.error('请选择一个部门!')
+      // } else {
+      //   this.$refs.selectUserModal.visible = true
+      // }
+      this.$message.info('功能开发者,敬请期待！')
+    },
+    // 删除已选用户
     handleDelete: function(id) {
-      console.log(2)
-      if (!this.url.delete) {
-        this.$message.error('请设置url.delete属性!')
-        return
-      }
-      var that = this
-      deleteAction(that.url.delete, { depId: this.currentDeptId, userId: id }).then(res => {
-        console.log(3)
-        if (res.success) {
-          that.$message.success(res.message)
-          if (this.selectedRowKeys.length > 0) {
-            for (let i = 0; i < this.selectedRowKeys.length; i++) {
-              if (this.selectedRowKeys[i] == id) {
-                this.selectedRowKeys.splice(i, 1)
-                break
-              }
-            }
-          }
-          that.loadData()
-        } else {
-          that.$message.warning(res.message)
-        }
-      })
+      console.log('handleDelete')
+      this.$message.info('功能开发者,敬请期待！')
+      // if (!this.url.delete) {
+      //   this.$message.error('请设置url.delete属性!')
+      //   return
+      // }
+      // var that = this
+      // deleteAction(that.url.delete, { depId: this.currentDeptId, userId: id }).then(res => {
+      //   console.log(3)
+      //   if (res.success) {
+      //     that.$message.success(res.message)
+      //     if (this.selectedRowKeys.length > 0) {
+      //       for (let i = 0; i < this.selectedRowKeys.length; i++) {
+      //         if (this.selectedRowKeys[i] == id) {
+      //           this.selectedRowKeys.splice(i, 1)
+      //           break
+      //         }
+      //       }
+      //     }
+      //     that.loadData()
+      //   } else {
+      //     that.$message.warning(res.message)
+      //   }
+      // })
     },
+    // 删除单条数据
+    batchDel: function() {
+      this.$message.info('功能开发中,敬请期待！')
+      // if (!this.url.deleteBatch) {
+      //   this.$message.error('请设置url.deleteBatch属性!')
+      //   return
+      // }
+      // if (this.selectedRowKeys.length <= 0) {
+      //   this.$message.warning('请选择一条记录！')
+      //   return
+      // } else {
+      //   var ids = ''
+      //   for (var a = 0; a < this.selectedRowKeys.length; a++) {
+      //     ids += this.selectedRowKeys[a] + ','
+      //   }
+      //   var that = this
+      //   console.log(this.currentDeptId)
+      //   this.$confirm({
+      //     title: '确认删除',
+      //     content: '是否删除选中数据?',
+      //     onOk: function() {
+      //       deleteAction(that.url.deleteBatch, { depId: that.currentDeptId, userIds: ids }).then(res => {
+      //         if (res.success) {
+      //           that.$message.success(res.message)
+      //           that.loadData()
+      //           that.onClearSelected()
+      //         } else {
+      //           that.$message.warning(res.message)
+      //         }
+      //       })
+      //     }
+      //   })
+      // }
+    },
+    // ===================
 
     clearList() {
       console.log(5)
@@ -298,30 +327,7 @@ handleScreenSubmit(e) {
       }
       return true
     },
-    handleAddUserDepart() {
-      if (this.currentDeptId == '') {
-        this.$message.error('请选择一个部门!')
-      } else {
-        this.$refs.selectUserModal.visible = true
-      }
-    },
-    handleEdit: function(record) {
-      console.log(7)
-      this.$refs.modalForm.title = '编辑'
-      this.$refs.modalForm.departDisabled = true
-      this.$refs.modalForm.disableSubmit = false
-      this.$refs.modalForm.edit(record)
-    },
-    handleAdd: function() {
-      if (this.currentDeptId == '') {
-        this.$message.error('请选择一个部门!')
-      } else {
-        this.$refs.modalForm.departDisabled = true
-        this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId] //传入一个部门id
-        this.$refs.modalForm.add()
-        this.$refs.modalForm.title = '新增'
-      }
-    },
+
     selectOK(data) {
       let params = {}
       params.depId = this.currentDeptId
