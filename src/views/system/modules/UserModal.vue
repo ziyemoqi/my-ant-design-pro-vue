@@ -16,27 +16,30 @@
           <a-button @click="toggleScreen" icon="appstore" style="height:20px;width:20px;border:0px"></a-button>
         </span>
       </div>
-
     </template>
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
-        <a-form-item label="用户账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入用户账号" v-decorator="[ 'username', validatorRules.username]" :readOnly="!!model.id"/>
+        <a-form-item label="登录账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input placeholder="请输入登录账号" v-decorator="[ 'loginName', validatorRules.username]" :readOnly="!!model.id"/>
+        </a-form-item>
+<!-- 
+        <a-form-item label="用户名字" :labelCol="labelCol" :wrapperCol="wrapperCol" >
+          <a-input placeholder="请输入用户名称" v-decorator="[ 'userName']" />
         </a-form-item>
 
         <a-form-item label="用户名字" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-input placeholder="请输入用户名称" v-decorator="[ 'realname', validatorRules.realname]" />
+          <a-input placeholder="请输入用户名称" v-decorator="[ 'nickName']" />
         </a-form-item>
 
         <a-form-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入工号" v-decorator="[ 'workNo', validatorRules.workNo]" />
+          <a-input-number :min="1" v-decorator="[ 'sort']" placeholder="请输入工号" style="width:100%"/>
         </a-form-item>
 
-        <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol"> -->
           <!-- <j-select-position placeholder="请选择职务" :multiple="false" v-decorator="['post', {}]"/> -->
-        </a-form-item>
+        <!-- </a-form-item>
 
         <a-form-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!roleDisabled" >
           <a-select
@@ -45,14 +48,14 @@
             placeholder="请选择用户角色"
             optionFilterProp = "children"
             v-model="selectedRole">
-            <a-select-option v-for="(role,roleindex) in roleList" :key="roleindex.toString()" :value="role.id">
+            <a-select-option v-for="(role,roleindex) in roleList" :key="roleindex.toString()" :value="role.sysRoleId">
               {{ role.roleName }}
             </a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-item> -->
 
         <!--部门分配-->
-        <a-form-item label="部门分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
+        <!-- <a-form-item label="部门分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
           <a-input-search
             placeholder="点击右侧按钮选择部门"
             v-model="checkedDepartNameString"
@@ -98,17 +101,17 @@
           <a-input placeholder="请输入邮箱" v-decorator="[ 'email', validatorRules.email]" />
         </a-form-item>
 
+         <a-form-item label="年龄" :labelCol="labelCol" :wrapperCol="wrapperCol">
+           <a-input-number :min="1" :max="140"  v-decorator="[ 'age']" placeholder="请输入年龄" style="width:100%"/>
+        </a-form-item>
+
         <a-form-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <!-- <a-input placeholder="请输入手机号码" :disabled="isDisabledAuth('user:form:phone')" v-decorator="[ 'phone', validatorRules.phone]" /> -->
+          <a-input placeholder="请输入手机号码" v-decorator="[ 'mobilePhone']"/>
         </a-form-item>
 
         <a-form-item label="座机" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input placeholder="请输入座机" v-decorator="[ 'telephone', validatorRules.telephone]"/>
-        </a-form-item>
-
-        <a-form-item label="工作流引擎" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <!-- <j-dict-select-tag  v-decorator="['activitiSync', {}]" placeholder="请选择是否同步工作流引擎" :type="'radio'" :triggerChange="true" dictCode="activiti_sync"/> -->
-        </a-form-item>
+        </a-form-item> -->
 
       </a-form>
     </a-spin>
@@ -132,7 +135,7 @@
   // import JSelectPosition from '@/components/jeecgbiz/JSelectPosition'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { get } from '@/api/manage'
-  // import {addUser,editUser,queryUserRole,queryall } from '@/api/role'
+  import {addUser,editUser } from '@/api/user'
   import {queryall } from '@/api/role'
   // import { disabledAuthFilter } from "@/utils/authFilter"
   // import {duplicateCheck } from '@/api/api'
@@ -175,12 +178,6 @@
             }],
           },
           roles:{},
-          workNo: {
-            rules: [
-              { required: true, message: '请输入工号' },
-              { validator: this.validateWorkNo }
-            ]
-          },
           telephone: {
             rules: [
               { pattern: /^0\d{2,3}-[1-9]\d{6,7}$/, message: '请输入正确的座机号码' },
@@ -239,10 +236,10 @@
       },
       initialRoleList(){
         queryall().then((res)=>{
-          if(res.success){
-            this.roleList = res.result;
+          if(res.code === 200){
+            this.roleList = res.data;
           }else{
-            console.log(res.message);
+            console.log(res.msg);
           }
         });
       },
@@ -281,7 +278,7 @@
         that.visible = true;
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','activitiSync','workNo','telephone','post'))
+          that.form.setFieldsValue(pick(this.model,'loginName','sex','nickName','email','phone','sort','telephone','post'))
         });
         // 调用查询用户对应的部门信息的方法
         that.checkedDepartKeys = [];
@@ -318,10 +315,10 @@
       },
       moment,
       handleSubmit () {
-
-        const that = this;
+        const that = this
         // 触发表单验证
         this.form.validateFields((err, values) => {
+          console.log(2222)
           if (!err) {
             that.confirmLoading = true;
             let avatar = that.model.avatar;
@@ -330,14 +327,17 @@
             }else{
               values.birthday = values.birthday.format(this.dateFormat);
             }
+            console.log(12)
             let formData = Object.assign(this.model, values);
             formData.avatar = avatar;
             formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):'';
             formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
 
             // that.addDepartsToUser(that,formData); // 调用根据当前用户添加部门信息的方法
-            let obj;
+            let obj
+            console.log(2)
             if(!this.model.id){
+              console.log(22)
               formData.id = this.userId;
               obj=addUser(formData);
             }else{
@@ -357,7 +357,6 @@
 
               that.close();
             })
-
           }
         })
       },
@@ -448,21 +447,6 @@
           callback("用户名已存在!")
         }
       })
-      },
-      validateWorkNo(rule, value, callback){
-        var params = {
-          tableName: 'sys_user',
-          fieldName: 'work_no',
-          fieldVal: value,
-          dataId: this.userId
-        };
-        duplicateCheck(params).then((res) => {
-          if (res.success) {
-            callback()
-          } else {
-            callback("工号已存在!")
-          }
-        })
       },
       handleConfirmBlur  (e) {
         const value = e.target.value;

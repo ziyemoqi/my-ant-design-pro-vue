@@ -37,12 +37,13 @@ export function userList(params){
   return post("/sysUser/departUserList",params)
 }
 
+const addUser = (params)=>postAction("/sysUser/add",params);
+const editUser = (params)=>putAction("/sysUser/edit",params);
 
-// url: {
-//   edit: '/sys/user/editSysDepartWithUser',
-//   delete: '/sys/user/deleteUserInDepart',
-//   deleteBatch: '/sys/user/deleteUserInDepartBatch'
-// },
+export {
+  addUser,
+  editUser
+}
 
 /**
  * 临时接口 -- 测试websocket 推送

@@ -133,9 +133,7 @@ export default {
       currentDeptId: '',
       dataSource: [],
       columns,
-      /* table选中keys*/
       selectedRowKeys: [],
-      /* table选中records*/
       selectionRows: [],
       ipagination: {
         current: 1,
@@ -231,16 +229,15 @@ export default {
     },
     // 用户增加
     handleAdd: function() {
-      console.log('handleAdd')
-      this.$message.info('功能开发者,敬请期待！')
-      // if (this.currentDeptId == '') {
-      //   this.$message.error('请选择一个部门!')
-      // } else {
-      //   this.$refs.modalForm.departDisabled = true
-      //   this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId] //传入一个部门id
-      //   this.$refs.modalForm.add()
-      //   this.$refs.modalForm.title = '新增'
-      // }
+      // this.$message.info('功能开发中,敬请期待！')
+      if (this.currentDeptId == '') {
+        this.$message.error('请选择一个部门!')
+      } else {
+        this.$refs.modalForm.departDisabled = true
+        this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId] //传入一个部门id
+        this.$refs.modalForm.add()
+        this.$refs.modalForm.title = '新增'
+      }
     },
     // 添加已有用户
     handleAddUserDepart() {
@@ -249,12 +246,12 @@ export default {
       // } else {
       //   this.$refs.selectUserModal.visible = true
       // }
-      this.$message.info('功能开发者,敬请期待！')
+      this.$message.info('功能开发中,敬请期待！')
     },
     // 删除已选用户
     handleDelete: function(id) {
       console.log('handleDelete')
-      this.$message.info('功能开发者,敬请期待！')
+      this.$message.info('功能开发中,敬请期待！')
       // if (!this.url.delete) {
       //   this.$message.error('请设置url.delete属性!')
       //   return

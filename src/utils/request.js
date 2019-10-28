@@ -40,7 +40,7 @@ const err = (error) => {
       case 400:
         notification.error({message: '系统提示', description: '数据请求有误!', duration: 4})
       case 404:
-        notification.error({message: '系统提示', description: '很抱歉，请求资源未找到!', duration: 4})
+        notification.error({message: '系统提示', description: '请求资源未找到!', duration: 4})
         break
       case 405:
         notification.error({message: '系统提示', description: '请求类型有误!', duration: 4})
