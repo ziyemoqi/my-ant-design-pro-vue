@@ -7,7 +7,8 @@
           <a-button @click="handleAdd(2)" type="primary">添加子部门</a-button>
           <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
           <a-button title="删除多条数据" @click="batchDel" type="default">批量删除</a-button>
-          <!--<a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>-->
+          <a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>
+          <a-button @click="backFlowList" type="default" icon="rollback" :loading="loading">返回</a-button>
         </a-row>
         <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
           <a-alert type="info" :showIcon="true">
@@ -57,7 +58,7 @@
           </a-col>
         </div>
       </a-card>
-      <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
+      <!---- for:树操作 =======------>
       <div class="drawer-bootom-button">
         <a-dropdown :trigger="['click']" placement="topCenter">
           <a-menu slot="overlay">
@@ -74,7 +75,7 @@
           </a-button>
         </a-dropdown>
       </div>
-      <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
+      <!---- for:树操作 =======------>
     </a-col>
     <a-col :md="12" :sm="24">
       <a-card :bordered="false">
@@ -99,39 +100,32 @@
             <a-input
               disabled
               placeholder="请输入机构编码"
-              v-decorator="['orgCode', validatorRules.orgCode ]"
+              v-decorator="['uniqueCoding', validatorRules.uniqueCoding ]"
             />
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="机构类型">
-            <template v-if="orgCategoryDisabled">
+            <template >
               <a-radio-group
-                v-decorator="['orgCategory',validatorRules.orgCategory]"
+                v-decorator="['orgType',validatorRules.orgCategory]"
                 placeholder="请选择机构类型"
               >
                 <a-radio value="1">公司</a-radio>
-              </a-radio-group>
-            </template>
-            <template v-else>
-              <a-radio-group
-                v-decorator="['orgCategory',validatorRules.orgCategory]"
-                placeholder="请选择机构类型"
-              >
                 <a-radio value="2">部门</a-radio>
                 <a-radio value="3">岗位</a-radio>
               </a-radio-group>
             </template>
           </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
-            <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]" />
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="手机号">
-            <a-input placeholder="请输入手机号" v-decorator="['mobile', {'initialValue':''}]" />
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="办公电话">
+            <a-input placeholder="请输入办公电话" v-decorator="['telephone', {'initialValue':''}]" />
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="地址">
             <a-input placeholder="请输入地址" v-decorator="['address', {'initialValue':''}]" />
           </a-form-item>
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
+            <a-input-number v-decorator="[ 'sort',{'initialValue':0}]" style="width:100%" />
+          </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注">
-            <a-textarea placeholder="请输入备注" v-decorator="['memo', {'initialValue':''}]" />
+            <a-textarea placeholder="请输入备注" v-decorator="['remark', {'initialValue':''}]" />
           </a-form-item>
         </a-form>
         <div class="anty-form-btn">
@@ -146,47 +140,7 @@
 <script>
 import DepartModal from './modules/DepartModal'
 import pick from 'lodash.pick'
-import { queryDepartTreeList, searchByKeywords, deleteByDepartId } from '@/api/dept'
-import { httpAction, deleteAction } from '@/api/manage'
-// 表头
-const columns = [
-  {
-    title: '机构名称',
-    dataIndex: 'departName'
-  },
-  {
-    title: '机构类型',
-    align: 'center',
-    dataIndex: 'orgType'
-  },
-  {
-    title: '机构编码',
-    dataIndex: 'orgCode'
-  },
-  {
-    title: '手机号',
-    dataIndex: 'mobile'
-  },
-  {
-    title: '传真',
-    dataIndex: 'fax'
-  },
-  {
-    title: '地址',
-    dataIndex: 'address'
-  },
-  {
-    title: '排序',
-    align: 'center',
-    dataIndex: 'departOrder'
-  },
-  {
-    title: '操作',
-    align: 'center',
-    dataIndex: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
-]
+import { queryDepartTreeList, searchByKeywords, deleteByDepartId,editByDeptId } from '@/api/dept'
 export default {
   name: 'DepartList',
   components: {
@@ -208,16 +162,13 @@ export default {
       model: {},
       dropTrigger: '',
       depart: {},
-      columns: columns,
       disableSubmit: false,
       checkedKeys: [],
       selectedKeys: [],
       autoIncr: 1,
       currSelected: {},
-
       allTreeKeys: [],
       checkStrictly: true,
-
       form: this.$form.createForm(this),
       labelCol: {
         xs: { span: 24 },
@@ -233,11 +184,9 @@ export default {
       },
       validatorRules: {
         departName: { rules: [{ required: true, message: '请输入机构/部门名称!' }] },
-        orgCode: { rules: [{ required: true, message: '请输入机构编码!' }] },
+        uniqueCoding: { rules: [{ required: true, message: '请输入机构编码!' }] },
         orgCategory: { rules: [{ required: true, message: '请输入机构类型!' }] },
-        mobile: { rules: [{ validator: this.validateMobile }] }
       },
-      orgCategoryDisabled: false
     }
   },
   mounted() {
@@ -275,6 +224,15 @@ export default {
         }
       }
     },
+    getAllKeys(node) {
+      this.allTreeKeys.push(node.key)
+      if (node.children && node.children.length > 0) {
+        for (let a = 0; a < node.children.length; a++) {
+          this.getAllKeys(node.children[a])
+        }
+      }
+    },
+    // 刷新
     refresh() {
       this.loading = true
       this.loadTree()
@@ -282,16 +240,39 @@ export default {
     // 右键操作方法
     rightHandle(node) {
       this.dropTrigger = 'contextmenu'
-      console.log(node.node.eventKey)
       this.rightClickSelectedKey = node.node.eventKey
     },
+    // 展开/收起节点时触发
     onExpand(expandedKeys) {
-      console.log('onExpand', expandedKeys)
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
       this.iExpandedKeys = expandedKeys
       this.autoExpandParent = false
     },
+    // 点击复选框触发 -切换父子勾选模式
+    onCheck(checkedKeys, info) {
+      this.hiding = false
+      if (this.checkStrictly) {
+        this.checkedKeys = checkedKeys.checked
+      } else {
+        this.checkedKeys = checkedKeys
+      }
+    },
+    // 点击树节点触发
+    onSelect(selectedKeys, e) {
+      this.hiding = false
+      let record = e.node.dataRef
+      this.currSelected = Object.assign({}, record)
+      this.model = this.currSelected
+      this.selectedKeys = [record.key]
+      this.model.parentId = record.parentId
+      this.setValuesToForm(record)
+    },
+    // 触发onSelect事件时,为部门树右侧的form表单赋值
+    setValuesToForm(record) {
+      this.form.setFieldsValue(
+        pick(record, 'departName', 'orgType', 'uniqueCoding', 'sort', 'telephone', 'address', 'remark')
+      )
+    },
+    // 返回上一页
     backFlowList() {
       this.$router.back(-1)
     },
@@ -301,12 +282,32 @@ export default {
         this.dropTrigger = ''
       }
     },
-    // 右键店家下拉关闭下拉框
+    // 右键点击下拉关闭下拉框
     closeDrop() {
       this.dropTrigger = ''
     },
-    addRootNode() {
-      this.$refs.nodeModal.add(this.currFlowId, '')
+    // 保存并提交
+    submitCurrForm() {
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          if (!this.currSelected.id) {
+            this.$message.warning('请点击选择要修改部门!')
+            return
+          }
+
+          let formData = Object.assign(this.currSelected, values)
+          console.log('Received values of form: ', formData)
+          editByDeptId( formData).then(res => {
+            // if (res.success) {
+            //   this.$message.success('保存成功!')
+            //   this.loadTree()
+            // } else {
+            //   this.$message.error(res.message)
+            // }
+            console.log(res)
+          })
+        }
+      })
     },
     batchDel: function() {
       console.log(this.checkedKeys)
@@ -361,41 +362,7 @@ export default {
       console.log(111)
       this.visible = false
     },
-    onCheck(checkedKeys, info) {
-      console.log('onCheck', checkedKeys, info)
-      this.hiding = false
-      //this.checkedKeys = checkedKeys.checked
-      // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-      if (this.checkStrictly) {
-        this.checkedKeys = checkedKeys.checked
-      } else {
-        this.checkedKeys = checkedKeys
-      }
-      // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-    },
-    onSelect(selectedKeys, e) {
-      console.log('selected', selectedKeys, e)
-      this.hiding = false
-      let record = e.node.dataRef
-      console.log('onSelect-record', record)
-      this.currSelected = Object.assign({}, record)
-      this.model = this.currSelected
-      this.selectedKeys = [record.key]
-      this.model.parentId = record.parentId
-      this.setValuesToForm(record)
-    },
-    // 触发onSelect事件时,为部门树右侧的form表单赋值
-    setValuesToForm(record) {
-      if (record.orgCategory == '1') {
-        this.orgCategoryDisabled = true
-      } else {
-        this.orgCategoryDisabled = false
-      }
-      this.form.getFieldDecorator('fax', { initialValue: '' })
-      this.form.setFieldsValue(
-        pick(record, 'departName', 'orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo')
-      )
-    },
+    
     getCurrSelectedTitle() {
       return !this.currSelected.title ? '' : this.currSelected.title
     },
@@ -414,27 +381,6 @@ export default {
     },
     receiptTriggerTypeChange(value) {
       this.currSelected.receiptTriggerType = value
-    },
-    submitCurrForm() {
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          if (!this.currSelected.id) {
-            this.$message.warning('请点击选择要修改部门!')
-            return
-          }
-
-          let formData = Object.assign(this.currSelected, values)
-          console.log('Received values of form: ', formData)
-          httpAction(this.url.edit, formData, 'put').then(res => {
-            if (res.success) {
-              this.$message.success('保存成功!')
-              this.loadTree()
-            } else {
-              this.$message.error(res.message)
-            }
-          })
-        }
-      })
     },
     emptyCurrForm() {
       this.form.resetFields()
@@ -519,16 +465,6 @@ export default {
         this.checkStrictly = true
       }
     },
-    getAllKeys(node) {
-      // console.log('node',node);
-      this.allTreeKeys.push(node.key)
-      if (node.children && node.children.length > 0) {
-        for (let a = 0; a < node.children.length; a++) {
-          this.getAllKeys(node.children[a])
-        }
-      }
-    }
-    // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
   },
   created() {
     this.currFlowId = this.$route.params.id

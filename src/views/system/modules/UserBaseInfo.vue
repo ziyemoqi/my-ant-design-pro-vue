@@ -30,7 +30,7 @@
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel">
-            <a-icon type="delete" />删除关系
+            <a-icon type="delete" />删除
           </a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px">
@@ -79,8 +79,8 @@
               </a-menu-item>
 
               <a-menu-item>
-                <a-popconfirm title="确定要删除关系吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除关系</a>
+                <a-popconfirm title="确定要删除此用户吗?" @confirm="() => handleDelete(record.sysUserId)">
+                  <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
@@ -92,14 +92,11 @@
 
     <!-- 表单区域 -->
     <user-modal ref="modalForm" @ok="modalFormOk"></user-modal>
-    <!-- <Select-User-Modal ref="selectUserModal" @selectFinished="selectOK"></Select-User-Modal> -->
   </a-card>
 </template>
 
 <script>
-import { get, post, deleteAction } from '@/api/manage'
-import { userList } from '@/api/user'
-//   import SelectUserModal from './SelectUserModal'
+import { userList,deleteBatch,delete_ } from '@/api/user'
 import UserModal from './UserModal'
 const columns = [
   {
@@ -146,7 +143,6 @@ export default {
         showSizeChanger: true,
         total: 0
       },
-      /* table加载状态 */
       loading: false,
       screenForm: this.$form.createForm(this)
     }
@@ -185,7 +181,7 @@ export default {
       this.screenForm.resetFields()
       this.loadData()
     },
-    // 初始化
+    // 初始化 清空选中数据
     onClearSelected() {
       this.selectedRowKeys = []
       this.selectionRows = []
@@ -243,66 +239,55 @@ export default {
       // }
       this.$message.info('功能开发中,敬请期待！')
     },
-    // 删除已选用户
-    handleDelete: function(id) {
-      console.log('handleDelete')
-      this.$message.info('功能开发中,敬请期待！')
-      // if (!this.url.delete) {
-      //   this.$message.error('请设置url.delete属性!')
-      //   return
-      // }
-      // var that = this
-      // deleteAction(that.url.delete, { depId: this.currentDeptId, userId: id }).then(res => {
-      //   console.log(3)
-      //   if (res.success) {
-      //     that.$message.success(res.message)
-      //     if (this.selectedRowKeys.length > 0) {
-      //       for (let i = 0; i < this.selectedRowKeys.length; i++) {
-      //         if (this.selectedRowKeys[i] == id) {
-      //           this.selectedRowKeys.splice(i, 1)
-      //           break
-      //         }
-      //       }
-      //     }
-      //     that.loadData()
-      //   } else {
-      //     that.$message.warning(res.message)
-      //   }
-      // })
-    },
     // 删除单条数据
+    handleDelete: function(id) {
+      var that = this
+      delete_({sysUserId: id }).then(res => {
+        if (res.code === 200) {
+          that.$message.success('操作成功!')
+          if (this.selectedRowKeys.length > 0) {
+            for (let i = 0; i < this.selectedRowKeys.length; i++) {
+              if (this.selectedRowKeys[i] == id) {
+                this.selectedRowKeys.splice(i, 1)
+                break
+              }
+            }
+          }
+          that.loadData()
+        } else {
+          that.$message.warning('操作失败!')
+        }
+      })
+    },
+    // 多选删除
     batchDel: function() {
-      this.$message.info('功能开发中,敬请期待！')
-      // if (!this.url.deleteBatch) {
-      //   this.$message.error('请设置url.deleteBatch属性!')
-      //   return
-      // }
-      // if (this.selectedRowKeys.length <= 0) {
-      //   this.$message.warning('请选择一条记录！')
-      //   return
-      // } else {
-      //   var ids = ''
-      //   for (var a = 0; a < this.selectedRowKeys.length; a++) {
-      //     ids += this.selectedRowKeys[a] + ','
-      //   }
-      //   var that = this
-      //   console.log(this.currentDeptId)
-      //   this.$confirm({
-      //     title: '确认删除',
-      //     content: '是否删除选中数据?',
-      //     onOk: function() {
-      //       deleteAction(that.url.deleteBatch, { depId: that.currentDeptId, userIds: ids }).then(res => {
-      //         if (res.success) {
-      //           that.$message.success(res.message)
-      //           that.loadData()
-      //           that.onClearSelected()
-      //         } else {
-      //           that.$message.warning(res.message)
-      //         }
-      //       })
-      //     }
-      //   })
-      // }
+      if (this.selectedRowKeys.length <= 0) {
+        this.$message.warning('请选择一条记录！')
+        return
+      } else {
+        var ids = ''
+        for (var a = 0; a < this.selectedRowKeys.length; a++) {
+          ids += this.selectedRowKeys[a] + ','
+        }
+        var that = this
+        this.$confirm({
+          title: '确认删除',
+          content: '是否删除选中数据?',
+          onOk: function() {
+            // let {code,data,msg} = deleteBatch({sysUserIds:ids})
+            // console.log(code+'cheongsam')
+            deleteBatch({ sysUserIds: ids }).then(res => {
+              if (res.code === 200) {
+                that.$message.success('操作成功!')
+                that.loadData()
+                that.onClearSelected()
+              } else {
+                that.$message.warning('操作失败!')
+              }
+            })
+          }
+        })
+      }
     },
     // ===================
 

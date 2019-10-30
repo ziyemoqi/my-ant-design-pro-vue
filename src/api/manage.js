@@ -47,6 +47,17 @@ export function deleteAction(url,parameter) {
   })
 }
 
+
+//post method= {post | put}
+export function httpAction(url,parameter,method) {
+  return axios({
+    url: url,
+    method:method ,
+    data: parameter
+  })
+}
+
+
 /**
  * 下载文件 用于excel导出
  * @param url

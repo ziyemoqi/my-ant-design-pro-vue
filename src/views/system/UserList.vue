@@ -53,7 +53,6 @@ export default {
       currentDeptId: '',
       iExpandedKeys: [],
       loading: false,
-      autoExpandParent: true,
       disable: true,
       treeData: [],
       visible: false,

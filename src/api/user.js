@@ -1,5 +1,5 @@
 import { axios } from '@/utils/request'
-import { get,post,put} from '@/api/manage'
+import { get,post,put,deleteAction} from '@/api/manage'
 
 /**
  * 登录
@@ -40,10 +40,20 @@ const addUser = (params)=>post("/sysUser/add",params)
 // 用户修改
 const editUser = (params)=>put("/sysUser/edit",params)
 
-// export function editUser(params) {
-//   return put("/sysUser/edit",params)
-// }
+/**
+ * 删除
+ */
+export function delete_(params) {
+  return deleteAction("/sysUser/delete",params)
+}
 
+/**
+* 批量删除
+* @param {*} params 
+*/
+export function deleteBatch(params) {
+  return deleteAction("/sysUser/deleteBatch",params)
+}
 // 唯一性检测
 const checkIsOnly = (params)=>get("/sysUser/checkIsOnly",params)
 // 查询用户角色表里的所有信息
