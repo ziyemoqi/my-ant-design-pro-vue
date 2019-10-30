@@ -9,39 +9,20 @@
     :visible="visible"
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
 
-    <template slot="title">
-      <div style="width: 100%;">
-        <span>{{ title }}</span>
-        <span style="display:inline-block;width:calc(100% - 51px);padding-right:10px;text-align: right">
-          <a-button @click="toggleScreen" icon="appstore" style="height:20px;width:20px;border:0px"></a-button>
-        </span>
-      </div>
-    </template>
-
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
         <a-form-item label="登录账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入登录账号" v-decorator="[ 'loginName', validatorRules.username]" :readOnly="!!model.id"/>
-        </a-form-item>
-<!-- 
-        <a-form-item label="用户名字" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-input placeholder="请输入用户名称" v-decorator="[ 'userName']" />
+          <a-input placeholder="请输入登录账号" v-decorator="[ 'loginName', validatorRules.loginName]" :readOnly="!!model.id"/>
         </a-form-item>
 
         <a-form-item label="用户名字" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-input placeholder="请输入用户名称" v-decorator="[ 'nickName']" />
+          <a-input placeholder="请输入用户名称" v-decorator="[ 'userName', {
+            rules: [{required: true, message: '请填写用户名称'}]
+          }]" />
         </a-form-item>
 
-        <a-form-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input-number :min="1" v-decorator="[ 'sort']" placeholder="请输入工号" style="width:100%"/>
-        </a-form-item>
-
-        <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol"> -->
-          <!-- <j-select-position placeholder="请选择职务" :multiple="false" v-decorator="['post', {}]"/> -->
-        <!-- </a-form-item>
-
-        <a-form-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!roleDisabled" >
+        <a-form-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" >
           <a-select
             mode="multiple"
             style="width: 100%"
@@ -52,35 +33,6 @@
               {{ role.roleName }}
             </a-select-option>
           </a-select>
-        </a-form-item> -->
-
-        <!--部门分配-->
-        <!-- <a-form-item label="部门分配" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!departDisabled">
-          <a-input-search
-            placeholder="点击右侧按钮选择部门"
-            v-model="checkedDepartNameString"
-            disabled
-            @search="onSearch">
-            <a-button slot="enterButton" icon="search">选择</a-button>
-          </a-input-search>
-        </a-form-item>
-        <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-upload
-            listType="picture-card"
-            class="avatar-uploader"
-            :showUploadList="false"
-            :action="uploadAction"
-            :data="{'isup':1}"
-            :headers="headers"
-            :beforeUpload="beforeUpload"
-            @change="handleChange"
-          >
-            <img v-if="picUrl" :src="getAvatarView()" alt="头像" style="height:104px;max-width:300px"/>
-            <div v-else>
-              <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
-              <div class="ant-upload-text">上传</div>
-            </div>
-          </a-upload>
         </a-form-item>
 
         <a-form-item label="生日" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -92,8 +44,9 @@
 
         <a-form-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select v-decorator="[ 'sex', {}]" placeholder="请选择性别">
+            <a-select-option :value="0">女</a-select-option>
             <a-select-option :value="1">男</a-select-option>
-            <a-select-option :value="2">女</a-select-option>
+            <a-select-option :value="2">保密</a-select-option>
           </a-select>
         </a-form-item>
 
@@ -101,21 +54,16 @@
           <a-input placeholder="请输入邮箱" v-decorator="[ 'email', validatorRules.email]" />
         </a-form-item>
 
-         <a-form-item label="年龄" :labelCol="labelCol" :wrapperCol="wrapperCol">
-           <a-input-number :min="1" :max="140"  v-decorator="[ 'age']" placeholder="请输入年龄" style="width:100%"/>
-        </a-form-item>
-
         <a-form-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入手机号码" v-decorator="[ 'mobilePhone']"/>
+          <a-input placeholder="请输入手机号码" v-decorator="[ 'mobilePhone',validatorRules.phone]"/>
         </a-form-item>
 
-        <a-form-item label="座机" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入座机" v-decorator="[ 'telephone', validatorRules.telephone]"/>
-        </a-form-item> -->
+          <a-form-item label="排序" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input-number :min="1" v-decorator="['sort']" style="width:100%"  placeholder="请输入序号" />
+          </a-form-item>
 
       </a-form>
     </a-spin>
-    <!-- <depart-window ref="departWindow" @ok="modalFormOk"></depart-window> -->
 
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
@@ -130,61 +78,22 @@
   import pick from 'lodash.pick'
   import moment from 'moment'
   import Vue from 'vue'
-  // 引入搜索部门弹出框的组件
-  // import departWindow from './DepartWindow'
-  // import JSelectPosition from '@/components/jeecgbiz/JSelectPosition'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { get } from '@/api/manage'
-  import {addUser,editUser } from '@/api/user'
-  import {queryall } from '@/api/role'
-  // import { disabledAuthFilter } from "@/utils/authFilter"
-  // import {duplicateCheck } from '@/api/api'
-
+  import {addUser,editUser,checkIsOnly,queryUserRole } from '@/api/user'
+  import {queryallRole } from '@/api/role'
   export default {
     name: "UserModal",
-    components: {
-      // departWindow,
-      // JSelectPosition
-    },
     data () {
       return {
-        departDisabled: false, //是否是我的部门调用该页面
-        roleDisabled: false, //是否是角色维护调用该页面
         modalWidth:800,
         drawerWidth:700,
         modaltoggleFlag:true,
         confirmDirty: false,
-        selectedDepartKeys:[], //保存用户选择部门id
-        checkedDepartKeys:[],
-        checkedDepartNames:[], // 保存部门的名称 =>title
-        checkedDepartNameString:"", // 保存部门的名称 =>title
-        userId:"", //保存用户id
         disableSubmit:false,
-        userDepartModel:{userId:'',departIdList:[]}, // 保存SysUserDepart的用户部门中间表数据需要的对象
         dateFormat:"YYYY-MM-DD",
-        validatorRules:{
-          username:{
-            rules: [{
-              required: true, message: '请输入用户账号!'
-            },{
-              validator: this.validateUsername,
-            }]
-          },
-          realname:{rules: [{ required: true, message: '请输入用户名称!' }]},
-          phone:{rules: [{validator: this.validatePhone}]},
-          email:{
-            rules: [{
-              validator: this.validateEmail
-            }],
-          },
-          roles:{},
-          telephone: {
-            rules: [
-              { pattern: /^0\d{2,3}-[1-9]\d{6,7}$/, message: '请输入正确的座机号码' },
-            ]
-          }
-        },
         title:"操作",
+        userDepartModel:{sysUserId:'',departIdList:[]}, // 保存SysUserDepart的用户部门中间表数据需要的对象
         visible: false,
         model: {},
         roleList:[],
@@ -202,29 +111,138 @@
         headers:{},
         form:this.$form.createForm(this),
         picUrl: "",
-        url: {
-          fileUpload: window._CONFIG['domianURL']+"/sys/common/upload",
-          imgerver: window._CONFIG['domianURL']+"/sys/common/view",
-          userWithDepart: "/sys/user/userDepartList", // 引入为指定用户查看部门信息需要的url
-          userId:"/sys/user/generateUserId", // 引入生成添加用户情况下的url
-          syncUserByUserName:"/process/extActProcess/doSyncUserByUserName",//同步用户到工作流
+        validatorRules:{
+          loginName:{
+            rules: [{
+              required: true, message: '请输入登录账号!'
+            },{
+              validator: this.validateLoginName,
+            }]
+          },
+          realname:{rules: [{ required: true, message: '请输入用户名称!' }]},
+          phone:{rules: [{validator: this.validatePhone}]},
+          email:{
+            rules: [{
+              validator: this.validateEmail
+            }],
+          },
         },
       }
     },
     created () {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token":token}
-
-    },
-    computed:{
-      uploadAction:function () {
-        return this.url.fileUpload;
-      }
     },
     methods: {
-      // isDisabledAuth(code){
-      //   return disabledAuthFilter(code);
-      // },
+      // 调用add方法
+      add () {
+        this.picUrl = ""
+        this.refresh()
+        this.edit({activitiSync:'1'});
+      },
+      // 调用edit
+      edit (record) {
+        this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
+        let that = this;
+        that.initialRoleList();
+        that.form.resetFields();
+        if(record.hasOwnProperty("sysUserId")){
+          that.loadUserRoles(record.sysUserId);
+          this.picUrl = "Has no pic url yet";
+        }
+        that.userId = record.sysUserId;
+        that.visible = true;
+        that.model = Object.assign({}, record);
+        that.$nextTick(() => {
+          that.form.setFieldsValue(pick(this.model,'loginName','sex','userName','email','phone','sort','mobilePhone'))
+        });
+      },
+      // 验证登录账号
+      validateLoginName(rule, value, callback){
+        if (value && !new RegExp(/^[A-Za-z0-9]{5,}$/).test(value)) {
+          callback(new Error('登录密码只能输入英文或数字且不能少于5位数!'))
+        } else {
+          var params = {
+            loginName: value,
+          };
+          checkIsOnly(params).then((res) => {
+            if (res.code === 200 ) {
+            callback()
+          } else {
+            callback(res.msg || '登录账号已存在!')
+          }
+        })
+        }
+      },
+      // 验证邮箱
+      validateEmail(rule, value, callback){
+        if(!value){
+          callback()
+        }else{
+          if(new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/).test(value)){
+            callback()
+          }else{
+            callback(new Error('请输入正确格式的邮箱!'))
+          }}
+      },
+      // 验证手机号
+      validatePhone(rule, value, callback) {
+        if (!value || new RegExp(/^1[3|4|5|6|7|8|9][0-9]\d{8}$/).test(value)) {
+          callback();
+        } else {
+          callback(new Error('请输入正确格式的手机号码!'));
+        }
+      },
+      // form 表单提交
+      handleSubmit () {
+        const that = this
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            if(!values.birthday){
+              values.birthday = ''
+            }else{
+              values.birthday = values.birthday.format(this.dateFormat)
+            }
+            let formData = Object.assign(this.model, values)
+            formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):''
+            formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
+            let obj
+            if(!this.model.sysUserId){
+              obj=addUser(formData)
+            }else{
+              obj=editUser(formData)
+            }
+            obj.then((res)=>{
+              if(res.code === 200){
+                that.$message.success('操作成功!')
+                that.$emit('ok');
+              }else{
+                that.$message.warning('操作失败!')
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.checkedDepartNames = [];
+              that.close();
+            })
+          }else{
+            console.log('验证失败')
+          }
+        })
+      },
+      // 修改时查询用户拥有角色
+      loadUserRoles(sysUserId){
+        queryUserRole({sysUserId:sysUserId}).then((res)=>{
+          if(res.code === 200){
+            this.selectedRole = res.data;
+          }else{
+            console.log(res.msg || '用户角色加载失败！');
+          }
+        });
+      },
+      // ==============================
+
       //窗口最大化切换
       toggleScreen(){
         if(this.modaltoggleFlag){
@@ -235,7 +253,7 @@
         this.modaltoggleFlag = !this.modaltoggleFlag;
       },
       initialRoleList(){
-        queryall().then((res)=>{
+        queryallRole().then((res)=>{
           if(res.code === 200){
             this.roleList = res.data;
           }else{
@@ -243,210 +261,27 @@
           }
         });
       },
-      loadUserRoles(userid){
-        queryUserRole({userid:userid}).then((res)=>{
-          if(res.success){
-            this.selectedRole = res.result;
-          }else{
-            console.log(res.message);
-          }
-        });
-      },
+      
       refresh () {
-          this.selectedDepartKeys=[];
-          this.checkedDepartKeys=[];
-          this.checkedDepartNames=[];
-          this.checkedDepartNameString = "";
-          this.userId=""
+        this.selectedDepartKeys=[]
+        this.checkedDepartKeys=[]
+        this.checkedDepartNames=[]
+        this.checkedDepartNameString = ""
       },
-      add () {
-        this.picUrl = "";
-        this.refresh();
-        this.edit({activitiSync:'1'});
-      },
-      edit (record) {
-        this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
-        let that = this;
-        that.initialRoleList();
-        that.checkedDepartNameString = "";
-        that.form.resetFields();
-        if(record.hasOwnProperty("id")){
-          that.loadUserRoles(record.id);
-          this.picUrl = "Has no pic url yet";
-        }
-        that.userId = record.id;
-        that.visible = true;
-        that.model = Object.assign({}, record);
-        that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model,'loginName','sex','nickName','email','phone','sort','telephone','post'))
-        });
-        // 调用查询用户对应的部门信息的方法
-        that.checkedDepartKeys = [];
-        that.loadCheckedDeparts();
-      },
-      //
-      loadCheckedDeparts(){
-        let that = this;
-        if(!that.userId){return}
-        get(that.url.userWithDepart,{userId:that.userId}).then((res)=>{
-          that.checkedDepartNames = [];
-          if(res.success){
-            for (let i = 0; i < res.result.length; i++) {
-              that.checkedDepartNames.push(res.result[i].title);
-              this.checkedDepartNameString = this.checkedDepartNames.join(",");
-              that.checkedDepartKeys.push(res.result[i].key);
-            }
-            that.userDepartModel.departIdList = that.checkedDepartKeys
-          }else{
-            console.log(res.message);
-          }
-        })
-      },
+      
       close () {
         this.$emit('close');
         this.visible = false;
         this.disableSubmit = false;
         this.selectedRole = [];
-        this.userDepartModel = {userId:'',departIdList:[]};
         this.checkedDepartNames = [];
         this.checkedDepartNameString='';
         this.checkedDepartKeys = [];
         this.selectedDepartKeys = [];
       },
       moment,
-      handleSubmit () {
-        const that = this
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          console.log(2222)
-          if (!err) {
-            that.confirmLoading = true;
-            let avatar = that.model.avatar;
-            if(!values.birthday){
-              values.birthday = '';
-            }else{
-              values.birthday = values.birthday.format(this.dateFormat);
-            }
-            console.log(12)
-            let formData = Object.assign(this.model, values);
-            formData.avatar = avatar;
-            formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):'';
-            formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
-
-            // that.addDepartsToUser(that,formData); // 调用根据当前用户添加部门信息的方法
-            let obj
-            console.log(2)
-            if(!this.model.id){
-              console.log(22)
-              formData.id = this.userId;
-              obj=addUser(formData);
-            }else{
-              obj=editUser(formData);
-            }
-            obj.then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.confirmLoading = false;
-              that.checkedDepartNames = [];
-              that.userDepartModel.departIdList = {userId:'',departIdList:[]};
-
-              that.close();
-            })
-          }
-        })
-      },
       handleCancel () {
         this.close()
-      },
-      validateToNextPassword  (rule, value, callback) {
-        const form = this.form;
-        const confirmpassword=form.getFieldValue('confirmpassword');
-
-        if (value && confirmpassword && value !== confirmpassword) {
-          callback('两次输入的密码不一样！');
-        }
-        if (value && this.confirmDirty) {
-          form.validateFields(['confirm'], { force: true })
-        }
-        callback();
-      },
-      compareToFirstPassword  (rule, value, callback) {
-        const form = this.form;
-        if (value && value !== form.getFieldValue('password')) {
-          callback('两次输入的密码不一样！');
-        } else {
-          callback()
-        }
-      },
-      validatePhone(rule, value, callback){
-        if(!value){
-          callback()
-        }else{
-          //update-begin--Author:kangxiaolin  Date:20190826 for：[05] 手机号不支持199号码段--------------------
-          if(new RegExp(/^1[3|4|5|7|8|9][0-9]\d{8}$/).test(value)){
-            //update-end--Author:kangxiaolin  Date:20190826 for：[05] 手机号不支持199号码段--------------------
-
-            var params = {
-              tableName: 'sys_user',
-              fieldName: 'phone',
-              fieldVal: value,
-              dataId: this.userId
-            };
-            duplicateCheck(params).then((res) => {
-              if (res.success) {
-                callback()
-              } else {
-                callback("手机号已存在!")
-              }
-            })
-          }else{
-            callback("请输入正确格式的手机号码!");
-          }
-        }
-      },
-      validateEmail(rule, value, callback){
-        if(!value){
-          callback()
-        }else{
-          if(new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/).test(value)){
-            var params = {
-              tableName: 'sys_user',
-              fieldName: 'email',
-              fieldVal: value,
-              dataId: this.userId
-            };
-            duplicateCheck(params).then((res) => {
-              console.log(res)
-              if (res.success) {
-                callback()
-              } else {
-                callback("邮箱已存在!")
-              }
-            })
-          }else{
-            callback("请输入正确格式的邮箱!")
-          }
-        }
-      },
-      validateUsername(rule, value, callback){
-        var params = {
-          tableName: 'sys_user',
-          fieldName: 'username',
-          fieldVal: value,
-          dataId: this.userId
-        };
-        duplicateCheck(params).then((res) => {
-          if (res.success) {
-          callback()
-        } else {
-          callback("用户名已存在!")
-        }
-      })
       },
       handleConfirmBlur  (e) {
         const value = e.target.value;
@@ -489,26 +324,7 @@
       getAvatarView(){
         return this.url.imgerver +"/"+ this.model.avatar;
       },
-      // 搜索用户对应的部门API
-      onSearch(){
-        this.$refs.departWindow.add(this.checkedDepartKeys,this.userId);
-      },
 
-      // 获取用户对应部门弹出框提交给返回的数据
-      modalFormOk (formData) {
-        this.checkedDepartNames = [];
-        this.selectedDepartKeys = [];
-        this.checkedDepartNameString = '';
-        this.userId = formData.userId;
-        this.userDepartModel.userId = formData.userId;
-        for (let i = 0; i < formData.departIdList.length; i++) {
-          this.selectedDepartKeys.push(formData.departIdList[i].key);
-          this.checkedDepartNames.push(formData.departIdList[i].title);
-          this.checkedDepartNameString = this.checkedDepartNames.join(",");
-        }
-        this.userDepartModel.departIdList = this.selectedDepartKeys;
-        this.checkedDepartKeys = this.selectedDepartKeys  //更新当前的选择keys
-       },
       // 根据屏幕变化,设置抽屉尺寸
       resetScreenSize(){
         let screenWidth = document.body.clientWidth;

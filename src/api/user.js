@@ -1,5 +1,5 @@
 import { axios } from '@/utils/request'
-import { get,post} from '@/api/manage'
+import { get,post,put} from '@/api/manage'
 
 /**
  * 登录
@@ -28,7 +28,6 @@ export function logout(logoutToken) {
   })
 }
 
-
 /**
  * 根据部门ID加载有效用户
  * @param {*} params 
@@ -36,13 +35,31 @@ export function logout(logoutToken) {
 export function userList(params){
   return post("/sysUser/departUserList",params)
 }
+// 用户添加
+const addUser = (params)=>post("/sysUser/add",params)
+// 用户修改
+const editUser = (params)=>put("/sysUser/edit",params)
 
-const addUser = (params)=>postAction("/sysUser/add",params);
-const editUser = (params)=>putAction("/sysUser/edit",params);
+// export function editUser(params) {
+//   return put("/sysUser/edit",params)
+// }
+
+// 唯一性检测
+const checkIsOnly = (params)=>get("/sysUser/checkIsOnly",params)
+// 查询用户角色表里的所有信息
+const queryUserRoleMap = (params)=>get("/sysUser/queryUserRoleMap",params)
+// 查询用户的角色列表
+const queryUserRole = (params)=>get("/sysUser/queryUserRole",params);
+
+
+
 
 export {
   addUser,
-  editUser
+  editUser,
+  checkIsOnly,
+  queryUserRoleMap,
+  queryUserRole
 }
 
 /**

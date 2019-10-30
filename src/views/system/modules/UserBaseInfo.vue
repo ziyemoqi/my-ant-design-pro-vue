@@ -216,28 +216,23 @@ export default {
     },
     // 编辑
     handleEdit: function(record) {
-      console.log('handleEdit')
-      this.$message.info('功能开发中,敬请期待！')
-      // this.$refs.modalForm.title = '编辑'
-      // this.$refs.modalForm.departDisabled = true
-      // this.$refs.modalForm.disableSubmit = false
-      // this.$refs.modalForm.edit(record)
-    },
-    // 新增/修改 回调
-    modalFormOk() {
-      this.loadData()
+      this.$refs.modalForm.title = '编辑'
+      this.$refs.modalForm.disableSubmit = false
+      this.$refs.modalForm.edit(record)
     },
     // 用户增加
     handleAdd: function() {
-      // this.$message.info('功能开发中,敬请期待！')
       if (this.currentDeptId == '') {
         this.$message.error('请选择一个部门!')
       } else {
-        this.$refs.modalForm.departDisabled = true
         this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId] //传入一个部门id
         this.$refs.modalForm.add()
         this.$refs.modalForm.title = '新增'
       }
+    },
+    // 新增/修改 回调
+    modalFormOk() {
+      this.loadData()
     },
     // 添加已有用户
     handleAddUserDepart() {
