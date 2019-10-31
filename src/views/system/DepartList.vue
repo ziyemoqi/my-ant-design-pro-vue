@@ -140,7 +140,7 @@
 <script>
 import DepartModal from './modules/DepartModal'
 import pick from 'lodash.pick'
-import { queryDepartTreeList, searchByKeywords, deleteByDepartId,editByDeptId } from '@/api/dept'
+import { queryDepartTreeList, searchByKeywords, deleteByDepartId,deleteBatch,editByDeptId } from '@/api/dept'
 export default {
   name: 'DepartList',
   components: {
@@ -188,6 +188,10 @@ export default {
         orgCategory: { rules: [{ required: true, message: '请输入机构类型!' }] },
       },
     }
+  },
+  created() {
+    this.currFlowId = this.$route.params.id
+    this.currFlowName = this.$route.params.name
   },
   mounted() {
     this.loadTree()
@@ -294,23 +298,23 @@ export default {
             this.$message.warning('请点击选择要修改部门!')
             return
           }
-
-          let formData = Object.assign(this.currSelected, values)
-          console.log('Received values of form: ', formData)
-          editByDeptId( formData).then(res => {
-            // if (res.success) {
-            //   this.$message.success('保存成功!')
-            //   this.loadTree()
-            // } else {
-            //   this.$message.error(res.message)
-            // }
-            console.log(res)
+          let formData = {
+            sysDeptId: this.currSelected.id,
+            ...values
+          }
+          editByDeptId(formData).then(res => {
+            if (res.code === 200) {
+              this.$message.success('保存成功!')
+              this.loadTree()
+            } else {
+              this.$message.error('保存失败！')
+            }
           })
         }
       })
     },
+    // 批量删除
     batchDel: function() {
-      console.log(this.checkedKeys)
       if (this.checkedKeys.length <= 0) {
         this.$message.warning('请选择一条记录！')
       } else {
@@ -321,51 +325,47 @@ export default {
         var that = this
         this.$confirm({
           title: '确认删除',
-          content: '确定要删除所选中的 ' + this.checkedKeys.length + ' 条数据，以及子节点数据吗?',
+          content: '确定要删除所选中的 ' + this.checkedKeys.length + ' 条数据，及子节点数据吗?',
           onOk: function() {
-            deleteAction(that.url.deleteBatch, { ids: ids }).then(res => {
-              if (res.success) {
-                that.$message.success(res.message)
+            deleteBatch({ ids: ids }).then(res => {
+              if (res.code === 200) {
+                that.$message.success('删除成功!')
                 that.loadTree()
                 that.onClearSelected()
               } else {
-                that.$message.warning(res.message)
+                that.$message.warning('删除失败!')
               }
             })
           }
         })
       }
     },
+    // 部门搜索
     onSearch(value) {
       let that = this
       if (value) {
         searchByKeywords({ keyWord: value }).then(res => {
-          if (res.success) {
+          if (res.code === 200 ) {
             that.departTree = []
-            for (let i = 0; i < res.result.length; i++) {
-              let temp = res.result[i]
-              that.departTree.push(temp)
+            if(res.data){
+              for (let i = 0; i < res.data.length; i++) {
+                let temp = res.data[i]
+                that.departTree.push(temp)
+              }
             }
           } else {
-            that.$message.warning(res.message)
+            that.$message.warning('查询失败！')
           }
         })
       } else {
         that.loadTree()
       }
     },
-    nodeModalOk() {
-      this.loadTree()
-    },
-    nodeModalClose() {},
-    hide() {
-      console.log(111)
-      this.visible = false
-    },
-    
+    // 当前选择
     getCurrSelectedTitle() {
       return !this.currSelected.title ? '' : this.currSelected.title
     },
+    // 取消选择
     onClearSelected() {
       this.hiding = true
       this.checkedKeys = []
@@ -373,28 +373,7 @@ export default {
       this.form.resetFields()
       this.selectedKeys = []
     },
-    handleNodeTypeChange(val) {
-      this.currSelected.nodeType = val
-    },
-    notifyTriggerTypeChange(value) {
-      this.currSelected.notifyTriggerType = value
-    },
-    receiptTriggerTypeChange(value) {
-      this.currSelected.receiptTriggerType = value
-    },
-    emptyCurrForm() {
-      this.form.resetFields()
-    },
-    nodeSettingFormSubmit() {
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values)
-        }
-      })
-    },
-    openSelect() {
-      this.$refs.sysDirectiveModal.show()
-    },
+    // 新增
     handleAdd(num) {
       if (num == 1) {
         this.$refs.departModal.add()
@@ -412,9 +391,10 @@ export default {
         this.$refs.departModal.title = '新增'
       }
     },
+    // 删除单条信息
     handleDelete() {
-      deleteByDepartId({ id: this.rightClickSelectedKey }).then(resp => {
-        if (resp.success) {
+      deleteByDepartId({ sysDeptId: this.rightClickSelectedKey }).then(resp => {
+        if (resp.code === 200) {
           this.$message.success('删除成功!')
           this.loadTree()
         } else {
@@ -422,28 +402,11 @@ export default {
         }
       })
     },
-    selectDirectiveOk(record) {
-      console.log('选中指令数据', record)
-      this.nodeSettingForm.setFieldsValue({ directiveCode: record.directiveCode })
-      this.currSelected.sysCode = record.sysCode
+    // 重置
+    emptyCurrForm() {
+      this.form.resetFields()
     },
-    getFlowGraphData(node) {
-      this.graphDatasource.nodes.push({
-        id: node.id,
-        text: node.flowNodeName
-      })
-      if (node.children.length > 0) {
-        for (let a = 0; a < node.children.length; a++) {
-          let temp = node.children[a]
-          this.graphDatasource.edges.push({
-            source: node.id,
-            target: temp.id
-          })
-          this.getFlowGraphData(temp)
-        }
-      }
-    },
-    // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
+    // <!---- for:切换父子勾选模式 =======------>
     expandAll() {
       this.iExpandedKeys = this.allTreeKeys
     },
@@ -455,7 +418,6 @@ export default {
       this.checkedKeys = this.allTreeKeys
     },
     cancelCheckALL() {
-      //this.checkedKeys = this.defaultCheckedKeys
       this.checkedKeys = []
     },
     switchCheckStrictly(v) {
@@ -465,12 +427,8 @@ export default {
         this.checkStrictly = true
       }
     },
+    //  <!---- for:切换父子勾选模式 =======------>
   },
-  created() {
-    this.currFlowId = this.$route.params.id
-    this.currFlowName = this.$route.params.name
-    // this.loadTree()
-  }
 }
 </script>
 <style scoped>

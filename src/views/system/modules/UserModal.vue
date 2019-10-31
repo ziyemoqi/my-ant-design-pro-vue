@@ -59,7 +59,7 @@
         </a-form-item>
 
           <a-form-item label="排序" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input-number :min="1" v-decorator="['sort']" style="width:100%"  placeholder="请输入序号" />
+            <a-input-number :min="1" v-decorator="['sort',{'initialValue':100}]" style="width:100%"  placeholder="请输入序号" />
           </a-form-item>
 
       </a-form>

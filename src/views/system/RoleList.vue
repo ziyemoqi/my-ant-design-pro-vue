@@ -115,9 +115,7 @@
       return {
 
         description: '角色管理页面',
-        // 查询条件
         queryParam: {roleName:'',},
-        // 表头
         columns: [
           {
             title: '#',
@@ -179,7 +177,6 @@
     },
     methods: {
       handlePerssion: function(roleId){
-       // alert(roleId);
         this.$refs.modalUserRole.show(roleId);
       },
       onChangeDate(date, dateString) {

@@ -91,8 +91,7 @@
 
           <a-form-item v-show="!show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="授权策略">
             <a-radio-group
-              v-decorator="['permsType']"
-              defaultValue="1"
+              v-decorator="['permsType',{'initialValue':1}]"
             >
               <a-radio value="1">显示</a-radio>
               <a-radio value="2">禁用</a-radio>
@@ -100,8 +99,7 @@
           </a-form-item>
           <a-form-item v-show="!show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="状态">
             <a-radio-group
-              v-decorator="['status']"
-              defaultValue="0"
+              v-decorator="['status',{'initialValue':0}]"
             >
               <a-radio value="0">无效</a-radio>
               <a-radio value="1">有效</a-radio>
@@ -118,7 +116,7 @@
             <a-input-number
               placeholder="请输入菜单排序"
               style="width: 200px"
-              v-decorator="[ 'sort',validatorRules.sortNo]"
+              v-decorator="[ 'sort',{'initialValue':100}]"
               :readOnly="disableSubmit"
             />
           </a-form-item>
@@ -202,8 +200,7 @@ export default {
         name: { rules: [{ required: true, message: '请输入菜单标题!' }] },
         component: { rules: [{ required: this.show, message: '请输入前端组件!' }] },
         url: { rules: [{ required: this.show, message: '请输入菜单路径!' }] },
-        permsType: { rules: [{ required: true, message: '请输入授权策略!' }] },
-        sortNo: { initialValue: 1.0 }
+        permsType: { rules: [{ required: true, message: '请输入授权策略!' }] }
       }
     }
   },
