@@ -130,11 +130,6 @@ export default {
       description: '这是菜单管理页面',
       columns: columns,
       loading: false,
-      url: {
-        list: '/sys/permission/list',
-        delete: '/sys/permission/delete',
-        deleteBatch: '/sys/permission/deleteBatch'
-      },
       selectedRowKeys: [],
       selectionRows: [],
       dataSource: []
