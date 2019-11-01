@@ -27,11 +27,15 @@
           <a-input placeholder="请输入角色编码" :disabled="roleDisabled" v-decorator="[ 'roleCode', validatorRules.roleCode]" />
         </a-form-item>
 
+         <a-form-item label="排序" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input-number :min="1" v-decorator="['sort',{'initialValue':100}]" style="width:100%"  placeholder="请输入序号" />
+          </a-form-item>
+
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="描述">
-          <a-textarea :rows="5" placeholder="..." v-decorator="[ 'description', validatorRules.description ]" />
+          <a-textarea :rows="5" placeholder="请输入描述" v-decorator="[ 'remark', validatorRules.description ]" />
         </a-form-item>
 
       </a-form>
@@ -41,7 +45,7 @@
 
 <script>
   import pick from 'lodash.pick'
-  // import {addRole,editRole,duplicateCheck } from '@/api/api'
+  import {addRole,editRole,duplicateCheck } from '@/api/role'
 
   export default {
     name: "RoleModal",
@@ -80,8 +84,6 @@
         },
       }
     },
-    created () {
-    },
     methods: {
       add () {
         this.edit({});
@@ -90,15 +92,14 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-
         //编辑页面禁止修改角色编码
-        if(this.model.id){
+        if(this.model.sysRoleId){
           this.roleDisabled = true;
         }else{
           this.roleDisabled = false;
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'roleName', 'description','roleCode'))
+          this.form.setFieldsValue(pick(this.model,'roleName', 'remark','sort','roleCode'))
         });
 
       },
@@ -106,26 +107,27 @@
         this.$emit('close');
         this.visible = false;
       },
+      // 提交操作
       handleOk () {
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
-            let formData = Object.assign(this.model, values);
-            let obj;
+            let formData = Object.assign(this.model, values)
+            let obj
             console.log(formData)
-            if(!this.model.id){
-              obj=addRole(formData);
+            if(!this.model.sysRoleId){
+              obj=addRole(formData)
             }else{
-              obj=editRole(formData);
+              obj=editRole(formData)
             }
             obj.then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
+              if(res.code === 200){
+                that.$message.success('操作成功!');
                 that.$emit('ok');
               }else{
-                that.$message.warning(res.message);
+                that.$message.warning('操作失败!');
               }
             }).finally(() => {
               that.confirmLoading = false;
@@ -140,20 +142,19 @@
       validateRoleCode(rule, value, callback){
         if(/[\u4E00-\u9FA5]/g.test(value)){
           callback("角色编码不可输入汉字!");
-        }else{
+        }else if(!this.model.sysRoleId){
           var params = {
-            tableName: "sys_role",
-            fieldName: "role_code",
-            fieldVal: value,
-            dataId: this.model.id,
+            roleCode: value,
           };
           duplicateCheck(params).then((res)=>{
-            if(res.success){
+            if(res.code === 200){
               callback();
             }else{
-              callback(res.message);
+              callback(res.msg || '该角色代码已存在！');
             }
           });
+        }else {
+          callback();
         }
       }
 

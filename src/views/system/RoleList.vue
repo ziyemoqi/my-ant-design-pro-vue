@@ -3,11 +3,11 @@
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <!-- 搜索区域 -->
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-form layout="inline" :form="screenForm" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="名称" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
-              <a-input placeholder="请输入名称查询" v-model="queryParam.roleName"></a-input>
+              <a-input placeholder="请输入名称查询" v-decorator="['roleName',{}]"></a-input>
             </a-form-item>
           </a-col>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -57,8 +57,7 @@
         @change="handleTableChange"
       >
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-
+          <!-- <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">
@@ -67,15 +66,22 @@
             </a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a @click="handlePerssion(record.id)">授权</a>
+                <a >授权</a>
               </a-menu-item>
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.sysRoleId)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>
+          </a-dropdown>-->
+          <a-button
+            type="primary"
+            icon="safety-certificate"
+            @click="handlePerssion(record.sysRoleId)"
+          >授权</a-button>&nbsp;&nbsp;
+          <a-button @click="handleEdit(record)">编辑</a-button>&nbsp;&nbsp;
+          <a-button @click="handleDelete(record.sysRoleId)">删除</a-button>
         </span>
       </a-table>
     </div>
@@ -91,9 +97,9 @@
 import RoleModal from './modules/RoleModal'
 import UserRoleModal from './modules/UserRoleModal'
 import Vue from 'vue'
-import { ACCESS_TOKEN } from "@/store/mutation-types"
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { filterObj } from '@/utils/util'
-import { queryallRolePage } from '@/api/role'
+import { queryallRolePage, deleteByRoleId, deleteBatch } from '@/api/role'
 const columns = [
   {
     title: '#',
@@ -118,7 +124,7 @@ const columns = [
   {
     title: '备注',
     align: 'center',
-    dataIndex: 'description'
+    dataIndex: 'remark'
   },
   {
     title: '创建时间',
@@ -148,19 +154,20 @@ export default {
 
   data() {
     return {
-      dataSource:[],
-      loading:false,
+      dataSource: [],
+      loading: false,
+      screenForm: this.$form.createForm(this),
       description: '角色管理页面',
       queryParam: { roleName: '' },
-      tokenHeader: {'X-Access-Token': Vue.ls.get(ACCESS_TOKEN)},
+      tokenHeader: { 'X-Access-Token': Vue.ls.get(ACCESS_TOKEN) },
       selectedRowKeys: [],
-      columns:columns,
-      ipagination:{
+      columns: columns,
+      ipagination: {
         current: 1,
         pageSize: 10,
         pageSizeOptions: ['10', '20', '30'],
         showTotal: (total, range) => {
-          return range[0] + "-" + range[1] + " 共" + total + "条"
+          return range[0] + '-' + range[1] + ' 共' + total + '条'
         },
         showQuickJumper: true,
         showSizeChanger: true,
@@ -172,7 +179,7 @@ export default {
     this.loadData()
   },
   methods: {
-     async loadData(screenData) {
+    async loadData(screenData) {
       let that = this
       let obj = {
         page: {
@@ -180,82 +187,135 @@ export default {
           pageSize: that.ipagination.pageSize
         },
         params: {
-          ...screenData,
-          deptId: this.currentDeptId
+          ...screenData
         }
       }
       this.loading = true
-      await queryallRolePage(obj).then((res) => {
-        if (res.code === 200 ) {
+      await queryallRolePage(obj).then(res => {
+        if (res.code === 200) {
           this.dataSource = res.data
+          that.ipagination.total = res.page.total
         }
-        this.loading = false;
+        this.loading = false
       })
     },
     // 表单查询
-    searchQuery() {
-      this.loadData(1);
+    searchQuery(e) {
+      e.preventDefault()
+      this.ipagination.pageNo = 1
+      let { ...others } = this.screenForm.getFieldsValue()
+      this.loadData({
+        ...others
+      })
     },
     // 表单重置
     searchReset() {
       this.queryParam = {}
-      this.loadData(1);
+      this.loadData(1)
     },
     // 新增
-    handleAdd: function () {
-      this.$refs.modalForm.add();
-      this.$refs.modalForm.title = "新增";
-      this.$refs.modalForm.disableSubmit = false;
+    handleAdd: function() {
+      this.$refs.modalForm.add()
+      this.$refs.modalForm.title = '新增'
+      this.$refs.modalForm.disableSubmit = false
     },
     // 取消选中
     onClearSelected() {
-      this.selectedRowKeys = [];
-      this.selectionRows = [];
+      this.selectedRowKeys = []
+      this.selectionRows = []
     },
     onSelectChange(selectedRowKeys, selectionRows) {
-      this.selectedRowKeys = selectedRowKeys;
-      this.selectionRows = selectionRows;
+      this.selectedRowKeys = selectedRowKeys
+      this.selectionRows = selectionRows
     },
-      //分页、排序、筛选变化时触发
+    //分页、排序、筛选变化时触发
     handleTableChange(pagination, filters, sorter) {
       if (Object.keys(sorter).length > 0) {
-        this.isorter.column = sorter.field;
-        this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
+        this.isorter.column = sorter.field
+        this.isorter.order = 'ascend' == sorter.order ? 'asc' : 'desc'
       }
-      this.ipagination = pagination;
-      this.loadData();
+      this.ipagination = pagination
+      this.loadData()
     },
     // 新增/修改 成功时，重载列表
     modalFormOk() {
-      this.loadData();
+      this.loadData()
     },
-    // 获取查询条件 
+    // 获取查询条件
     getQueryParams() {
-      //获取查询条件
       let sqp = {}
-      if(this.superQueryParams){
-        sqp['superQueryParams']=encodeURI(this.superQueryParams)
+      if (this.superQueryParams) {
+        sqp['superQueryParams'] = encodeURI(this.superQueryParams)
       }
-      var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
-      param.field = this.getQueryField();
-      param.pageNo = this.ipagination.current;
-      param.pageSize = this.ipagination.pageSize;
-      return filterObj(param);
+      var param = Object.assign(sqp, this.queryParam, this.isorter, this.filters)
+      param.field = this.getQueryField()
+      param.pageNo = this.ipagination.current
+      param.pageSize = this.ipagination.pageSize
+      return filterObj(param)
     },
-      //TODO 字段权限控制
+    //TODO 字段权限控制
     getQueryField() {
-      var str = "id,";
-      this.columns.forEach(function (value) {
-        str += "," + value.dataIndex;
-      });
-      return str;
+      var str = 'id,'
+      this.columns.forEach(function(value) {
+        str += ',' + value.dataIndex
+      })
+      return str
     },
-    // ===============
+    // 编辑
+    handleEdit: function(record) {
+      this.$refs.modalForm.edit(record)
+      this.$refs.modalForm.title = '编辑'
+      this.$refs.modalForm.disableSubmit = false
+    },
+    // 删除
+    handleDelete: function(id) {
+      var that = this
+      that.$confirm({
+        title: '确认删除',
+        content: '是否删除当前数据?',
+        onOk: function() {
+          deleteByRoleId({ sysRoleId: id }).then(res => {
+            if (res.code === 200) {
+              that.$message.success('操作成功!')
+              that.loadData()
+            } else {
+              that.$message.warning('操作失败!')
+            }
+          })
+        }
+      })
+    },
+    // 批量删除
+    batchDel: function() {
+      if (this.selectedRowKeys.length <= 0) {
+        this.$message.warning('请选择一条记录！')
+        return
+      } else {
+        var ids = ''
+        for (var a = 0; a < this.selectedRowKeys.length; a++) {
+          ids += this.selectedRowKeys[a] + ','
+        }
+        var that = this
+        this.$confirm({
+          title: '确认删除',
+          content: '是否删除选中数据?',
+          onOk: function() {
+            deleteBatch({ ids: ids }).then(res => {
+              if (res.code === 200) {
+                that.$message.success('操作成功!')
+                that.loadData()
+                that.onClearSelected()
+              } else {
+                that.$message.warning('操作失败!')
+              }
+            })
+          }
+        })
+      }
+    },
+    // 授权
     handlePerssion: function(roleId) {
       this.$refs.modalUserRole.show(roleId)
-    },
-    onChangeDate(date, dateString) {
-      console.log(date, dateString)
     }
   }
 }

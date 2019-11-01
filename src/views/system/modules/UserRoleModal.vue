@@ -50,20 +50,14 @@
       <a-button @click="handleSubmit" type="primary" :loading="loading">提交</a-button>
     </div>
 
-    <!-- <role-datarule-modal ref="datarule"></role-datarule-modal> -->
-
   </a-drawer>
 
 </template>
 <script>
-  // import {queryTreeListForRole,queryRolePermission,saveRolePermission} from '@/api/api'
-  // import RoleDataruleModal from './RoleDataruleModal.vue'
+  import {queryTreeListForRole,queryRolePermission,saveRolePermission} from '@/api/role'
 
   export default {
     name: "RoleModal",
-    components:{
-      // RoleDataruleModal
-    },
     data(){
       return {
         roleId:"",
@@ -83,12 +77,16 @@
     },
     methods: {
       onTreeNodeSelect(id){
+        console.log("执行9090909090")
         if(id && id.length>0){
           this.selectedKeys = id
         }
         this.$refs.datarule.show(this.selectedKeys[0],this.roleId)
       },
       onCheck (checkedKeys, { halfCheckedKeys }) {
+        console.log("2")
+        console.log("checkedKeys:"+checkedKeys)
+        console.log("{ halfCheckedKeys }:"+{ halfCheckedKeys })
         // 保存选中的和半选中的，后面保存的时候合并提交
         this.checkedKeys = checkedKeys
         this.halfCheckedKeys = halfCheckedKeys
@@ -98,11 +96,13 @@
         this.visible = true;
       },
       close () {
+        console.log("3")
         this.reset()
         this.$emit('close');
         this.visible = false;
       },
       onExpand(expandedKeys){
+        console.log('onExpand')
         this.expandedKeysss = expandedKeys;
         this.autoExpandParent = false
       },
@@ -128,61 +128,63 @@
         this.close()
       },
       handleSubmit(){
-        let that = this;
+        let that = this
         let checkedKeys = [...that.checkedKeys, ...that.halfCheckedKeys]
         const permissionIds = checkedKeys.join(",")
         let params =  {
-          roleId:that.roleId,
+          sysRoleId:that.roleId,
           permissionIds,
           lastpermissionIds:that.defaultCheckedKeys.join(","),
         };
+        console.log(params.permissionIds)
+        console.log(params.lastpermissionIds)
         that.loading = true;
         console.log("请求参数：",params);
         saveRolePermission(params).then((res)=>{
-          if(res.success){
-            that.$message.success(res.message);
-            that.loading = false;
-            that.close();
+          if(res.code === 200){
+            that.$message.success('操作成功!')
+            that.loading = false
+            that.close()
           }else {
-            that.$message.error(res.message);
-            that.loading = false;
-            that.close();
+            that.$message.error('操作失败!')
+            that.loading = false
+            that.close()
           }
         })
       },
       convertTreeListToKeyLeafPairs(treeList, keyLeafPair = []) {
-        for(const {key, isLeaf, children} of treeList) {
-          keyLeafPair.push({key, isLeaf})
+        for(const {key, leaf, children} of treeList) {
+          keyLeafPair.push({key, leaf})
           if(children && children.length > 0) {
             this.convertTreeListToKeyLeafPairs(children, keyLeafPair)
           }
         }
-        return keyLeafPair;
+        return keyLeafPair
       },
     },
   watch: {
     visible () {
       if (this.visible) {
         queryTreeListForRole().then((res) => {
-          this.treeData = res.result.treeList
-          this.allTreeKeys = res.result.ids
+          this.treeData = res.data.treeList
+          this.allTreeKeys = res.data.ids
           const keyLeafPairs = this.convertTreeListToKeyLeafPairs(this.treeData)
-          queryRolePermission({roleId:this.roleId}).then((res)=>{
+          queryRolePermission({sysRoleId:this.roleId}).then((res)=>{
             // 过滤出 leaf node 即可，即选中的
             // Tree组件中checkStrictly默认为false的时候，选中子节点，父节点会自动设置选中或半选中
             // 保存 checkedKeys 以及 halfCheckedKeys 以便于未做任何操作时提交表单数据
-            const checkedKeys = [...res.result].filter(key => {
+            const checkedKeys = [...res.data].filter(key => {
               const keyLeafPair = keyLeafPairs.filter(item => item.key === key)[0]
-              return keyLeafPair && keyLeafPair.isLeaf
+              return keyLeafPair && keyLeafPair.leaf
             })
-            const halfCheckedKeys = [...res.result].filter(key => {
+            const halfCheckedKeys = [...res.data].filter(key => {
               const keyLeafPair = keyLeafPairs.filter(item => item.key === key)[0]
-              return keyLeafPair && !keyLeafPair.isLeaf
+              return keyLeafPair && !keyLeafPair.leaf
             })
-            this.checkedKeys = [...checkedKeys];
+            this.checkedKeys = [...checkedKeys]
             this.halfCheckedKeys = [...halfCheckedKeys]
-            this.defaultCheckedKeys = [...halfCheckedKeys, ...checkedKeys];
-            this.expandedKeysss = this.allTreeKeys;
+            this.defaultCheckedKeys = [...halfCheckedKeys, ...checkedKeys]
+            this.expandedKeysss = this.allTreeKeys
           })
         })
       }
