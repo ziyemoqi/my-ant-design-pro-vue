@@ -97,10 +97,8 @@ const user = {
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
         logout(logoutToken).then(() => {
-          console.log(123)
           resolve()
         }).catch(() => {
-          console.log(1234)
           resolve()
         })
       })

@@ -161,7 +161,7 @@
       validateLoginName(rule, value, callback){
         if (value && !new RegExp(/^[A-Za-z0-9]{5,}$/).test(value)) {
           callback(new Error('登录密码只能输入英文或数字且不能少于5位数!'))
-        } else {
+        } else if(!this.userId) {
           var params = {
             loginName: value,
           };
@@ -172,6 +172,8 @@
             callback(res.msg || '登录账号已存在!')
           }
         })
+        }else {
+          callback()
         }
       },
       // 验证邮箱
