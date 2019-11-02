@@ -77,16 +77,12 @@
     },
     methods: {
       onTreeNodeSelect(id){
-        console.log("执行9090909090")
         if(id && id.length>0){
           this.selectedKeys = id
         }
         this.$refs.datarule.show(this.selectedKeys[0],this.roleId)
       },
       onCheck (checkedKeys, { halfCheckedKeys }) {
-        console.log("2")
-        console.log("checkedKeys:"+checkedKeys)
-        console.log("{ halfCheckedKeys }:"+{ halfCheckedKeys })
         // 保存选中的和半选中的，后面保存的时候合并提交
         this.checkedKeys = checkedKeys
         this.halfCheckedKeys = halfCheckedKeys
@@ -96,13 +92,11 @@
         this.visible = true;
       },
       close () {
-        console.log("3")
         this.reset()
         this.$emit('close');
         this.visible = false;
       },
       onExpand(expandedKeys){
-        console.log('onExpand')
         this.expandedKeysss = expandedKeys;
         this.autoExpandParent = false
       },
@@ -134,12 +128,9 @@
         let params =  {
           sysRoleId:that.roleId,
           permissionIds,
-          lastpermissionIds:that.defaultCheckedKeys.join(","),
+          lastPermissionIds:that.defaultCheckedKeys.join(","),
         };
-        console.log(params.permissionIds)
-        console.log(params.lastpermissionIds)
         that.loading = true;
-        console.log("请求参数：",params);
         saveRolePermission(params).then((res)=>{
           if(res.code === 200){
             that.$message.success('操作成功!')
