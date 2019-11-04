@@ -68,11 +68,11 @@ const user = {
         let params = { token: v_token }
         queryPermissionsByToken(params).then(response => {
           if (response.code == '200') {
-            let menuData = response.data.menu;
-            let authData = response.data.auth;
-            let allAuthData = response.data.allAuth;
-            sessionStorage.setItem(USER_AUTH, JSON.stringify(authData));
-            sessionStorage.setItem(SYS_BUTTON_AUTH, JSON.stringify(allAuthData));
+            let menuData = response.data.menu
+            let authData = response.data.auth
+            let allAuthData = response.data.allAuth
+            sessionStorage.setItem(USER_AUTH, JSON.stringify(authData))
+            sessionStorage.setItem(SYS_BUTTON_AUTH, JSON.stringify(allAuthData))
             if (menuData && menuData.length > 0) {
               commit('SET_PERMISSIONLIST', menuData)
             } else {

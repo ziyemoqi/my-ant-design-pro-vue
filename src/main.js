@@ -10,8 +10,8 @@ import config from '@/defaultSettings'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.less'
 import Viser from 'viser-vue'
-import './permission' // permission control
-import './utils/filter' // global filter
+import './permission'
+import './utils/filter'
 import VueApexCharts from 'vue-apexcharts'
 import VueRouter from 'vue-router';
 

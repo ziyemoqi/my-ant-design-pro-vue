@@ -116,7 +116,6 @@
             that.confirmLoading = true;
             let formData = Object.assign(this.model, values)
             let obj
-            console.log(formData)
             if(!this.model.sysRoleId){
               obj=addRole(formData)
             }else{

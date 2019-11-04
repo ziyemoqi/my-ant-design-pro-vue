@@ -62,8 +62,6 @@ const queryUserRoleMap = (params)=>get("/sysUser/queryUserRoleMap",params)
 const queryUserRole = (params)=>get("/sysUser/queryUserRole",params);
 
 
-
-
 export {
   addUser,
   editUser,
@@ -78,12 +76,11 @@ export {
  */
 export function tempApi2(params) {
   return axios({
-    url: '/remind/remind-message/sendUser',
+    url: '/remindMessage/sendUser',
     method: 'post',
     data: params
   })
 }
-
 
 
 // 方法多种方式
