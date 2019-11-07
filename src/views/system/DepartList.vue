@@ -142,7 +142,7 @@ import DepartModal from './modules/DepartModal'
 import pick from 'lodash.pick'
 import { queryDepartTreeList, searchByKeywords, deleteByDepartId,deleteBatch,editByDeptId } from '@/api/dept'
 export default {
-  name: 'DepartList',
+  name: 'DepartList_view',
   components: {
     DepartModal
   },
@@ -203,7 +203,7 @@ export default {
       that.departTree = []
       try {
         let { code, data, msg } = await queryDepartTreeList()
-        if (code === 200) {
+        if (code === 200 ) {
           for (let i = 0; i < data.length; i++) {
             let temp = data[i]
             that.treeData.push(temp)
@@ -211,11 +211,10 @@ export default {
             that.setThisExpandedKeys(temp)
             that.getAllKeys(temp)
           }
-        } else {
-          that.$message.error(msg || '数据获取失败,请联系系统管理员')
-        }
+        } 
       } catch (e) {
-        console.log(e)
+        console.error(e)
+        that.$message.error('数据获取失败,请联系系统管理员')
       } finally {
         this.loading = false
       }

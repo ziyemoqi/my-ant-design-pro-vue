@@ -6,9 +6,9 @@ import 'nprogress/nprogress.css'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { generateIndexRouter } from "@/utils/util"
 
-NProgress.configure({ showSpinner: false }) // NProgress Configuration
+NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/user/login', '/user/register', '/user/register-result']
+const whiteList = ['/user/login']
 
 router.beforeEach((to, from, next) => {
   console.log('------------------------路由守卫前置---------------------')

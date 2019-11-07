@@ -57,7 +57,7 @@
   import {queryTreeListForRole,queryRolePermission,saveRolePermission} from '@/api/role'
 
   export default {
-    name: "RoleModal",
+    name: "UserRoleModal",
     data(){
       return {
         roleId:"",

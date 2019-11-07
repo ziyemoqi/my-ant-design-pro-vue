@@ -121,7 +121,7 @@ const columns = [
 ]
 
 export default {
-  name: 'PermissionList',
+  name: 'PermissionList_view',
   components: {
     PermissionModal,
   },

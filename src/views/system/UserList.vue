@@ -43,7 +43,7 @@ import UserBaseInfo from './modules/UserBaseInfo'
 import { queryDepartTreeList, searchByKeywords } from '@/api/dept'
 
 export default {
-  name: 'DepartUserList',
+  name: 'UserList_view',
   components: {
     DeptBaseInfo,
     UserBaseInfo

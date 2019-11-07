@@ -69,7 +69,7 @@ import { queryIdTree, addDept } from '@/api/dept'
 import pick from 'lodash.pick'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 export default {
-  name: 'SysDepartModal',
+  name: 'DepartModal',
   components: { ATextarea },
   data() {
     return {

@@ -146,7 +146,7 @@ const columns = [
   }
 ]
 export default {
-  name: 'RoleList',
+  name: 'RoleList_view',
   components: {
     RoleModal,
     UserRoleModal
