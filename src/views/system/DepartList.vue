@@ -40,7 +40,7 @@
                     @rightClick="rightHandle"
                     :selectedKeys="selectedKeys"
                     :checkedKeys="checkedKeys"
-                    :treeData="departTree"
+                    :treeData="treeData"
                     :checkStrictly="checkStrictly"
                     :expandedKeys="iExpandedKeys"
                     :autoExpandParent="autoExpandParent"
@@ -90,7 +90,7 @@
             <a-tree-select
               style="width:100%"
               :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
-              :treeData="treeData"
+              :treeData="detailTree"
               :disabled="disable"
               v-model="model.parentId"
               placeholder="无"
@@ -141,6 +141,7 @@
 import DepartModal from './modules/DepartModal'
 import pick from 'lodash.pick'
 import { queryDepartTreeList, searchByKeywords, deleteByDepartId,deleteBatch,editByDeptId } from '@/api/dept'
+
 export default {
   name: 'DepartList_view',
   components: {
@@ -148,15 +149,15 @@ export default {
   },
   data() {
     return {
+      detailTree: [],
+      treeData: [],
       iExpandedKeys: [],
       loading: false,
       autoExpandParent: true,
       currFlowId: '',
       currFlowName: '',
       disable: true,
-      treeData: [],
       visible: false,
-      departTree: [],
       rightClickSelectedKey: '',
       hiding: true,
       model: {},
@@ -199,15 +200,15 @@ export default {
   methods: {
     async loadTree() {
       var that = this
+      that.detailTree = []
       that.treeData = []
-      that.departTree = []
       try {
         let { code, data, msg } = await queryDepartTreeList()
         if (code === 200 ) {
           for (let i = 0; i < data.length; i++) {
             let temp = data[i]
+            that.detailTree.push(temp)
             that.treeData.push(temp)
-            that.departTree.push(temp)
             that.setThisExpandedKeys(temp)
             that.getAllKeys(temp)
           }
@@ -345,11 +346,11 @@ export default {
       if (value) {
         searchByKeywords({ keyWord: value }).then(res => {
           if (res.code === 200 ) {
-            that.departTree = []
+            that.treeData = []
             if(res.data){
               for (let i = 0; i < res.data.length; i++) {
                 let temp = res.data[i]
-                that.departTree.push(temp)
+                that.treeData.push(temp)
               }
             }
           } else {

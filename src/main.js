@@ -1,19 +1,19 @@
+import '@babel/polyfill'
+
 import Vue from 'vue'
 import App from './App.vue'
-import Storage from 'vue-ls'
 import router from './router'
 import store from './store/'
-
-import { VueAxios } from '@/utils/request'
-import Antd from 'ant-design-vue'
-import Viser from 'viser-vue'
-import 'ant-design-vue/dist/antd.less'
-
-import '@/permission'
-import '@/utils/filter'
-
+import { VueAxios } from './utils/request'
+import Storage from 'vue-ls'
 import config from '@/defaultSettings'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.less'
+import Viser from 'viser-vue'
+import './permission'
+import './utils/filter'
 import VueApexCharts from 'vue-apexcharts'
+import VueRouter from 'vue-router';
 
 import {
   ACCESS_TOKEN,
@@ -31,10 +31,15 @@ import {
 Vue.config.productionTip = false
 Vue.use(Storage, config.storageOptions)
 Vue.use(Antd)
-Vue.use(VueAxios, router)
+Vue.use(VueAxios)
 Vue.use(VueApexCharts)
 Vue.component('apexchart', VueApexCharts)
 Vue.use(Viser)
+
+const routerPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch(error=> error)
+}
 
 new Vue({
   router,

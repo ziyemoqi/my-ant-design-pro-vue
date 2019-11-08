@@ -6,7 +6,7 @@ import 'nprogress/nprogress.css'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { generateIndexRouter } from "@/utils/util"
 
-NProgress.configure({ showSpinner: false })
+NProgress.configure({ showSpinner: true })
 
 const whiteList = ['/user/login']
 
