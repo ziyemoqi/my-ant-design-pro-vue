@@ -170,6 +170,8 @@ export default {
         if (res.code === 200) {
           that.dataSource = res.data
           that.ipagination.total = res.page.total
+        }else{
+           that.$message.error(res.msg || '数据获取失败,请联系系统管理员')
         }
       })
       this.loading = false
@@ -255,7 +257,7 @@ export default {
           }
           that.loadData()
         } else {
-          that.$message.warning('操作失败!')
+          that.$message.warning(res.msg || '操作失败!')
         }
       })
     },
@@ -282,7 +284,7 @@ export default {
                 that.loadData()
                 that.onClearSelected()
               } else {
-                that.$message.warning('操作失败!')
+                that.$message.warning(res.msg || '操作失败!')
               }
             })
           }

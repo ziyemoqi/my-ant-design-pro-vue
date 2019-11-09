@@ -104,7 +104,7 @@
             />
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="机构类型">
-            <template >
+            <template>
               <a-radio-group
                 v-decorator="['orgType',validatorRules.orgCategory]"
                 placeholder="请选择机构类型"
@@ -140,7 +140,7 @@
 <script>
 import DepartModal from './modules/DepartModal'
 import pick from 'lodash.pick'
-import { queryDepartTreeList, searchByKeywords, deleteByDepartId,deleteBatch,editByDeptId } from '@/api/dept'
+import { queryDepartTreeList, searchByKeywords, deleteByDepartId, deleteBatch, editByDeptId } from '@/api/dept'
 
 export default {
   name: 'DepartList_view',
@@ -186,8 +186,8 @@ export default {
       validatorRules: {
         departName: { rules: [{ required: true, message: '请输入机构/部门名称!' }] },
         uniqueCoding: { rules: [{ required: true, message: '请输入机构编码!' }] },
-        orgCategory: { rules: [{ required: true, message: '请输入机构类型!' }] },
-      },
+        orgCategory: { rules: [{ required: true, message: '请输入机构类型!' }] }
+      }
     }
   },
   created() {
@@ -200,11 +200,12 @@ export default {
   methods: {
     async loadTree() {
       var that = this
+      that.loading = true
       that.detailTree = []
       that.treeData = []
       try {
         let { code, data, msg } = await queryDepartTreeList()
-        if (code === 200 ) {
+        if (code === 200) {
           for (let i = 0; i < data.length; i++) {
             let temp = data[i]
             that.detailTree.push(temp)
@@ -212,10 +213,11 @@ export default {
             that.setThisExpandedKeys(temp)
             that.getAllKeys(temp)
           }
-        } 
+        } else {
+          that.$message.error(msg || '数据获取失败,请联系系统管理员')
+        }
       } catch (e) {
         console.error(e)
-        that.$message.error('数据获取失败,请联系系统管理员')
       } finally {
         this.loading = false
       }
@@ -302,14 +304,19 @@ export default {
             sysDeptId: this.currSelected.id,
             ...values
           }
-          editByDeptId(formData).then(res => {
-            if (res.code === 200) {
-              this.$message.success('保存成功!')
-              this.loadTree()
-            } else {
-              this.$message.error('保存失败！')
-            }
-          })
+          try {
+            editByDeptId(formData).then(res => {
+              if (res.code === 200) {
+                this.$message.success('保存成功!')
+              } else {
+                this.$message.error(res.msg || '保存失败！')
+              }
+            })
+          } catch (e) {
+            console.log(e)
+          } finally {
+            this.loadTree()
+          }
         }
       })
     },
@@ -333,7 +340,7 @@ export default {
                 that.loadTree()
                 that.onClearSelected()
               } else {
-                that.$message.warning('删除失败!')
+                that.$message.warning( msg || '删除失败!')
               }
             })
           }
@@ -345,16 +352,16 @@ export default {
       let that = this
       if (value) {
         searchByKeywords({ keyWord: value }).then(res => {
-          if (res.code === 200 ) {
+          if (res.code === 200) {
             that.treeData = []
-            if(res.data){
+            if (res.data) {
               for (let i = 0; i < res.data.length; i++) {
                 let temp = res.data[i]
                 that.treeData.push(temp)
               }
             }
           } else {
-            that.$message.warning('查询失败！')
+            that.$message.error(res.msg || '查询失败！')
           }
         })
       } else {
@@ -398,7 +405,7 @@ export default {
           this.$message.success('删除成功!')
           this.loadTree()
         } else {
-          this.$message.warning('删除失败!')
+          this.$message.error( resp.msg || '删除失败!')
         }
       })
     },
@@ -426,9 +433,9 @@ export default {
       } else if (v == 2) {
         this.checkStrictly = true
       }
-    },
+    }
     //  <!---- for:切换父子勾选模式 =======------>
-  },
+  }
 }
 </script>
 <style scoped>

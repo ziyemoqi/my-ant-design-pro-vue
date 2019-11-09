@@ -89,12 +89,12 @@
         this.edit({});
       },
       edit (record) {
-        this.form.resetFields();
-        this.model = Object.assign({}, record);
-        this.visible = true;
+        this.form.resetFields()
+        this.model = Object.assign({}, record)
+        this.visible = true
         //编辑页面禁止修改角色编码
         if(this.model.sysRoleId){
-          this.roleDisabled = true;
+          this.roleDisabled = true
         }else{
           this.roleDisabled = false;
         }
@@ -104,8 +104,8 @@
 
       },
       close () {
-        this.$emit('close');
-        this.visible = false;
+        this.$emit('close')
+        this.visible = false
       },
       // 提交操作
       handleOk () {
@@ -126,7 +126,7 @@
                 that.$message.success('操作成功!');
                 that.$emit('ok');
               }else{
-                that.$message.warning('操作失败!');
+                that.$message.warning(res.msg ||'操作失败!');
               }
             }).finally(() => {
               that.confirmLoading = false;

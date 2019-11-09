@@ -137,7 +137,7 @@
             that.loading = false
             that.close()
           }else {
-            that.$message.error('操作失败!')
+            that.$message.error(res.msg || '操作失败!')
             that.loading = false
             that.close()
           }

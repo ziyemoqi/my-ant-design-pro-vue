@@ -134,7 +134,7 @@
                 <div class="head-info" :class="center && 'center'">
                   <span>今日IP</span>
                   <p>
-                    <a>{{ loginfo.todayIp }}</a>
+                    <a>{{ logInfo.todayIp }}</a>
                   </p>
                 </div>
               </a-col>
@@ -142,7 +142,7 @@
                 <div class="head-info" :class="center && 'center'">
                   <span>今日访问</span>
                   <p>
-                    <a>{{ loginfo.todayVisitCount }}</a>
+                    <a>{{ logInfo.todayVisitCount }}</a>
                   </p>
                 </div>
               </a-col>
@@ -150,7 +150,7 @@
                 <div class="head-info" :class="center && 'center'">
                   <span>访问总览</span>
                   <p>
-                    <a>{{ loginfo.totalVisitCount }}</a>
+                    <a>{{ logInfo.totalVisitCount }}</a>
                   </p>
                 </div>
               </a-col>
@@ -192,7 +192,7 @@ import MiniProgress from '@/components/chart/MiniProgress'
 import RankList from '@/components/chart/RankList'
 import Bar from '@/components/chart/Bar'
 import Trend from '@/components/Trend'
-import { getLoginfo } from '@/api/log'
+import { getLogInfo } from '@/api/log'
 import * as userApi from '@/api/user'
 import { deleteAction, get,downFile } from '@/api/manage'
 
@@ -229,7 +229,7 @@ export default {
       center: null,
       rankList,
       barData,
-      loginfo: {},
+      logInfo: {},
       num: 0
     }
   },
@@ -256,9 +256,9 @@ export default {
     //  }, 1000 * 60 * 10)
     // },
     initLogInfo() {
-      getLoginfo(null).then(res => {
+      getLogInfo().then(res => {
         if (res.code === 200) {
-          this.loginfo = res.data.logInfo
+          this.logInfo = res.data.logInfo
         }
       })
     },

@@ -219,11 +219,12 @@ export default {
             temp.isLeaf = temp.leaf
             that.treeData.push(temp)
           }
+        }else {
+          that.$message.warning(res.msg || '数据加载错误')
         }
       })
     },
     add() {
-      // 默认值
       this.edit({ status: '1', permsType: '1', isRoute: true })
     },
     edit(record) {
@@ -331,7 +332,7 @@ export default {
             that.$message.success('操作成功！')
             that.$emit('ok')
           } else {
-            that.$message.warning('操作失败！')
+            that.$message.warning(res.msg || '操作失败！')
           }
         })
         .finally(() => {
@@ -367,7 +368,7 @@ export default {
             that.$message.success('操作成功！')
             that.$emit('ok')
           } else {
-            that.$message.warning('操作失败！')
+            that.$message.warning(res.msg || '操作失败！')
           }
         })
         .finally(() => {

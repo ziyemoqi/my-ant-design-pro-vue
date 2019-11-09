@@ -102,6 +102,8 @@ export default {
             that.setThisExpandedKeys(temp)
           }
           this.loading = false
+        }else {
+          this.$message.error( res.msg || '查询失败!')
         }
       })
     },

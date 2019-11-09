@@ -228,8 +228,6 @@
               that.checkedDepartNames = [];
               that.close();
             })
-          }else{
-            console.log('验证失败')
           }
         })
       },
@@ -239,7 +237,7 @@
           if(res.code === 200){
             this.selectedRole = res.data;
           }else{
-            console.log(res.msg || '用户角色加载失败！');
+            that.$message.warning(res.msg || '用户角色加载失败！')
           }
         });
       },

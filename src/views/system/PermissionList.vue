@@ -188,7 +188,7 @@ export default {
           that.$message.success('操作成功！');
           that.loadData();
         } else {
-          that.$message.warning('操作失败！');
+          that.$message.error(res.msg || '操作失败！');
         }
       });
     },
@@ -220,7 +220,7 @@ export default {
                 that.loadData()
                 that.onClearSelected()
               } else {
-                that.$message.warning('操作失败!')
+                that.$message.warning( msg || '操作失败!')
               }
             })
           }
