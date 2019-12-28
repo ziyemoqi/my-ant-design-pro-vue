@@ -1,6 +1,6 @@
 <template xmlns:background-color="http://www.w3.org/1999/xhtml">
   <a-row :gutter="10">
-    <a-col :md="12" :sm="24">
+    <a-col :md="8" :sm="24">
       <a-card :bordered="false">
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
@@ -77,62 +77,53 @@
       </div>
       <!---- for:树操作 =======------>
     </a-col>
-    <a-col :md="12" :sm="24">
-      <a-card :bordered="false">
-        <a-form :form="form">
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="机构名称">
-            <a-input
-              placeholder="请输入机构/部门名称"
-              v-decorator="['departName', validatorRules.departName ]"
-            />
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
-            <a-tree-select
-              style="width:100%"
-              :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
-              :treeData="detailTree"
-              :disabled="disable"
-              v-model="model.parentId"
-              placeholder="无"
-            ></a-tree-select>
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="机构编码">
-            <a-input
-              disabled
-              placeholder="请输入机构编码"
-              v-decorator="['uniqueCoding', validatorRules.uniqueCoding ]"
-            />
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="机构类型">
-            <template>
-              <a-radio-group
-                v-decorator="['orgType',validatorRules.orgCategory]"
-                placeholder="请选择机构类型"
-              >
-                <a-radio value="1">公司</a-radio>
-                <a-radio value="2">部门</a-radio>
-                <a-radio value="3">岗位</a-radio>
-              </a-radio-group>
-            </template>
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="办公电话">
-            <a-input placeholder="请输入办公电话" v-decorator="['telephone', {'initialValue':''}]" />
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="地址">
-            <a-input placeholder="请输入地址" v-decorator="['address', {'initialValue':''}]" />
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
-            <a-input-number v-decorator="[ 'sort',{'initialValue':0}]" style="width:100%" />
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注">
-            <a-textarea placeholder="请输入备注" v-decorator="['remark', {'initialValue':''}]" />
-          </a-form-item>
-        </a-form>
-        <div class="anty-form-btn">
-          <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
-          <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form">修改并保存</a-button>
-        </div>
-      </a-card>
+    <!-- table区域-begin -->
+    <a-col :md="16" :sm="24">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择
+        <a style="font-weight: 600">
+          {{
+          selectedRowKeys.length }}
+        </a>项
+        <a style="margin-left: 24px" @click="onClearListSelected">清空</a>
+      </div>
+
+      <a-table
+        ref="table"
+        size="middle"
+        bordered
+        rowKey="sysUserId"
+        :columns="columns"
+        :dataSource="listDataSource"
+        :pagination="ipagination"
+        :loading="listLoading"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        @change="handleTableChange"
+      >
+        <span slot="action" slot-scope="text, record">
+          <a @click="handleEdit(record)">编辑</a>
+
+          <a-divider type="vertical" />
+
+          <a-dropdown>
+            <a class="ant-dropdown-link">
+              更多
+              <a-icon type="down" />
+            </a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a href="javascript:;" @click="handleDetail(record)">详情</a>
+              </a-menu-item>
+
+              <a-menu-item>
+                <a-popconfirm title="确定要删除此用户吗?" @confirm="() => handleDelete(record.sysUserId)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
+        </span>
+      </a-table>
     </a-col>
     <depart-modal ref="departModal" @ok="loadTree"></depart-modal>
   </a-row>
@@ -140,8 +131,47 @@
 <script>
 import DepartModal from './modules/DepartModal'
 import pick from 'lodash.pick'
-import { queryDepartTreeList, searchByKeywords, deleteByDepartId, deleteBatch, editByDeptId } from '@/api/dept'
+import { queryDepartTreeList, childrenDept, searchByKeywords, deleteByDepartId, deleteBatch, editByDeptId } from '@/api/dept'
 
+const columns = [
+  {
+    title: '部门名称',
+    align: 'center',
+    dataIndex: 'departName'
+  },
+  {
+    title: '负责人',
+    align: 'center',
+    dataIndex: 'managerName'
+  },
+  {
+    title: '办公电话',
+    align: 'center',
+    dataIndex: 'telephone'
+  },
+  {
+    title: '机构类型',
+    align: 'center',
+    dataIndex: 'orgType'
+  },
+  {
+    title: '地址',
+    align: 'center',
+    dataIndex: 'address'
+  },
+  {
+    title: '状态',
+    align: 'center',
+    dataIndex: 'state'
+  },
+  {
+    title: '操作',
+    dataIndex: 'action',
+    scopedSlots: { customRender: 'action' },
+    align: 'center',
+    width: 170
+  }
+]
 export default {
   name: 'DepartList_view',
   components: {
@@ -150,9 +180,24 @@ export default {
   data() {
     return {
       detailTree: [],
+      columns,
       treeData: [],
+      listDataSource: [],
+      selectionRows: [],
+      ipagination: {
+        current: 1,
+        pageSize: 10,
+        pageSizeOptions: ['10', '20', '30'],
+        showTotal: (total, range) => {
+          return range[0] + '-' + range[1] + ' 共 ' + total + ' 条'
+        },
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: 0
+      },
       iExpandedKeys: [],
       loading: false,
+      listLoading: false,
       autoExpandParent: true,
       currFlowId: '',
       currFlowName: '',
@@ -171,6 +216,7 @@ export default {
       allTreeKeys: [],
       checkStrictly: true,
       form: this.$form.createForm(this),
+      selectedRowKeys: [],
       labelCol: {
         xs: { span: 24 },
         sm: { span: 5 }
@@ -206,8 +252,9 @@ export default {
       try {
         let { code, data, msg } = await queryDepartTreeList()
         if (code === 200) {
-          for (let i = 0; i < data.length; i++) {
-            let temp = data[i]
+            let handleTreeData = this.handleDeptTreeData(data)
+          for (let i = 0; i < handleTreeData.length; i++) {
+            let temp = handleTreeData[i]
             that.detailTree.push(temp)
             that.treeData.push(temp)
             that.setThisExpandedKeys(temp)
@@ -221,6 +268,18 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    handleDeptTreeData (tree) {
+      for (let node of tree) {
+        node.key = node.id
+        node.value = node.id
+        node.scopedSlots = {
+          icon: 'icon',
+          title: 'title'
+        }
+        if (node.children) node.children = this.handleDeptTreeData(node.children)
+      }
+      return tree
     },
     setThisExpandedKeys(node) {
       if (node.children && node.children.length > 0) {
@@ -266,17 +325,41 @@ export default {
     onSelect(selectedKeys, e) {
       this.hiding = false
       let record = e.node.dataRef
-      this.currSelected = Object.assign({}, record)
-      this.model = this.currSelected
       this.selectedKeys = [record.key]
-      this.model.parentId = record.parentId
-      this.setValuesToForm(record)
+      this.currSelected = Object.assign({}, record)
+      // console.log(this.currSelected)
+      // this.model = this.currSelected
+      // this.model.parentId = record.parentId
+      this.setValuesToList(record.id)
     },
-    // 触发onSelect事件时,为部门树右侧的form表单赋值
-    setValuesToForm(record) {
-      this.form.setFieldsValue(
-        pick(record, 'departName', 'orgType', 'uniqueCoding', 'sort', 'telephone', 'address', 'remark')
-      )
+    // 触发onSelect事件时,查询左侧list
+    setValuesToList(id) {
+      console.log(id)
+      let that = this
+      let obj = {
+        page: {
+          pageNo: that.ipagination.current,
+          pageSize: that.ipagination.pageSize
+        },
+        params: {
+          parentId: id
+        }
+      }
+      this.listLoading = true
+      childrenDept(obj).then(res => {
+        if (res.code === 200) {
+          console.log('调用成功!')
+          that.dataSource = res.data
+          that.ipagination.total = res.page.total
+        }else{
+           that.$message.error(res.msg || '数据获取失败,请联系系统管理员')
+        }
+      })
+      this.loading = false
+      // this.childrenDept(id)
+      // this.form.setFieldsValue(
+      //   pick(record, 'title', 'orgType', 'uniqueCoding', 'sort', 'telephone', 'address', 'remark')
+      // )
     },
     // 返回上一页
     backFlowList() {
@@ -291,6 +374,21 @@ export default {
     // 右键点击下拉关闭下拉框
     closeDrop() {
       this.dropTrigger = ''
+    },
+    // 全选单选后的回调
+    onSelectChange(selectedRowKeys, selectionRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectionRows = selectionRows
+    },
+    // 初始化 清空选中数据
+    onClearListSelected() {
+      this.selectedRowKeys = []
+      this.selectionRows = []
+    },
+    //分页、排序、筛选变化时触发
+    handleTableChange(pagination, filters, sorter) {
+      this.ipagination = pagination
+      this.loadData()
     },
     // 保存并提交
     submitCurrForm() {

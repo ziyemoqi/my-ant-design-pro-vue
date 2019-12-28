@@ -11,13 +11,16 @@
           />
           <template>
             <a-tree
-              showLine
-              :selectedKeys="selectedKeys"
-              :checkStrictly="true"
-              @select="onSelect"
-              :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
-              :treeData="departTree"
-            />
+                multiple
+                @select="onSelect"
+                @check="onCheck"
+                :selectedKeys="selectedKeys"
+                :checkedKeys="checkedKeys"
+                :treeData="departTree"
+                :checkStrictly="true"
+                :expandedKeys="iExpandedKeys"
+                @expand="onExpand"
+              />
           </template>
         </div>
       </a-card>
@@ -26,9 +29,6 @@
     <a-col :md="16" :sm="24">
       <a-card :bordered="false">
         <a-tabs defaultActiveKey="2">
-          <a-tab-pane tab="基本信息" key="1" forceRender>
-            <Dept-Base-Info ref="DeptBaseInfo"></Dept-Base-Info>
-          </a-tab-pane>
           <a-tab-pane tab="用户信息" key="2">
             <User-Base-Info ref="UserBaseInfo"></User-Base-Info>
           </a-tab-pane>
@@ -38,14 +38,12 @@
   </a-row>
 </template>
 <script>
-import DeptBaseInfo from './modules/DeptBaseInfo'
 import UserBaseInfo from './modules/UserBaseInfo'
 import { queryDepartTreeList, searchByKeywords } from '@/api/dept'
 
 export default {
   name: 'UserList_view',
   components: {
-    DeptBaseInfo,
     UserBaseInfo
   },
   data() {
@@ -95,6 +93,7 @@ export default {
       that.departTree = []
       queryDepartTreeList().then(res => {
         if (res.code === 200) {
+          let handleTreeData = this.handleDeptTreeData(res.data)
           for (let i = 0; i < res.data.length; i++) {
             let temp = res.data[i]
             that.treeData.push(temp)
@@ -106,6 +105,18 @@ export default {
           this.$message.error( res.msg || '查询失败!')
         }
       })
+    },
+    handleDeptTreeData (tree) {
+      for (let node of tree) {
+        node.key = node.id
+        node.value = node.id
+        node.scopedSlots = {
+          icon: 'icon',
+          title: 'title'
+        }
+        if (node.children) node.children = this.handleDeptTreeData(node.children)
+      }
+      return tree
     },
     // 部门搜索
     onSearch(value) {
@@ -130,12 +141,9 @@ export default {
     },
     // 选择tree节点
     onSelect(selectedKeys, e) {
-      if (this.selectedKeys[0] !== selectedKeys[0]) {
-        this.selectedKeys = [selectedKeys[0]]
-      }
       let record = e.node.dataRef
+      this.selectedKeys = [record.key]
       this.checkedKeys.push(record.id)
-      this.$refs.DeptBaseInfo.open(record)
       this.$refs.UserBaseInfo.onClearSelected()
       this.$refs.UserBaseInfo.open(record)
     },
@@ -164,7 +172,6 @@ export default {
       this.checkedKeys = []
       this.currentDeptId = record.id
       this.checkedKeys.push(record.id)
-      this.$refs.DeptBaseInfo.open(record)
       this.$refs.UserBaseInfo.open(record)
       this.hiding = false
     }

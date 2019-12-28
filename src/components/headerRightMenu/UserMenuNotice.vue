@@ -152,10 +152,11 @@ export default {
       this.$message.success('showAnnouncement接口调用成功！')
     },
     toMyAnnouncement () {
-      this.$router.push({
-        path: '/isps/userAnnouncement',
-        name: 'isps-userAnnouncement'
-      })
+      // this.$router.push({
+      //   path: '/isps/userAnnouncement',
+      //   name: 'isps-userAnnouncement'
+      // })
+      this.$message.warning("功能开发中，敬请期待！")
     },
     modalFormOk () {
     },

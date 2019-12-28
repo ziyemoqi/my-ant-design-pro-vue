@@ -3,6 +3,8 @@ import { get,post,deleteAction,put} from '@/api/manage'
 // =========  部门管理API  =========
 // 加载部门树
 const queryDepartTreeList = (params)=>get("/sysDept/queryTreeList",params)
+// 查询子级部门
+const childrenDept = (params)=>get("/sysDept/childrenDept",params)
 // 搜索
 const searchByKeywords = (params)=>get("/sysDept/searchBy",params)
 // 根据主键查询详情
@@ -20,7 +22,8 @@ const queryParentName   = (params)=>get("/sys/sysDepart/queryParentName",params)
 
 
 export {
-  queryDepartTreeList,
+    queryDepartTreeList,
+    childrenDept,
     queryIdTree,
     queryParentName,
     searchByKeywords,

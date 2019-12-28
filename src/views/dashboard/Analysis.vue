@@ -247,7 +247,7 @@ export default {
     // this.exportExcel("前端传递的导出文件名称")
   },
   destroyed: function () { // 离开页面生命周期函数
-    this.websocketclose();
+    // this.websocketclose();
   },
   methods: {
     // timer () {

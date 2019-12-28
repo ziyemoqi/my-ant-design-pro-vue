@@ -91,8 +91,9 @@ export default {
       })
     },
     updatePassword () {
-      const username = this.userInfo().username
-      this.$refs.userPassword.show(username)
+      this.$message.warning("功能开发中，敬请期待！")
+      // const username = this.userInfo().username
+      // this.$refs.userPassword.show(username)
     }
   }
 }

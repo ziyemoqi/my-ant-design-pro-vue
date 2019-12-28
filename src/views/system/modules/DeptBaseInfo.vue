@@ -4,7 +4,7 @@
       <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="机构名称">
         <a-input style="border:0px;" placeholder v-decorator="['departName', {}]" />
       </a-form-item>
-      <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
+      <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门" >
         <a-tree-select
           disabled
           style="width:100%;border: 0px;border: none;outline:none;"
