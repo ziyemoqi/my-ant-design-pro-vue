@@ -17,13 +17,13 @@ const addDept = (params)=>post("/sysDept/add",params)
 const deleteByDepartId  = (params)=>deleteAction("/sysDept/delete",params)
 // 批量删除
 const deleteBatch  = (params)=>deleteAction("/sysDept/deleteBatch",params)
-// 
+//
 const queryParentName   = (params)=>get("/sys/sysDepart/queryParentName",params)
 
 
 export {
-    queryDepartTreeList,
-    childrenDept,
+  queryDepartTreeList,
+  childrenDept,
     queryIdTree,
     queryParentName,
     searchByKeywords,
