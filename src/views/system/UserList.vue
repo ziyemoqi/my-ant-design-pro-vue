@@ -4,11 +4,6 @@
     <a-col :md="8" :sm="24">
       <a-card :bordered="false">
         <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
-          <a-input-search
-            @search="onSearch"
-            style="width:100%;margin-top: 10px"
-            placeholder="请输入部门名称"
-          />
           <template>
             <a-tree
                 multiple
@@ -39,7 +34,7 @@
 </template>
 <script>
 import UserBaseInfo from './modules/UserBaseInfo'
-import { queryDepartTreeList, searchByKeywords } from '@/api/dept'
+import { departTree} from '@/api/dept'
 
 export default {
   name: 'UserList_view',
@@ -91,9 +86,8 @@ export default {
       let that = this
       that.treeData = []
       that.departTree = []
-      queryDepartTreeList().then(res => {
+      departTree().then(res => {
         if (res.code === 200) {
-          let handleTreeData = this.handleDeptTreeData(res.data)
           for (let i = 0; i < res.data.length; i++) {
             let temp = res.data[i]
             that.treeData.push(temp)
@@ -105,39 +99,6 @@ export default {
           this.$message.error( res.msg || '查询失败!')
         }
       })
-    },
-    handleDeptTreeData (tree) {
-      for (let node of tree) {
-        node.key = node.id
-        node.value = node.id
-        node.scopedSlots = {
-          icon: 'icon',
-          title: 'title'
-        }
-        if (node.children) node.children = this.handleDeptTreeData(node.children)
-      }
-      return tree
-    },
-    // 部门搜索
-    onSearch(value) {
-      let that = this
-      if (value) {
-        searchByKeywords({ keyWord: value }).then(res => {
-          if (res.code === 200) {
-            that.departTree = []
-            if (res.data) {
-              for (let i = 0; i < res.data.length; i++) {
-                let temp = res.data[i]
-                that.departTree.push(temp)
-              }
-            }
-          } else {
-            that.$message.warning(res.msg || '数据加载错误')
-          }
-        })
-      } else {
-        that.loadTree()
-      }
     },
     // 选择tree节点
     onSelect(selectedKeys, e) {

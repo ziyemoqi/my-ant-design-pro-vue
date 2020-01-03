@@ -120,7 +120,6 @@ const columns = [
 export default {
   name: 'UserBaseInfo',
   components: {
-    //   SelectUserModal,
     UserModal
   },
 

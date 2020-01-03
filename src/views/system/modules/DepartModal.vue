@@ -15,34 +15,24 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="机构名称"
+          label="部门名称"
           :hidden="false"
           hasFeedback
         >
           <a-input
             id="departName"
-            placeholder="请输入机构/部门名称"
+            placeholder="请输入部门名称"
             v-decorator="['departName', validatorRules.departName ]"
           />
         </a-form-item>
-        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门" hasFeedback>
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门" hasFeedback v-if="dictDisabled">
           <a-tree-select
             style="width:100%"
             :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
             :treeData="departTree"
             v-model="model.parentId"
-            placeholder="请选择上级部门"
-            :disabled="condition"
+            :disabled="true"
           ></a-tree-select>
-        </a-form-item>
-        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="机构类型">
-          <template>
-            <a-radio-group v-decorator="['orgType',{'initialValue':'2'}]" placeholder="请选择机构类型">
-              <a-radio value="1">公司</a-radio>
-              <a-radio value="2">部门</a-radio>
-              <a-radio value="3">岗位</a-radio>
-            </a-radio-group>
-          </template>
         </a-form-item>
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="办公电话">
           <a-input placeholder="请输入办公电话" v-decorator="['telephone',validatorRules.mobile]" />
@@ -65,7 +55,7 @@
 </template>
 
 <script>
-import { queryIdTree, addDept } from '@/api/dept'
+import {departTree,addDept,editByDeptId} from '@/api/dept'
 import pick from 'lodash.pick'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 export default {
@@ -74,16 +64,14 @@ export default {
   data() {
     return {
       departTree: [],
-      orgTypeData: [],
-      phoneWarning: '',
       departName: '',
       title: '操作',
+      addFlag: false,
+      sysDeptId: '',
       visible: false,
       condition: true,
       disableSubmit: false,
       model: {},
-      menuhidden: false,
-      menuusing: true,
       labelCol: {
         xs: { span: 24 },
         sm: { span: 5 }
@@ -100,9 +88,6 @@ export default {
         orgCode: { rules: [{ required: true, message: '请输入机构编码!' }] },
         mobile: { rules: [{ validator: this.validateMobile }] }
       },
-      url: {
-        add: '/sys/sysDepart/add'
-      },
       dictDisabled: true
     }
   },
@@ -110,22 +95,31 @@ export default {
   methods: {
     loadTreeData() {
       var that = this
-      queryIdTree().then(res => {
+      departTree().then(res => {
         if (res.code === 200) {
           that.departTree = []
-          for (let i = 0; i < res.data.length; i++) {
-            let temp = res.data[i]
+          let handleTreeData = this.handleDeptTreeData(res.data)
+          for (let i = 0; i < handleTreeData.length; i++) {
+            let temp = handleTreeData[i]
             that.departTree.push(temp)
           }
         }
       })
     },
+    handleDeptTreeData (tree) {
+      for (let node of tree) {
+        node.key = node.title
+        node.value = node.id
+        if (node.children) node.children = this.handleDeptTreeData(node.children)
+      }
+      return tree
+    },
     // 添加前调用
     add(depart) {
       if (depart) {
-        this.dictDisabled = false
-      } else {
         this.dictDisabled = true
+      } else {
+        this.dictDisabled = false
       }
       this.edit(depart)
     },
@@ -135,20 +129,19 @@ export default {
       this.model = Object.assign({}, {})
       this.visible = true
       this.loadTreeData()
-      this.model.parentId = record != null ? record.toString() : null
+      this.model.parentId = record != null ? record.parentId.toString() : null
+      this.sysDeptId = record != null ? record.sysDeptId.toString() : null
       this.$nextTick(() => {
         this.form.setFieldsValue(
           pick(
-            this.model,
-            'orgType',
+            record,
             'departName',
             'sort',
             'orgCode',
             'telephone',
             'fax',
             'address',
-            'remark',
-            'status'
+            'remark'
           )
         )
       })
@@ -166,20 +159,40 @@ export default {
         if (!err) {
           that.confirmLoading = true
           let formData = Object.assign(this.model, values)
-          addDept(formData)
-            .then(res => {
-              if (res.code === 200) {
-                that.$message.success('操作成功!')
-                that.loadTreeData()
-                that.$emit('ok')
-              } else {
-                that.$message.warning(res.msg || '操作失败!')
-              }
-            })
-            .finally(() => {
+          if(that.addFlag){
+            addDept(formData)
+              .then(res => {
+                if (res.code === 200) {
+                  that.$message.success('操作成功!')
+                  that.loadTreeData()
+                  that.$emit('ok')
+                } else {
+                  that.$message.warning(res.msg || '操作失败!')
+                }
+              }).finally(() => {
               that.confirmLoading = false
               that.close()
             })
+          }else{
+            let sysDeptId = that.sysDeptId
+            let editData = {
+              ...formData,
+              sysDeptId
+            }
+            editByDeptId(editData)
+              .then(res => {
+                if (res.code === 200) {
+                  that.$message.success('操作成功!')
+                  that.loadTreeData()
+                  that.$emit('ok')
+                } else {
+                  that.$message.warning(res.msg || '操作失败!')
+                }
+              }).finally(() => {
+              that.confirmLoading = false
+              that.close()
+            })
+          }
         }
       })
     },
