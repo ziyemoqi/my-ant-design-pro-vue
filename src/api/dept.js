@@ -5,8 +5,6 @@ import { get,post,deleteAction,put} from '@/api/manage'
 const departTree = (params)=>get("/sysDept/departTree",params)
 // 查询子级部门
 const childrenDept = (params)=>get("/sysDept/childrenDept",params)
-// 根据主键查询详情
-// const queryIdTree = (params)=>get("/sysDept/queryIdTree",params)
 // 编辑
 const editByDeptId = (params)=>put("/sysDept/edit",params)
 // 部门添加

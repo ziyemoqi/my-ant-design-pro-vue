@@ -30,7 +30,7 @@
           <!-- 树-->
           <a-col :md="10" :sm="24">
             <template>
-              <a-dropdown :trigger="[this.dropTrigger]" @visibleChange="dropStatus">
+              <a-dropdown :trigger="[this.dropTrigger]">
                 <span style="user-select: none">
                   <a-tree
                     checkable
@@ -103,6 +103,17 @@
                       >重置</a-button>
                     </a-col>
                   </span>
+                  <a-dropdown v-if="selectedRowKeys.length > 0">
+                    <a-menu slot="overlay">
+                      <a-menu-item key="1" @click="listBatchDel">
+                        <a-icon type="delete" />删除
+                      </a-menu-item>
+                    </a-menu>
+                    <a-button style="margin-left: 8px">
+                      批量操作
+                      <a-icon type="down" />
+                    </a-button>
+                  </a-dropdown>
                 </a-row>
               </a-form>
             </div>
@@ -124,10 +135,16 @@
                 :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
                 @change="handleTableChange"
               >
+                <span slot="state" slot-scope="text">
+                  <a-badge :status="text | stateTypeFilter" :text="text | stateFilter" />
+                </span>
                 <span slot="action" slot-scope="text, record">
                   <a @click="handleEdit(record)">编辑</a>
-
                   <a-divider type="vertical" />
+                  <a v-if="record.state=== 0 " @click="handleState(record.sysDeptId,'1')">停用</a>
+                  <a-divider v-if="record.state === 0 " type="vertical" />
+                  <a v-if="record.state=== 1  " @click="handleState(record.sysDeptId,'0')">启用</a>
+                  <a-divider v-if="record.state=== 1 " type="vertical" />
 
                   <a-dropdown>
                     <a class="ant-dropdown-link">
@@ -141,8 +158,8 @@
 
                       <a-menu-item>
                         <a-popconfirm
-                          title="确定要删除此用户吗?"
-                          @confirm="() => handleDelete(record.sysUserId)"
+                          title="确定要删除此部门吗?"
+                          @confirm="() => handleDelete(record.sysDeptId)"
                         >
                           <a>删除</a>
                         </a-popconfirm>
@@ -162,17 +179,19 @@
 <script>
 import DepartModal from './modules/DepartModal'
 import pick from 'lodash.pick'
-import { departTree, childrenDept, deleteByDepartId, deleteBatch } from '@/api/dept'
+import { departTree, childrenDept, deleteByDepartId, deleteBatch, editByDeptId } from '@/api/dept'
 const columns = [
   {
     title: '部门名称',
     align: 'center',
-    dataIndex: 'departName'
+    dataIndex: 'departName',
+    width: 130
   },
   {
     title: '办公电话',
     align: 'center',
-    dataIndex: 'telephone'
+    dataIndex: 'telephone',
+    width: 140
   },
   {
     title: '办公地址',
@@ -182,21 +201,36 @@ const columns = [
   {
     title: '状态',
     align: 'center',
-    dataIndex: 'state'
+    dataIndex: 'state',
+    scopedSlots: { customRender: 'state' },
+    width: 100
   },
   {
     title: '序号',
     align: 'center',
-    dataIndex: 'sort'
+    dataIndex: 'sort',
+    width: 90
   },
   {
     title: '操作',
     dataIndex: 'action',
     scopedSlots: { customRender: 'action' },
     align: 'center',
-    width: 150
+    width: 180
   }
 ]
+
+const stateMap = {
+  '0': {
+    state: 'success',
+    text: '启用'
+  },
+  '1': {
+    state: 'warning',
+    text: '停用'
+  }
+}
+
 export default {
   name: 'DepartList_view',
   components: {
@@ -204,11 +238,11 @@ export default {
   },
   data() {
     return {
-      detailTree: [],
       columns,
       treeData: [],
       listDataSource: [],
       selectionRows: [],
+      form: this.$form.createForm(this),
       screenForm: this.$form.createForm(this),
       ipagination: {
         current: 1,
@@ -225,14 +259,9 @@ export default {
       loading: false,
       listLoading: false,
       autoExpandParent: true,
-      currFlowId: '',
-      currFlowName: '',
-      disable: true,
-      visible: false,
       hiding: true,
       model: {},
       dropTrigger: '',
-      depart: {},
       disableSubmit: false,
       checkedKeys: [],
       selectedKeys: [],
@@ -240,7 +269,6 @@ export default {
       currSelected: {},
       allTreeKeys: [],
       checkStrictly: true,
-      form: this.$form.createForm(this),
       selectedRowKeys: [],
       labelCol: {
         xs: { span: 24 },
@@ -249,25 +277,25 @@ export default {
       wrapperCol: {
         xs: { span: 24 },
         sm: { span: 16 }
-      },
-      graphDatasource: {
-        nodes: [],
-        edges: []
       }
     }
   },
-  created() {
-    this.currFlowId = this.$route.params.id
-    this.currFlowName = this.$route.params.name
+  filters: {
+    stateFilter(type) {
+      return stateMap[type].text
+    },
+    stateTypeFilter(type) {
+      return stateMap[type].state
+    }
   },
   mounted() {
     this.loadTree()
   },
   methods: {
+    // 加载部门树
     async loadTree() {
       var that = this
       that.loading = true
-      that.detailTree = []
       that.treeData = []
       try {
         let { code, data, msg } = await departTree()
@@ -275,7 +303,6 @@ export default {
           let handleTreeData = this.handleDeptTreeData(data)
           for (let i = 0; i < handleTreeData.length; i++) {
             let temp = handleTreeData[i]
-            that.detailTree.push(temp)
             that.treeData.push(temp)
             that.setThisExpandedKeys(temp)
             that.getAllKeys(temp)
@@ -289,6 +316,7 @@ export default {
         this.loading = false
       }
     },
+    // 处理部门树数据 ====== loadTree 子方法 ======
     handleDeptTreeData(tree) {
       for (let node of tree) {
         node.key = node.id
@@ -342,18 +370,16 @@ export default {
       let record = e.node.dataRef
       this.selectedKeys = [record.key]
       this.currSelected = Object.assign({}, record)
-      this.setValuesToList(record.id)
-    },
-    // 触发onSelect事件时,查询左侧list
-    setValuesToList(id) {
-      let that = this
       let obj = {
-        page: {
-          pageNo: that.ipagination.current,
-          pageSize: that.ipagination.pageSize
-        },
-        parentId: id
+        current: this.ipagination.current,
+        size: this.ipagination.pageSize,
+        parentId: record.id
       }
+      this.queryChildrenDept(obj)
+    },
+    //  触发onSelect事件时,查询右侧list
+    queryChildrenDept(obj) {
+      let that = this
       this.listLoading = true
       try {
         childrenDept(obj).then(res => {
@@ -374,12 +400,6 @@ export default {
     backFlowList() {
       this.$router.back(-1)
     },
-    // 点击下拉框改变事件
-    dropStatus(visible) {
-      if (visible == false) {
-        this.dropTrigger = ''
-      }
-    },
     // 全选单选后的回调
     onSelectChange(selectedRowKeys, selectionRows) {
       this.selectedRowKeys = selectedRowKeys
@@ -393,7 +413,11 @@ export default {
     //分页、排序、筛选变化时触发
     handleTableChange(pagination, filters, sorter) {
       this.ipagination = pagination
-      this.loadData()
+      this.queryChildrenDept({
+        parentId: this.currSelected.key,
+        current: pagination.current,
+        size: this.ipagination.pageSize
+      })
     },
     // 批量删除
     batchDel: function() {
@@ -428,7 +452,6 @@ export default {
     onSearch(value) {
       let that = this
       that.loading = true
-      that.detailTree = []
       that.treeData = []
       if (value) {
         let obj = {
@@ -443,7 +466,6 @@ export default {
               let handleTreeData = this.handleDeptTreeData(res.data)
               for (let i = 0; i < handleTreeData.length; i++) {
                 let temp = handleTreeData[i]
-                that.detailTree.push(temp)
                 that.treeData.push(temp)
                 that.setThisExpandedKeys(temp)
                 that.getAllKeys(temp)
@@ -473,7 +495,7 @@ export default {
       this.form.resetFields()
       this.selectedKeys = []
     },
-    // 新增
+    // 部门新增
     handleAdd(num) {
       this.$refs.departModal.title = '新增'
       this.$refs.departModal.addFlag = true
@@ -488,48 +510,40 @@ export default {
         this.$refs.departModal.add(this.selectedKeys)
       }
     },
+    // 部门新增后的回调
     add_loadTree() {
       this.loadTree()
-      this.setValuesToList(this.currSelected.key)
+      let obj = {
+        parentId: this.currSelected.key,
+        current: 1,
+        size: this.ipagination.pageSize
+      }
+      this.queryChildrenDept(obj)
     },
     // 删除单条信息
-    handleDelete() {
-      deleteByDepartId({ sysDeptId: this.rightClickSelectedKey }).then(resp => {
+    handleDelete(sysDeptId) {
+      let that = this
+      deleteByDepartId({ sysDeptId: sysDeptId }).then(resp => {
         if (resp.code === 200) {
-          this.$message.success('删除成功!')
-          this.loadTree()
+          that.$message.success('删除成功!')
+          that.loadTree()
+          that.queryChildrenDept({ parentId: that.currSelected.key })
         } else {
-          this.$message.error(resp.msg || '删除失败!')
+          that.$message.error(resp.msg || '删除失败!')
         }
       })
     },
     //list 条件查询
     handleScreenSubmit(e) {
-      let that = this
       e.preventDefault()
-      this.listLoading = true
       let { ...others } = this.screenForm.getFieldsValue()
-      try {
-        childrenDept({
-          ...others,
-          page: {
-            pageNo: 1,
-            pageSize: that.ipagination.pageSize
-          },
-          parentId: this.selectedKeys
-        }).then(res => {
-          if (res.code === 200) {
-            that.listDataSource = res.data
-            that.ipagination.total = res.page.total
-          } else {
-            that.$message.error(res.msg || '数据获取失败,请联系系统管理员')
-          }
-        })
-      } catch (e) {
-        console.error(e)
-      } finally {
-        this.listLoading = false
+      let obj = {
+        ...others,
+        current: 1,
+        size: this.ipagination.pageSize,
+        parentId: this.currSelected.key
       }
+      this.queryChildrenDept(obj)
     },
     // 重置
     emptyCurrForm() {
@@ -538,7 +552,12 @@ export default {
     // list重置
     handleReset() {
       this.screenForm.resetFields()
-      this.loadData()
+      let obj = {
+        current: 1,
+        size: this.ipagination.pageSize,
+        parentId: this.selectedKeys[0]
+      }
+      this.queryChildrenDept(obj)
     },
     // list 编辑
     handleEdit: function(record) {
@@ -546,6 +565,77 @@ export default {
       this.$refs.departModal.addFlag = false
       this.$refs.departModal.disableSubmit = false
       this.$refs.departModal.edit(record)
+    },
+    // list 详情
+    handleDetail(record) {
+      this.$refs.departModal.title = '详情'
+      this.$refs.departModal.addFlag = false
+      this.$refs.departModal.disableSubmit = true
+      this.$refs.departModal.edit(record)
+    },
+    // 启用停用
+    handleState(sysDeptId, state) {
+      let msg = '启用'
+      if (state === '1') {
+        msg = '停用'
+      }
+      let _this = this
+      _this.$confirm({
+        title: '提示',
+        content: '您确定要' + msg + '此部门吗?',
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        async onOk() {
+          let obj = {
+            sysDeptId,
+            state
+          }
+          editByDeptId(obj).then(resp => {
+            if (resp.code === 200) {
+              _this.$message.success('操作成功!')
+              _this.queryChildrenDept({ parentId: _this.currSelected.key })
+            } else {
+              _this.$message.error(resp.msg || '操作失败!')
+            }
+          })
+        },
+        onCancel() {}
+      })
+    },
+    // 多选删除
+    listBatchDel: function() {
+      let that = this
+      if (this.selectedRowKeys.length <= 0) {
+        this.$message.warning('请选择一条记录！')
+        return
+      } else {
+        var ids = ''
+        for (var a = 0; a < this.selectedRowKeys.length; a++) {
+          ids += this.selectedRowKeys[a] + ','
+        }
+        this.$confirm({
+          title: '确认删除',
+          content: '是否删除选中数据?',
+          onOk: function() {
+            deleteBatch({ ids: ids }).then(res => {
+              if (res.code === 200) {
+                that.$message.success('删除成功!')
+                that.loadTree()
+                that.queryChildrenDept({
+                  parentId: that.currSelected.key,
+                  current: 1,
+                  size: that.ipagination.pageSize
+                })
+                that.selectedRowKeys = []
+                that.selectionRows = []
+              } else {
+                that.$message.warning(msg || '删除失败!')
+              }
+            })
+          }
+        })
+      }
     },
     // <!---- for:切换父子勾选模式 =======------>
     expandAll() {

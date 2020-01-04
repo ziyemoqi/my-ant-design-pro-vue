@@ -34,7 +34,7 @@ module.exports = {
     port: 3000,
     proxy: {
       '/lionherding': {
-        target: 'http://localhost:8080', // 接口地址
+        target: 'http://192.168.0.243:8081', // 接口地址
         ws: false,
         changeOrigin: true
       }

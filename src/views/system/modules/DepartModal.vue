@@ -121,7 +121,10 @@ export default {
       } else {
         this.dictDisabled = false
       }
-      this.edit(depart)
+      this.form.resetFields()
+      this.model.parentId = depart
+      this.visible = true
+      this.loadTreeData()
     },
     // 修改前调用
     edit(record) {
