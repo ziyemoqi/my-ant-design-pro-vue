@@ -269,15 +269,7 @@ export default {
       currSelected: {},
       allTreeKeys: [],
       checkStrictly: true,
-      selectedRowKeys: [],
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 5 }
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 }
-      }
+      selectedRowKeys: []
     }
   },
   filters: {
