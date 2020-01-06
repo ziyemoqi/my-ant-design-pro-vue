@@ -1,16 +1,14 @@
 <template>
   <a-row :gutter="10">
     <!--组织机构-->
-    <a-col :md="8" :sm="24">
+    <a-col :md="6" :sm="24">
       <a-card :bordered="false">
         <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
           <template>
             <a-tree
-                multiple
+              showLine
                 @select="onSelect"
-                @check="onCheck"
                 :selectedKeys="selectedKeys"
-                :checkedKeys="checkedKeys"
                 :treeData="departTree"
                 :checkStrictly="true"
                 :expandedKeys="iExpandedKeys"
@@ -21,7 +19,7 @@
       </a-card>
     </a-col>
     <!--右侧部门和用户TAB-->
-    <a-col :md="16" :sm="24">
+    <a-col :md="18" :sm="24">
       <a-card :bordered="false">
         <a-tabs defaultActiveKey="2">
           <a-tab-pane tab="用户信息" key="2">
@@ -47,32 +45,13 @@ export default {
       iExpandedKeys: [],
       loading: false,
       disable: true,
-      treeData: [],
       visible: false,
       departTree: [],
-      rightClickSelectedKey: '',
       hiding: true,
       model: {},
-      dropTrigger: '',
-      depart: {},
-      disableSubmit: false,
-      checkedKeys: [],
       selectedKeys: [],
-      autoIncr: 1,
-      currSelected: {},
-      form: this.$form.createForm(this),
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 5 }
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 }
-      },
-      graphDatasource: {
-        nodes: [],
-        edges: []
-      }
+      allTreeKeys: [],
+      form: this.$form.createForm(this)
     }
   },
 
@@ -84,15 +63,15 @@ export default {
     loadData() {
       this.loading = true
       let that = this
-      that.treeData = []
       that.departTree = []
       departTree().then(res => {
         if (res.code === 200) {
-          for (let i = 0; i < res.data.length; i++) {
-            let temp = res.data[i]
-            that.treeData.push(temp)
+          let handleTreeData = this.handleDeptTreeData(res.data)
+          for (let i = 0; i < handleTreeData.length; i++) {
+            let temp = handleTreeData[i]
             that.departTree.push(temp)
             that.setThisExpandedKeys(temp)
+            that.getAllKeys(temp)
           }
           this.loading = false
         }else {
@@ -100,14 +79,27 @@ export default {
         }
       })
     },
+    // 处理部门树数据 ====== loadData 子方法 ======
+    handleDeptTreeData(tree) {
+      for (let node of tree) {
+        node.key = node.id
+        node.value = node.id
+        node.scopedSlots = {
+          icon: 'icon',
+          title: 'title'
+        }
+        if (node.children) node.children = this.handleDeptTreeData(node.children)
+      }
+      return tree
+    },
     // 选择tree节点
     onSelect(selectedKeys, e) {
       let record = e.node.dataRef
       this.selectedKeys = [record.key]
-      this.checkedKeys.push(record.id)
       this.$refs.UserBaseInfo.onClearSelected()
       this.$refs.UserBaseInfo.open(record)
     },
+    // 展开所有节点
     setThisExpandedKeys(node) {
       if (node.children && node.children.length > 0) {
         this.iExpandedKeys.push(node.key)
@@ -116,26 +108,19 @@ export default {
         }
       }
     },
-    // =====================
-
+    getAllKeys(node) {
+      this.allTreeKeys.push(node.key)
+      if (node.children && node.children.length > 0) {
+        for (let a = 0; a < node.children.length; a++) {
+          this.getAllKeys(node.children[a])
+        }
+      }
+    },
     onExpand(expandedKeys) {
-      console.log('onExpand')
-      // console.log('onExpand', expandedKeys)
-      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-      // or, you can remove all expanded children keys.
       this.iExpandedKeys = expandedKeys
       this.autoExpandParent = false
     },
 
-    onCheck(checkedKeys, e) {
-      console.log('onCheck')
-      let record = e.node.dataRef
-      this.checkedKeys = []
-      this.currentDeptId = record.id
-      this.checkedKeys.push(record.id)
-      this.$refs.UserBaseInfo.open(record)
-      this.hiding = false
-    }
   }
 }
 </script>

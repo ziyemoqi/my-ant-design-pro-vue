@@ -6,34 +6,36 @@
       <a-form layout="inline" :form="screenForm" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="名称" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
+            <a-form-item label="角色名称" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
               <a-input placeholder="请输入名称查询" v-decorator="['roleName',{}]"></a-input>
             </a-form-item>
           </a-col>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
-              <a-button type="primary" @click="searchQuery">查询</a-button>
-              <a-button style="margin-left: 8px" @click="searchReset">重置</a-button>
+              <a-button type="primary" icon="search" @click="searchQuery">查询</a-button>
+              <a-button
+                style="margin-left: 8px"
+                type="primary"
+                icon="reload"
+                @click="searchReset"
+              >重置</a-button>
+
+              <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left:10px">新增</a-button>
+              <a-dropdown v-if="selectedRowKeys.length > 0">
+                <a-menu slot="overlay">
+                  <a-menu-item key="1" @click="batchDel">
+                    <a-icon type="delete" />删除
+                  </a-menu-item>
+                </a-menu>
+                <a-button style="margin-left: 8px">
+                  批量操作
+                  <a-icon type="down" />
+                </a-button>
+              </a-dropdown>
             </a-col>
           </span>
         </a-row>
       </a-form>
-    </div>
-
-    <!-- 操作按钮区域 -->
-    <div class="table-operator" style="margin-top: 5px">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel">
-            <a-icon type="delete" />删除
-          </a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px">
-          批量操作
-          <a-icon type="down" />
-        </a-button>
-      </a-dropdown>
     </div>
 
     <!-- table区域-begin -->
@@ -57,24 +59,6 @@
         @change="handleTableChange"
       >
         <span slot="action" slot-scope="text, record">
-          <!-- <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多
-              <a-icon type="down" />
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a >授权</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.sysRoleId)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>-->
           <a-button
             type="primary"
             icon="safety-certificate"
@@ -99,7 +83,7 @@ import UserRoleModal from './modules/UserRoleModal'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { filterObj } from '@/utils/util'
-import { queryallRolePage, deleteByRoleId, deleteBatch } from '@/api/role'
+import { roleList, deleteByRoleId, deleteBatch } from '@/api/role'
 const columns = [
   {
     title: '#',
@@ -122,6 +106,11 @@ const columns = [
     dataIndex: 'roleCode'
   },
   {
+    title: '序号',
+    dataIndex: 'sort',
+    align: 'center'
+  },
+  {
     title: '备注',
     align: 'center',
     dataIndex: 'remark'
@@ -129,14 +118,7 @@ const columns = [
   {
     title: '创建时间',
     dataIndex: 'createTime',
-    align: 'center',
-    sorter: true
-  },
-  {
-    title: '更新时间',
-    dataIndex: 'updateTime',
-    align: 'center',
-    sorter: true
+    align: 'center'
   },
   {
     title: '操作',
@@ -182,16 +164,12 @@ export default {
     async loadData(screenData) {
       let that = this
       let obj = {
-        page: {
-          pageNo: that.ipagination.current,
-          pageSize: that.ipagination.pageSize
-        },
-        params: {
+          current: that.ipagination.current,
+          size: that.ipagination.pageSize,
           ...screenData
-        }
       }
       this.loading = true
-      await queryallRolePage(obj).then(res => {
+      await roleList(obj).then(res => {
         if (res.code === 200) {
           this.dataSource = res.data
           that.ipagination.total = res.page.total
@@ -306,7 +284,7 @@ export default {
                 that.loadData()
                 that.onClearSelected()
               } else {
-                that.$message.warning( res.msg || '操作失败!')
+                that.$message.warning(res.msg || '操作失败!')
               }
             })
           }

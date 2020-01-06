@@ -4,7 +4,7 @@ import { get, post,put,deleteAction } from '@/api/manage'
 // 查询所有角色 用于添加时选择角色
 const queryallRole = (params)=>get("/sysRole/queryall",params)
 // 分页查询数据
-const queryallRolePage = (params) => post("/sysRole/queryPageAll", params)
+const roleList = (params) => get("/sysRole/roleList", params)
 // 角色添加
 const addRole = (params)=>post("/sysRole/add",params)
 // 角色修改
@@ -26,7 +26,7 @@ const saveRolePermission = (params)=>post("/sysPermission/saveRolePermission",pa
 
 export {
     queryallRole,
-    queryallRolePage,
+    roleList,
     addRole,
     editRole,
     deleteByRoleId,

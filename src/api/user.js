@@ -32,9 +32,7 @@ export function logout(logoutToken) {
  * 根据部门ID加载有效用户
  * @param {*} params 
  */
-export function userList(params){
-  return post("/sysUser/departUserList",params)
-}
+const userList = (params)=>get("/sysUser/userList",params)
 // 用户添加
 const addUser = (params)=>post("/sysUser/add",params)
 // 用户修改
@@ -63,6 +61,7 @@ const queryUserRole = (params)=>get("/sysUser/queryUserRole",params);
 
 
 export {
+  userList,
   addUser,
   editUser,
   checkIsOnly,

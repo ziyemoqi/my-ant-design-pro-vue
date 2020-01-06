@@ -4,9 +4,9 @@
       <!-- FORM搜索区域 -->
       <a-form layout="inline" :form="screenForm" @submit.prevent="handleScreenSubmit">
         <a-row :gutter="10">
-          <a-col :md="10" :sm="12">
-            <a-form-item label="用户账号" style="margin-left:8px">
-              <a-input placeholder="请输入名称查询" v-decorator="['loginName',{}]"></a-input>
+          <a-col :md="8" :sm="12">
+            <a-form-item label="用户名称" style="margin-left:8px">
+              <a-input placeholder="请输入名称查询" v-decorator="['userName',{}]"></a-input>
             </a-form-item>
           </a-col>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -18,28 +18,23 @@
                 style="margin-left: 8px"
                 @click="handleReset"
               >重置</a-button>
+              <a-button @click="handleAdd" type="primary" icon="plus">用户录入</a-button>
+              <a-dropdown v-if="selectedRowKeys.length > 0">
+                <a-menu slot="overlay">
+                  <a-menu-item key="1" @click="batchDel">
+                    <a-icon type="delete" />删除
+                  </a-menu-item>
+                </a-menu>
+                <a-button style="margin-left: 8px">
+                  批量操作
+                  <a-icon type="down" />
+                </a-button>
+              </a-dropdown>
             </a-col>
           </span>
         </a-row>
       </a-form>
     </div>
-    <!-- 操作按钮区域 -->
-    <div class="table-operator" :md="24" :sm="24" style="margin: -46px 0px 10px 2px">
-      <a-button @click="handleAdd" type="primary" icon="plus" style="margin-top: 16px">用户录入</a-button>
-      <a-button @click="handleAddUserDepart" type="primary" icon="plus">添加已有用户</a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel">
-            <a-icon type="delete" />删除
-          </a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px">
-          批量操作
-          <a-icon type="down" />
-        </a-button>
-      </a-dropdown>
-    </div>
-
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -63,6 +58,16 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange"
       >
+        <span slot="sex" slot-scope="text">
+          <a-tag color="green" v-if="text === 0 ">女</a-tag>
+          <a-tag color="blue" v-if="text === 1 ">男</a-tag>
+          <a-tag color="yellow" v-if="text === 2 ">保密</a-tag>
+          <a-tag color="red" v-if="text === 3 ">未知</a-tag>
+        </span>
+
+        <span slot="state" slot-scope="text">
+          <a-badge :status="text | stateTypeFilter" :text="text | stateFilter" />
+        </span>
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
 
@@ -96,18 +101,53 @@
 </template>
 
 <script>
-import { userList,deleteBatch,delete_ } from '@/api/user'
+import { userList, deleteBatch, delete_ } from '@/api/user'
 import UserModal from './UserModal'
 const columns = [
   {
-    title: '用户账号',
-    align: 'center',
-    dataIndex: 'loginName'
-  },
-  {
     title: '用户名称',
     align: 'center',
-    dataIndex: 'userName'
+    dataIndex: 'userName',
+    width: 130
+  },
+  {
+    title: '联系方式',
+    align: 'center',
+    dataIndex: 'phone',
+    width: 110
+  },
+  {
+    title: '住址',
+    align: 'center',
+    dataIndex: 'address',
+    width: 130
+  },
+  {
+    title: '年龄',
+    align: 'center',
+    dataIndex: 'age',
+    width: 80
+  },
+  {
+    title: '性别',
+    align: 'center',
+    dataIndex: 'sex',
+
+    scopedSlots: { customRender: 'sex' },
+    width: 80
+  },
+  {
+    title: '登录次数',
+    align: 'center',
+    dataIndex: 'loginCount',
+    width: 80
+  },
+  {
+    title: '状态',
+    align: 'center',
+    dataIndex: 'state',
+    scopedSlots: { customRender: 'state' },
+    width: 100
   },
   {
     title: '操作',
@@ -117,6 +157,18 @@ const columns = [
     width: 170
   }
 ]
+
+const stateMap = {
+  '0': {
+    state: 'success',
+    text: '正常'
+  },
+  '1': {
+    state: 'warning',
+    text: '冻结'
+  }
+}
+
 export default {
   name: 'UserBaseInfo',
   components: {
@@ -146,31 +198,35 @@ export default {
       screenForm: this.$form.createForm(this)
     }
   },
+  filters: {
+    stateFilter(type) {
+      return stateMap[type].text
+    },
+    stateTypeFilter(type) {
+      return stateMap[type].state
+    }
+  },
   mounted() {
     this.loadData()
   },
   methods: {
-    //   加载数据
+    // 加载数据
     loadData(screenData) {
       let that = this
       if (that.currentDeptId === '') return
-      let obj = {
-        page: {
-          pageNo: that.ipagination.current,
-          pageSize: that.ipagination.pageSize
-        },
-        params: {
-          ...screenData,
-          deptId: this.currentDeptId
-        }
-      }
       this.loading = true
+      let obj = {
+        current: that.ipagination.current,
+        size: that.ipagination.pageSize,
+        ...screenData,
+        deptId: this.currentDeptId
+      }
       userList(obj).then(res => {
         if (res.code === 200) {
           that.dataSource = res.data
           that.ipagination.total = res.page.total
-        }else{
-           that.$message.error(res.msg || '数据获取失败,请联系系统管理员')
+        } else {
+          that.$message.error(res.msg || '数据获取失败,请联系系统管理员')
         }
       })
       this.loading = false
@@ -217,12 +273,18 @@ export default {
       this.$refs.modalForm.disableSubmit = false
       this.$refs.modalForm.edit(record)
     },
-    // 用户增加
+    // 详情
+    handleDetail: function(record) {
+      this.$refs.modalForm.title = '详情'
+      this.$refs.modalForm.disableSubmit = true
+      this.$refs.modalForm.edit(record)
+    },
+    // 增加
     handleAdd: function() {
       if (this.currentDeptId == '') {
         this.$message.error('请选择一个部门!')
       } else {
-        this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId] //传入一个部门id
+        this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId]
         this.$refs.modalForm.add()
         this.$refs.modalForm.title = '新增'
       }
@@ -231,19 +293,10 @@ export default {
     modalFormOk() {
       this.loadData()
     },
-    // 添加已有用户
-    handleAddUserDepart() {
-      // if (this.currentDeptId == '') {
-      //   this.$message.error('请选择一个部门!')
-      // } else {
-      //   this.$refs.selectUserModal.visible = true
-      // }
-      this.$message.info('功能开发中,敬请期待！')
-    },
-    // 删除单条数据
+    // 删除
     handleDelete: function(id) {
       var that = this
-      delete_({sysUserId: id }).then(res => {
+      delete_({ sysUserId: id }).then(res => {
         if (res.code === 200) {
           that.$message.success('操作成功!')
           if (this.selectedRowKeys.length > 0) {
@@ -289,39 +342,6 @@ export default {
           }
         })
       }
-    },
-    // ===================
-
-    clearList() {
-      console.log(5)
-      this.currentDeptId = ''
-      this.dataSource = []
-    },
-    hasSelectDept() {
-      console.log(6)
-      if (this.currentDeptId == null) {
-        this.$message.error('请选择一个部门!')
-        return false
-      }
-      return true
-    },
-
-    selectOK(data) {
-      let params = {}
-      params.depId = this.currentDeptId
-      params.userIdList = []
-      for (var a = 0; a < data.length; a++) {
-        params.userIdList.push(data[a])
-      }
-      console.log(params)
-      post(this.url.edit, params).then(res => {
-        if (res.success) {
-          this.$message.success(res.message)
-          this.loadData()
-        } else {
-          this.$message.warning(res.message)
-        }
-      })
     }
   }
 }
