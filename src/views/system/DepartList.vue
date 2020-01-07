@@ -499,7 +499,8 @@ export default {
           this.$message.warning('请先选中一条记录!')
           return false
         }
-        this.$refs.departModal.add(this.selectedKeys)
+        console.log(key)
+        this.$refs.departModal.add(key)
       }
     },
     // 部门新增后的回调

@@ -25,7 +25,13 @@
             v-decorator="['departName', validatorRules.departName ]"
           />
         </a-form-item>
-        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门" hasFeedback v-if="dictDisabled">
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="上级部门"
+          hasFeedback
+          v-if="dictDisabled"
+        >
           <a-tree-select
             style="width:100%"
             :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
@@ -40,8 +46,15 @@
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="传真">
           <a-input placeholder="请输入传真" v-decorator="['fax', {}]" />
         </a-form-item>
+
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="地址">
           <a-input placeholder="请输入地址" v-decorator="['address', {}]" />
+        </a-form-item>
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="状态">
+          <a-radio-group buttonStyle="solid" v-decorator="[ 'state', {'initialValue':0}]">
+            <a-radio-button :value="0">正常</a-radio-button>
+            <a-radio-button :value="1">停用</a-radio-button>
+          </a-radio-group>
         </a-form-item>
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
           <a-input-number v-decorator="[ 'sort',{'initialValue':100}]" style="width:100%" />
@@ -55,7 +68,7 @@
 </template>
 
 <script>
-import {departTree,addDept,editByDeptId} from '@/api/dept'
+import { departTree, addDept, editByDeptId } from '@/api/dept'
 import pick from 'lodash.pick'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 export default {
@@ -106,7 +119,7 @@ export default {
         }
       })
     },
-    handleDeptTreeData (tree) {
+    handleDeptTreeData(tree) {
       for (let node of tree) {
         node.key = node.title
         node.value = node.id
@@ -136,16 +149,7 @@ export default {
       this.sysDeptId = record != null ? record.sysDeptId.toString() : null
       this.$nextTick(() => {
         this.form.setFieldsValue(
-          pick(
-            record,
-            'departName',
-            'sort',
-            'orgCode',
-            'telephone',
-            'fax',
-            'address',
-            'remark'
-          )
+          pick(record, 'departName', 'sort', 'orgCode', 'telephone', 'fax', 'address', 'state', 'remark')
         )
       })
     },
@@ -162,7 +166,7 @@ export default {
         if (!err) {
           that.confirmLoading = true
           let formData = Object.assign(this.model, values)
-          if(that.addFlag){
+          if (that.addFlag) {
             addDept(formData)
               .then(res => {
                 if (res.code === 200) {
@@ -172,11 +176,12 @@ export default {
                 } else {
                   that.$message.warning(res.msg || '操作失败!')
                 }
-              }).finally(() => {
-              that.confirmLoading = false
-              that.close()
-            })
-          }else{
+              })
+              .finally(() => {
+                that.confirmLoading = false
+                that.close()
+              })
+          } else {
             let sysDeptId = that.sysDeptId
             let editData = {
               ...formData,
@@ -191,10 +196,11 @@ export default {
                 } else {
                   that.$message.warning(res.msg || '操作失败!')
                 }
-              }).finally(() => {
-              that.confirmLoading = false
-              that.close()
-            })
+              })
+              .finally(() => {
+                that.confirmLoading = false
+                that.close()
+              })
           }
         }
       })
