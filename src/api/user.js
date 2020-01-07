@@ -54,8 +54,6 @@ export function deleteBatch(params) {
 }
 // 唯一性检测
 const checkIsOnly = (params)=>get("/sysUser/checkIsOnly",params)
-// 查询用户角色表里的所有信息
-const queryUserRoleMap = (params)=>get("/sysUser/queryUserRoleMap",params)
 // 查询用户的角色列表
 const queryUserRole = (params)=>get("/sysUser/queryUserRole",params);
 
@@ -65,7 +63,6 @@ export {
   addUser,
   editUser,
   checkIsOnly,
-  queryUserRoleMap,
   queryUserRole
 }
 

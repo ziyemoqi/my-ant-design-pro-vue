@@ -304,7 +304,7 @@ export default {
         }
       })
     },
-
+    // 新增时调用，查询所有角色
     initialRoleList() {
       roleList().then(res => {
         if (res.code === 200) {

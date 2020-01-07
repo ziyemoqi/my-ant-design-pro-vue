@@ -1,4 +1,3 @@
-import { axios } from '@/utils/request'
 import { get, post,put,deleteAction } from '@/api/manage'
 
 // 查询所有角色 用于添加时选择角色
