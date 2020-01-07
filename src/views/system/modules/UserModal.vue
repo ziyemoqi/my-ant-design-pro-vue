@@ -15,7 +15,7 @@
           <a-input
             placeholder="请输入登录账号"
             v-decorator="[ 'loginName', validatorRules.loginName]"
-            :readOnly="!!model.id"
+            :readOnly="!!model.sysUserId"
           />
         </a-form-item>
 
@@ -29,7 +29,7 @@
         </a-form-item>
 
         <a-form-item label="身份证号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入身份证号" v-decorator="[ 'idCard']" />
+          <a-input placeholder="请输入身份证号" v-decorator="[ 'idCard',validatorRules.idCard]" />
         </a-form-item>
 
         <a-form-item label="联系方式" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -96,7 +96,7 @@ import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { get } from '@/api/manage'
 import { addUser, editUser, checkIsOnly, queryUserRole } from '@/api/user'
-import { queryallRole } from '@/api/role'
+import { roleList } from '@/api/role'
 export default {
   name: 'UserModal',
   data() {
@@ -139,7 +139,19 @@ export default {
           ]
         },
         realname: { rules: [{ required: true, message: '请输入用户名称!' }] },
-        phone: { rules: [{ validator: this.validatePhone }] },
+        phone: { rules: [{
+              required: true,
+              message: '请输入手机号码!'
+            },{ validator: this.validatePhone }] },
+        idCard: {
+          rules: [
+            {
+              required: true,
+              message: '请输入身份证号!'
+            },
+            { validator: this.validateIdCard }
+          ]
+        },
         email: {
           rules: [
             {
@@ -176,7 +188,19 @@ export default {
       that.model = Object.assign({}, record)
       that.$nextTick(() => {
         that.form.setFieldsValue(
-          pick(this.model, 'loginName', 'userName', 'email', 'address','idCard', 'phone', 'sort', 'state', 'remark')
+          pick(
+            this.model,
+            'sysUserId',
+            'loginName',
+            'userName',
+            'email',
+            'address',
+            'idCard',
+            'phone',
+            'sort',
+            'state',
+            'remark'
+          )
         )
       })
     },
@@ -221,6 +245,14 @@ export default {
         callback()
       } else {
         callback(new Error('请输入正确格式的手机号码!'))
+      }
+    },
+    // 验证身份证号
+    validateIdCard(rule, value, callback) {
+      if (!value || new RegExp(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/).test(value)) {
+        callback()
+      } else {
+        callback(new Error('请输入正确格式的身份证号!'))
       }
     },
     // form 表单提交
@@ -274,7 +306,7 @@ export default {
     },
 
     initialRoleList() {
-      queryallRole().then(res => {
+      roleList().then(res => {
         if (res.code === 200) {
           this.roleList = res.data
         } else {

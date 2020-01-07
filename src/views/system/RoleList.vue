@@ -58,12 +58,28 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange"
       >
+        <span slot="state" slot-scope="text">
+          <a-badge :status="text | stateTypeFilter" :text="text | stateFilter" />
+        </span>
+
         <span slot="action" slot-scope="text, record">
           <a-button
             type="primary"
             icon="safety-certificate"
             @click="handlePerssion(record.sysRoleId)"
           >授权</a-button>&nbsp;&nbsp;
+          <a-button
+            type="primary"
+            icon ="lock"
+            v-if="record.state=== 0 "
+            @click="handleState(record.sysRoleId,'1')"
+          >停用</a-button>
+          <a-button
+            type="primary"
+            icon ="unlock"
+            v-if="record.state=== 1  "
+            @click="handleState(record.sysRoleId,'0')"
+          >启用</a-button>&nbsp;&nbsp;
           <a-button @click="handleEdit(record)">编辑</a-button>&nbsp;&nbsp;
           <a-button @click="handleDelete(record.sysRoleId)">删除</a-button>
         </span>
@@ -83,7 +99,7 @@ import UserRoleModal from './modules/UserRoleModal'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { filterObj } from '@/utils/util'
-import { roleList, deleteByRoleId, deleteBatch } from '@/api/role'
+import { rolePage, deleteByRoleId,edit, deleteBatch } from '@/api/role'
 const columns = [
   {
     title: '#',
@@ -98,17 +114,27 @@ const columns = [
   {
     title: '角色名称',
     align: 'center',
-    dataIndex: 'roleName'
+    dataIndex: 'roleName',
+    width: 200
   },
   {
     title: '角色编码',
     align: 'center',
-    dataIndex: 'roleCode'
+    dataIndex: 'roleCode',
+    width: 200
+  },
+  {
+    title: '状态',
+    align: 'center',
+    dataIndex: 'state',
+    scopedSlots: { customRender: 'state' },
+    width: 120
   },
   {
     title: '序号',
     dataIndex: 'sort',
-    align: 'center'
+    align: 'center',
+    width: 120
   },
   {
     title: '备注',
@@ -118,15 +144,28 @@ const columns = [
   {
     title: '创建时间',
     dataIndex: 'createTime',
-    align: 'center'
+    align: 'center',
+    width: 200
   },
   {
     title: '操作',
     dataIndex: 'action',
     align: 'center',
-    scopedSlots: { customRender: 'action' }
+    scopedSlots: { customRender: 'action' },
+    width: 360
   }
 ]
+
+const stateMap = {
+  '0': {
+    state: 'success',
+    text: '启用'
+  },
+  '1': {
+    state: 'warning',
+    text: '停用'
+  }
+}
 export default {
   name: 'RoleList_view',
   components: {
@@ -139,9 +178,6 @@ export default {
       dataSource: [],
       loading: false,
       screenForm: this.$form.createForm(this),
-      description: '角色管理页面',
-      queryParam: { roleName: '' },
-      tokenHeader: { 'X-Access-Token': Vue.ls.get(ACCESS_TOKEN) },
       selectedRowKeys: [],
       columns: columns,
       ipagination: {
@@ -157,6 +193,14 @@ export default {
       }
     }
   },
+  filters: {
+    stateFilter(type) {
+      return stateMap[type].text
+    },
+    stateTypeFilter(type) {
+      return stateMap[type].state
+    }
+  },
   mounted() {
     this.loadData()
   },
@@ -164,12 +208,12 @@ export default {
     async loadData(screenData) {
       let that = this
       let obj = {
-          current: that.ipagination.current,
-          size: that.ipagination.pageSize,
-          ...screenData
+        current: that.ipagination.current,
+        size: that.ipagination.pageSize,
+        ...screenData
       }
       this.loading = true
-      await roleList(obj).then(res => {
+      await rolePage(obj).then(res => {
         if (res.code === 200) {
           this.dataSource = res.data
           that.ipagination.total = res.page.total
@@ -180,7 +224,7 @@ export default {
     // 表单查询
     searchQuery(e) {
       e.preventDefault()
-      this.ipagination.pageNo = 1
+      this.ipagination.current = 1
       let { ...others } = this.screenForm.getFieldsValue()
       this.loadData({
         ...others
@@ -188,8 +232,9 @@ export default {
     },
     // 表单重置
     searchReset() {
-      this.queryParam = {}
-      this.loadData(1)
+      this.screenForm.resetFields()
+      this.ipagination.current = 1
+      this.loadData()
     },
     // 新增
     handleAdd: function() {
@@ -218,26 +263,6 @@ export default {
     // 新增/修改 成功时，重载列表
     modalFormOk() {
       this.loadData()
-    },
-    // 获取查询条件
-    getQueryParams() {
-      let sqp = {}
-      if (this.superQueryParams) {
-        sqp['superQueryParams'] = encodeURI(this.superQueryParams)
-      }
-      var param = Object.assign(sqp, this.queryParam, this.isorter, this.filters)
-      param.field = this.getQueryField()
-      param.pageNo = this.ipagination.current
-      param.pageSize = this.ipagination.pageSize
-      return filterObj(param)
-    },
-    //TODO 字段权限控制
-    getQueryField() {
-      var str = 'id,'
-      this.columns.forEach(function(value) {
-        str += ',' + value.dataIndex
-      })
-      return str
     },
     // 编辑
     handleEdit: function(record) {
@@ -294,7 +319,37 @@ export default {
     // 授权
     handlePerssion: function(roleId) {
       this.$refs.modalUserRole.show(roleId)
-    }
+    },
+     // 启用停用
+    handleState(sysRoleId, state) {
+      let msg = '启用'
+      if (state === '1') {
+        msg = '停用'
+      }
+      let _this = this
+      _this.$confirm({
+        title: '提示',
+        content: '您确定要' + msg + '该角色吗?',
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        async onOk() {
+          let obj = {
+            sysRoleId,
+            state
+          }
+          edit(obj).then(resp => {
+            if (resp.code === 200) {
+              _this.$message.success('操作成功!')
+              _this.loadData()
+            } else {
+              _this.$message.error(resp.msg || '操作失败!')
+            }
+          })
+        },
+        onCancel() {}
+      })
+    },
   }
 }
 </script>

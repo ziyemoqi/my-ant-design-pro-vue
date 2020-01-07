@@ -54,6 +54,13 @@ export function deleteBatch(params) {
     return deleteAction("/sysPermission/deleteBatch",params)
 }
 
+
+/**
+ * 加载权限树Map
+ * @param {*} params 
+ */
+const permissionMapTree = (params)=>get("/sysPermission/permissionMapTree",params)
 export {
-    queryTreeList
+    queryTreeList,
+    permissionMapTree
 }

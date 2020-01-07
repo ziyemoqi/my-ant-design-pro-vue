@@ -27,6 +27,13 @@
           <a-input placeholder="请输入角色编码" :disabled="roleDisabled" v-decorator="[ 'roleCode', validatorRules.roleCode]" />
         </a-form-item>
 
+<a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="状态">
+          <a-radio-group buttonStyle="solid" v-decorator="[ 'state', {'initialValue':0}]">
+            <a-radio-button :value="0">正常</a-radio-button>
+            <a-radio-button :value="1">停用</a-radio-button>
+          </a-radio-group>
+        </a-form-item>
+
          <a-form-item label="排序" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input-number :min="1" v-decorator="['sort',{'initialValue':100}]" style="width:100%"  placeholder="请输入序号" />
           </a-form-item>
@@ -45,7 +52,7 @@
 
 <script>
   import pick from 'lodash.pick'
-  import {addRole,editRole,duplicateCheck } from '@/api/role'
+  import {add,edit,duplicateCheck } from '@/api/role'
 
   export default {
     name: "RoleModal",
@@ -99,7 +106,7 @@
           this.roleDisabled = false;
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'roleName', 'remark','sort','roleCode'))
+          this.form.setFieldsValue(pick(this.model,'roleName','state', 'remark','sort','roleCode'))
         });
 
       },
@@ -109,7 +116,7 @@
       },
       // 提交操作
       handleOk () {
-        const that = this;
+        const that = this
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
@@ -117,9 +124,9 @@
             let formData = Object.assign(this.model, values)
             let obj
             if(!this.model.sysRoleId){
-              obj=addRole(formData)
+              obj=add(formData)
             }else{
-              obj=editRole(formData)
+              obj=edit(formData)
             }
             obj.then((res)=>{
               if(res.code === 200){

@@ -18,7 +18,7 @@
                 style="margin-left: 8px"
                 @click="handleReset"
               >重置</a-button>
-              <a-button @click="handleAdd" type="primary" icon="plus">用户录入</a-button>
+              <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
               <a-dropdown v-if="selectedRowKeys.length > 0">
                 <a-menu slot="overlay">
                   <a-menu-item key="1" @click="batchDel">

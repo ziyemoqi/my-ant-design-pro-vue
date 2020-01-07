@@ -8,7 +8,6 @@ const user = {
   state: {
     token: '',
     userName: '',
-    nickName: '',
     welcome: '',
     picture: '',
     permissionList: [],
@@ -19,9 +18,8 @@ const user = {
     SET_TOKEN: (state, token) => {
       state.token = token
     },
-    SET_NAME: (state, { userName, nickName, welcome }) => {
+    SET_NAME: (state, { userName, welcome }) => {
       state.userName = userName
-      state.nickName = nickName
       state.welcome = welcome
     },
     SET_PICTURE: (state, picture) => {
@@ -48,7 +46,7 @@ const user = {
             Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', result.token)
             commit('SET_INFO', userInfo)
-            commit('SET_NAME', { userName: userInfo.userName, nickName: userInfo.nickName, welcome: welcome() })
+            commit('SET_NAME', { userName: userInfo.userName, welcome: welcome() })
             commit('SET_PICTURE', userInfo.picture)
             resolve(response)
           } else {

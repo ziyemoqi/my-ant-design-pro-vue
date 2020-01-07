@@ -499,7 +499,6 @@ export default {
           this.$message.warning('请先选中一条记录!')
           return false
         }
-        console.log(key)
         this.$refs.departModal.add(key)
       }
     },
