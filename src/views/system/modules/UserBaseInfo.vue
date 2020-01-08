@@ -110,6 +110,12 @@ const columns = [
     dataIndex: 'userName',
     width: 130
   },
+   {
+    title: '所在部门',
+    align: 'center',
+    dataIndex: 'departName',
+    width: 130
+  },
   {
     title: '联系方式',
     align: 'center',

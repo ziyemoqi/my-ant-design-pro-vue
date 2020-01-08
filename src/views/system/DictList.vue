@@ -4,8 +4,8 @@
       <a-card :bordered="false">
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
-          <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
-          <a-button @click="handleAdd(2)" type="primary">添加子部门</a-button>
+          <a-button @click="handleAdd(1)" type="primary">添加一级字典</a-button>
+          <a-button @click="handleAdd(2)" type="primary">添加子字典</a-button>
           <a-button title="删除多条数据" @click="batchDel" type="default">批量删除</a-button>
           <a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>
           <a-button @click="backFlowList" type="default" icon="rollback" :loading="loading">返回</a-button>
@@ -25,7 +25,7 @@
           <a-input-search
             @search="onSearch"
             style="width:100%;margin-top: 10px"
-            placeholder="请输入部门名称"
+            placeholder="请输入字典名称"
           />
           <!-- 树-->
           <a-col :md="10" :sm="24">
@@ -74,14 +74,14 @@
     <a-col :md="16" :sm="24">
       <a-card :bordered="false">
         <a-tabs defaultActiveKey="2">
-          <a-tab-pane tab="部门信息" key="2">
+          <a-tab-pane tab="字典信息" key="2">
             <div class="table-page-search-wrapper">
               <!-- FORM搜索区域 -->
               <a-form layout="inline" :form="screenForm" @submit.prevent="handleScreenSubmit">
                 <a-row :gutter="10">
                   <a-col :md="10" :sm="12">
-                    <a-form-item label="部门名称" style="margin-left:8px">
-                      <a-input placeholder="请输入名称查询" v-decorator="['departName',{}]"></a-input>
+                    <a-form-item label="字典名称" style="margin-left:8px">
+                      <a-input placeholder="请输入名称查询" v-decorator="['keyWord',{}]"></a-input>
                     </a-form-item>
                   </a-col>
                   <span
@@ -127,7 +127,7 @@
                 ref="table"
                 size="middle"
                 :bordered="true"
-                rowKey="sysDeptId"
+                rowKey="sysDictId"
                 :columns="columns"
                 :dataSource="listDataSource"
                 :pagination="ipagination"
@@ -141,9 +141,9 @@
                 <span slot="action" slot-scope="text, record">
                   <a @click="handleEdit(record)">编辑</a>
                   <a-divider type="vertical" />
-                  <a v-if="record.state=== 0 " @click="handleState(record.sysDeptId,'1')">停用</a>
+                  <a v-if="record.state=== 0 " @click="handleState(record.sysDictId,'1')">停用</a>
                   <a-divider v-if="record.state === 0 " type="vertical" />
-                  <a v-if="record.state=== 1  " @click="handleState(record.sysDeptId,'0')">启用</a>
+                  <a v-if="record.state=== 1  " @click="handleState(record.sysDictId,'0')">启用</a>
                   <a-divider v-if="record.state=== 1 " type="vertical" />
 
                   <a-dropdown>
@@ -158,8 +158,8 @@
 
                       <a-menu-item>
                         <a-popconfirm
-                          title="确定要删除此部门吗?"
-                          @confirm="() => handleDelete(record.sysDeptId)"
+                          title="确定要删除此字典吗?"
+                          @confirm="() => handleDelete(record.sysDictId)"
                         >
                           <a>删除</a>
                         </a-popconfirm>
@@ -173,43 +173,44 @@
         </a-tabs>
       </a-card>
     </a-col>
-    <depart-modal ref="departModal" @ok="add_loadTree"></depart-modal>
+    <dict-modal ref="dictModal" @ok="add_loadTree"></dict-modal>
   </a-row>
 </template>
 <script>
-import DepartModal from './modules/DepartModal'
+import { dictTree, childrenDict, deleteById,deleteBatch, edit } from '@/api/dict'
+import DictModal from './modules/DictModal'
 import pick from 'lodash.pick'
-import { departTree, childrenDept, deleteByDepartId, deleteBatch, editByDeptId } from '@/api/dept'
+
 const columns = [
   {
-    title: '部门名称',
+    title: '字典名称',
     align: 'center',
-    dataIndex: 'departName',
-    width: 130
+    dataIndex: 'keyWord',
+    width: 200
   },
   {
-    title: '办公电话',
+    title: '字典项值',
     align: 'center',
-    dataIndex: 'telephone',
-    width: 140
-  },
-  {
-    title: '办公地址',
-    align: 'center',
-    dataIndex: 'address'
-  },
-  {
-    title: '状态',
-    align: 'center',
-    dataIndex: 'state',
-    scopedSlots: { customRender: 'state' },
-    width: 100
+    dataIndex: 'value',
+    width: 200
   },
   {
     title: '序号',
     align: 'center',
     dataIndex: 'sort',
-    width: 90
+    width: 110
+  },
+   {
+    title: '状态',
+    align: 'center',
+    dataIndex: 'state',
+    scopedSlots: { customRender: 'state' },
+    width: 110
+  },
+  {
+    title: '备注',
+    align: 'center',
+    dataIndex: 'remark'
   },
   {
     title: '操作',
@@ -234,7 +235,7 @@ const stateMap = {
 export default {
   name: 'DepartList_view',
   components: {
-    DepartModal
+    DictModal
   },
   data() {
     return {
@@ -284,15 +285,15 @@ export default {
     this.loadTree()
   },
   methods: {
-    // 加载部门树
+    // 加载字典树
     async loadTree() {
       var that = this
       that.loading = true
       that.treeData = []
       try {
-        let { code, data, msg } = await departTree()
+        let { code, data, msg } = await dictTree()
         if (code === 200) {
-          let handleTreeData = this.handleDeptTreeData(data)
+          let handleTreeData = this.handleDictTreeData(data)
           for (let i = 0; i < handleTreeData.length; i++) {
             let temp = handleTreeData[i]
             that.treeData.push(temp)
@@ -308,8 +309,8 @@ export default {
         this.loading = false
       }
     },
-    // 处理部门树数据 ====== loadTree 子方法 ======
-    handleDeptTreeData(tree) {
+    // 处理字典树数据 ====== loadTree 子方法 ======
+    handleDictTreeData(tree) {
       for (let node of tree) {
         node.key = node.id
         node.value = node.id
@@ -317,7 +318,7 @@ export default {
           icon: 'icon',
           title: 'title'
         }
-        if (node.children) node.children = this.handleDeptTreeData(node.children)
+        if (node.children) node.children = this.handleDictTreeData(node.children)
       }
       return tree
     },
@@ -368,14 +369,14 @@ export default {
         size: this.ipagination.pageSize,
         parentId: record.id
       }
-      this.queryChildrenDept(obj)
+      this.queryChildrenDict(obj)
     },
     //  触发onSelect事件时,查询右侧list
-    queryChildrenDept(obj) {
+    queryChildrenDict(obj) {
       let that = this
       this.listLoading = true
       try {
-        childrenDept(obj).then(res => {
+        childrenDict(obj).then(res => {
           if (res.code === 200) {
             that.listDataSource = res.data
             that.ipagination.total = res.page.total
@@ -406,7 +407,7 @@ export default {
     //分页、排序、筛选变化时触发
     handleTableChange(pagination, filters, sorter) {
       this.ipagination = pagination
-      this.queryChildrenDept({
+      this.queryChildrenDict({
         parentId: this.currSelected.key,
         current: pagination.current,
         size: this.ipagination.pageSize
@@ -441,22 +442,22 @@ export default {
         })
       }
     },
-    // 部门搜索
+    // 字典搜索
     onSearch(value) {
       let that = this
       that.loading = true
       that.treeData = []
       if (value) {
         let obj = {
-          departName: value
+          keyWord: value
         }
         try {
-          departTree(obj).then(res => {
+          dictTree(obj).then(res => {
             if (res.code === 200) {
               that.onClearSelected()
               that.listDataSource = []
               that.ipagination.total = 0
-              let handleTreeData = this.handleDeptTreeData(res.data)
+              let handleTreeData = this.handleDictTreeData(res.data)
               for (let i = 0; i < handleTreeData.length; i++) {
                 let temp = handleTreeData[i]
                 that.treeData.push(temp)
@@ -488,22 +489,22 @@ export default {
       this.form.resetFields()
       this.selectedKeys = []
     },
-    // 部门新增
+    // 字典新增
     handleAdd(num) {
-      this.$refs.departModal.title = '新增'
-      this.$refs.departModal.addFlag = true
+      this.$refs.dictModal.title = '新增'
+      this.$refs.dictModal.addFlag = true
       if (num == 1) {
-        this.$refs.departModal.add()
+        this.$refs.dictModal.add()
       } else {
         let key = this.currSelected.key
         if (!key) {
           this.$message.warning('请先选中一条记录!')
           return false
         }
-        this.$refs.departModal.add(key)
+        this.$refs.dictModal.add(key)
       }
     },
-    // 部门新增后的回调
+    // 字典新增后的回调
     add_loadTree() {
       this.loadTree()
       let obj = {
@@ -511,16 +512,16 @@ export default {
         current: 1,
         size: this.ipagination.pageSize
       }
-      this.queryChildrenDept(obj)
+      this.queryChildrenDict(obj)
     },
     // 删除单条信息
-    handleDelete(sysDeptId) {
+    handleDelete(sysDictId) {
       let that = this
-      deleteByDepartId({ sysDeptId: sysDeptId }).then(resp => {
+      deleteById({ sysDictId: sysDictId }).then(resp => {
         if (resp.code === 200) {
           that.$message.success('删除成功!')
           that.loadTree()
-          that.queryChildrenDept({ parentId: that.currSelected.key })
+          that.queryChildrenDict({ parentId: that.currSelected.key })
         } else {
           that.$message.error(resp.msg || '删除失败!')
         }
@@ -536,7 +537,7 @@ export default {
         size: this.ipagination.pageSize,
         parentId: this.currSelected.key
       }
-      this.queryChildrenDept(obj)
+      this.queryChildrenDict(obj)
     },
     // 重置
     emptyCurrForm() {
@@ -550,24 +551,24 @@ export default {
         size: this.ipagination.pageSize,
         parentId: this.selectedKeys[0]
       }
-      this.queryChildrenDept(obj)
+      this.queryChildrenDict(obj)
     },
     // list 编辑
     handleEdit: function(record) {
-      this.$refs.departModal.title = '编辑'
-      this.$refs.departModal.addFlag = false
-      this.$refs.departModal.disableSubmit = false
-      this.$refs.departModal.edit(record)
+      this.$refs.dictModal.title = '编辑'
+      this.$refs.dictModal.addFlag = false
+      this.$refs.dictModal.disableSubmit = false
+      this.$refs.dictModal.edit(record)
     },
     // list 详情
     handleDetail(record) {
-      this.$refs.departModal.title = '详情'
-      this.$refs.departModal.addFlag = false
-      this.$refs.departModal.disableSubmit = true
-      this.$refs.departModal.edit(record)
+      this.$refs.dictModal.title = '详情'
+      this.$refs.dictModal.addFlag = false
+      this.$refs.dictModal.disableSubmit = true
+      this.$refs.dictModal.edit(record)
     },
     // 启用停用
-    handleState(sysDeptId, state) {
+    handleState(sysDictId, state) {
       let msg = '启用'
       if (state === '1') {
         msg = '停用'
@@ -575,19 +576,19 @@ export default {
       let _this = this
       _this.$confirm({
         title: '提示',
-        content: '您确定要' + msg + '此部门吗?',
+        content: '您确定要' + msg + '此字典吗?',
         okText: '确定',
         okType: 'danger',
         cancelText: '取消',
         async onOk() {
           let obj = {
-            sysDeptId,
+            sysDictId,
             state
           }
-          editByDeptId(obj).then(resp => {
+          edit(obj).then(resp => {
             if (resp.code === 200) {
               _this.$message.success('操作成功!')
-              _this.queryChildrenDept({ parentId: _this.currSelected.key })
+              _this.queryChildrenDict({ parentId: _this.currSelected.key })
             } else {
               _this.$message.error(resp.msg || '操作失败!')
             }
@@ -615,7 +616,7 @@ export default {
               if (res.code === 200) {
                 that.$message.success('删除成功!')
                 that.loadTree()
-                that.queryChildrenDept({
+                that.queryChildrenDict({
                   parentId: that.currSelected.key,
                   current: 1,
                   size: that.ipagination.pageSize
