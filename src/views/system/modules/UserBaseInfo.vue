@@ -113,38 +113,26 @@ const columns = [
     title: '用户名称',
     align: 'center',
     dataIndex: 'userName',
-    width: 130
+    width: 100
   },
    {
     title: '所在部门',
     align: 'center',
     dataIndex: 'departName',
-    width: 130
+    width: 100
   },
   {
     title: '联系方式',
     align: 'center',
     dataIndex: 'phone',
-    width: 110
-  },
-  {
-    title: '住址',
-    align: 'center',
-    dataIndex: 'address',
-    width: 130
-  },
-  {
-    title: '年龄',
-    align: 'center',
-    dataIndex: 'age',
-    width: 80
+    width: 100
   },
   {
     title: '性别',
     align: 'center',
     dataIndex: 'sex',
     scopedSlots: { customRender: 'sex' },
-    width: 80
+    width: 70
   },
   {
     title: '登录次数',
@@ -157,14 +145,14 @@ const columns = [
     align: 'center',
     dataIndex: 'state',
     scopedSlots: { customRender: 'state' },
-    width: 100
+    width: 80
   },
   {
     title: '操作',
     dataIndex: 'action',
     scopedSlots: { customRender: 'action' },
     align: 'center',
-    width: 170
+    width: 200
   }
 ]
 
@@ -361,9 +349,9 @@ export default {
         cancelText: '取消',
         async onOk() {
           let obj = {
-            sysUserId
+            sysUserId:sysUserId
           }
-          resetPassword(obj).then(resp => {
+          resetPassword({ sysUserId: sysUserId }).then(resp => {
             if (resp.code === 200) {
               _this.$message.success('操作成功!')
             } else {
