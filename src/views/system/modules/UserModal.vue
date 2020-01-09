@@ -62,7 +62,7 @@
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="状态">
           <a-radio-group buttonStyle="solid" v-decorator="[ 'state', {'initialValue':0}]">
             <a-radio-button :value="0">正常</a-radio-button>
-            <a-radio-button :value="1">停用</a-radio-button>
+            <a-radio-button :value="1">冻结</a-radio-button>
           </a-radio-group>
         </a-form-item>
 

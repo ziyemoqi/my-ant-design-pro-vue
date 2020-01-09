@@ -11,11 +11,50 @@
           </a-col>
           <a-col :md="6" :sm="12">
             <a-form-item label="登录账号" style="margin-left:8px">
-              <a-input placeholder="请输入..." v-decorator="['loginName',{}]"></a-input>
+              <a-input placeholder="请输入..." v-decorator="['loginName']"></a-input>
             </a-form-item>
           </a-col>
-          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-            <a-col :md="6" :sm="24">
+          <template v-if="toggleSearchStatus">
+            <a-col :md="8" :sm="12">
+              <a-form-item label="访问时间">
+                <a-range-picker
+                  v-decorator="['dateRange']"
+                  :showTime="{
+              defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')]
+            }"
+              format="YYYY-MM-DD"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="12">
+              <a-form-item label="操作类型" style="margin-left:8px">
+                <a-select
+                  v-decorator="['opType',{normalize: trimNormalizer,}]"
+                  placeholder="请选择操作类型"
+                >
+                  <a-select-option value="0">增加</a-select-option>
+                  <a-select-option value="1">删除</a-select-option>
+                  <a-select-option value="2">修改</a-select-option>
+                  <a-select-option value="3">查询</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="12" style="margin-left:8px">
+              <a-form-item label="日志类型">
+                <a-select
+                  v-decorator="['logType',{normalize: trimNormalizer,}]"
+                  placeholder="请选择日志类型"
+                >
+                  <a-select-option value="0">操作日志</a-select-option>
+                  <a-select-option value="1">登录日志</a-select-option>
+                  <a-select-option value="2">定时任务</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+          </template>
+
+          <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" icon="search" style="margin-left: 18px" html-type="submit">查询</a-button>
               <a-button
                 type="primary"
@@ -23,8 +62,12 @@
                 style="margin-left: 8px"
                 @click="handleReset"
               >重置</a-button>
-            </a-col>
-          </span>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
+              </a>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -41,8 +84,7 @@
         :loading="loading"
         @change="handleTableChange"
       >
-
-      <span slot="opType" slot-scope="text">
+        <span slot="opType" slot-scope="text">
           <a-badge :status="text | stateTypeFilter" :text="text | stateFilter" />
         </span>
 
@@ -63,13 +105,14 @@
     </div>
     <!-- table区域-end -->
     <!-- 表单区域 -->
-    <Log-modal ref="modalForm" ></Log-modal>
+    <Log-modal ref="modalForm"></Log-modal>
   </a-card>
 </template>
 
 <script>
 import { logPage } from '@/api/log'
 import LogModal from './modules/LogModal'
+import moment from 'moment'
 
 const columns = [
   {
@@ -101,7 +144,7 @@ const columns = [
   {
     title: '日志类型',
     align: 'center',
-    dataIndex: 'logType',    
+    dataIndex: 'logType',
     scopedSlots: { customRender: 'logType' }
   },
   {
@@ -139,10 +182,15 @@ const stateMap = {
 
 export default {
   name: 'LogList',
- components: {
+  components: {
     LogModal
   },
   data() {
+    let trimNormalizer = x => {
+      if (typeof x === 'undefined') return
+      if (typeof x !== 'string') x = String(x)
+      return x.trim()
+    }
     return {
       dataSource: [],
       columns,
@@ -158,7 +206,10 @@ export default {
         total: 0
       },
       loading: false,
-      screenForm: this.$form.createForm(this)
+      screenForm: this.$form.createForm(this),
+      trimNormalizer,
+      toggleSearchStatus: false,
+      moment
     }
   },
   filters: {
@@ -195,9 +246,13 @@ export default {
     handleScreenSubmit(e) {
       e.preventDefault()
       this.ipagination.pageNo = 1
-      let { ...others } = this.screenForm.getFieldsValue()
+      let {dateRange, ...others } = this.screenForm.getFieldsValue()
       this.loadData({
-        ...others
+        ...others,
+        ...(dateRange ? {
+          beginTime: dateRange[0].format('YYYY-MM-DD'),
+          endTime: dateRange[1].format('YYYY-MM-DD')
+        } : {})
       })
     },
     // 重置
@@ -215,6 +270,9 @@ export default {
       this.$refs.modalForm.title = '详情'
       this.$refs.modalForm.edit(record)
     },
+    handleToggleSearch() {
+      this.toggleSearchStatus = !this.toggleSearchStatus
+    }
   }
 }
 </script>

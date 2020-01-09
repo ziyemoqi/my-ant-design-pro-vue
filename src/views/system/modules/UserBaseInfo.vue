@@ -69,6 +69,11 @@
           <a-badge :status="text | stateTypeFilter" :text="text | stateFilter" />
         </span>
         <span slot="action" slot-scope="text, record">
+          <a-button
+            type="primary"
+            icon="safety-certificate"
+            @click="resetPassword(record.sysUserId)"
+          >重置密码</a-button>&nbsp;&nbsp;
           <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
@@ -101,7 +106,7 @@
 </template>
 
 <script>
-import { userList, deleteBatch, delete_ } from '@/api/user'
+import { userList, deleteBatch, delete_, resetPassword } from '@/api/user'
 import UserModal from './UserModal'
 const columns = [
   {
@@ -332,8 +337,6 @@ export default {
           title: '确认删除',
           content: '是否删除选中数据?',
           onOk: function() {
-            // let {code,data,msg} = deleteBatch({sysUserIds:ids})
-            // console.log(code+'cheongsam')
             deleteBatch({ sysUserIds: ids }).then(res => {
               if (res.code === 200) {
                 that.$message.success('操作成功!')
@@ -346,7 +349,30 @@ export default {
           }
         })
       }
-    }
+    },
+    // 重置密码
+    resetPassword: function(sysUserId) {
+      let _this = this
+      _this.$confirm({
+        title: '提示',
+        content: '您确定要重置密码吗?',
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        async onOk() {
+          let obj = {
+            sysUserId
+          }
+          resetPassword(obj).then(resp => {
+            if (resp.code === 200) {
+              _this.$message.success('操作成功!')
+            } else {
+              _this.$message.error(resp.msg || '操作失败!')
+            }
+          })
+        },
+      })
+    },
   }
 }
 </script>

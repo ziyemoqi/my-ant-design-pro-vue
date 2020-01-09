@@ -593,7 +593,6 @@ export default {
             }
           })
         },
-        onCancel() {}
       })
     },
     // 多选删除

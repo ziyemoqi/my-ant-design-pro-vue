@@ -38,6 +38,9 @@ const addUser = (params)=>post("/sysUser/add",params)
 // 用户修改
 const editUser = (params)=>put("/sysUser/edit",params)
 
+const resetPassword  = (params)=>put("/sysUser/resetPassword",params)
+
+
 /**
  * 删除
  */
@@ -63,7 +66,8 @@ export {
   addUser,
   editUser,
   checkIsOnly,
-  queryUserRole
+  queryUserRole,
+  resetPassword
 }
 
 /**
