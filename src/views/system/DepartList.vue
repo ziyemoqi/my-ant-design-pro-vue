@@ -1,11 +1,11 @@
 <template xmlns:background-color="http://www.w3.org/1999/xhtml">
   <a-row :gutter="10">
-    <a-col :md="8" :sm="24">
+    <a-col :md="9" :sm="24">
       <a-card :bordered="false">
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
           <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
-          <a-button @click="handleAdd(2)" type="primary">添加子部门</a-button>
+          <a-button @click="handleAdd(2)" type="primary">添加子级部门</a-button>
           <a-button title="删除多条数据" @click="batchDel" type="default">批量删除</a-button>
           <a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>
           <a-button @click="backFlowList" type="default" icon="rollback" :loading="loading">返回</a-button>
@@ -71,7 +71,7 @@
       <!---- for:树操作 =======------>
     </a-col>
     <!-- table区域-begin -->
-    <a-col :md="16" :sm="24">
+    <a-col :md="15" :sm="24">
       <a-card :bordered="false">
         <a-tabs defaultActiveKey="2">
           <a-tab-pane tab="部门信息" key="2">

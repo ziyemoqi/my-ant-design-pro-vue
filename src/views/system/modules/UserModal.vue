@@ -108,7 +108,6 @@ export default {
       disableSubmit: false,
       dateFormat: 'YYYY-MM-DD',
       title: '操作',
-      userDepartModel: { sysUserId: '', departIdList: [] }, // 保存SysUserDepart的用户部门中间表数据需要的对象
       visible: false,
       model: {},
       roleList: [],
@@ -121,7 +120,6 @@ export default {
         xs: { span: 24 },
         sm: { span: 16 }
       },
-      uploadLoading: false,
       confirmLoading: false,
       headers: {},
       form: this.$form.createForm(this),
@@ -175,7 +173,7 @@ export default {
     },
     // 调用edit
     edit(record) {
-      this.resetScreenSize() // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
+      this.resetScreenSize()
       let that = this
       that.initialRoleList()
       that.form.resetFields()
@@ -190,7 +188,6 @@ export default {
         that.form.setFieldsValue(
           pick(
             this.model,
-            'sysUserId',
             'loginName',
             'userName',
             'email',
@@ -269,8 +266,6 @@ export default {
           }
           let formData = Object.assign(this.model, values)
           formData.selectedroles = this.selectedRole.length > 0 ? this.selectedRole.join(',') : ''
-          formData.departId =
-            this.userDepartModel.departIdList.length > 0 ? this.userDepartModel.departIdList.join(',') : ''
           let obj
           if (!this.model.sysUserId) {
             obj = addUser(formData)
@@ -304,7 +299,7 @@ export default {
         }
       })
     },
-    // 新增时调用，查询所有角色
+    //查询所有角色
     initialRoleList() {
       roleList().then(res => {
         if (res.code === 200) {

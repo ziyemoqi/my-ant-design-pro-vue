@@ -1,11 +1,11 @@
 <template xmlns:background-color="http://www.w3.org/1999/xhtml">
   <a-row :gutter="10">
-    <a-col :md="8" :sm="24">
+    <a-col :md="9" :sm="24">
       <a-card :bordered="false">
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
           <a-button @click="handleAdd(1)" type="primary">添加一级字典</a-button>
-          <a-button @click="handleAdd(2)" type="primary">添加子字典</a-button>
+          <a-button @click="handleAdd(2)" type="primary">添加子级字典</a-button>
           <a-button title="删除多条数据" @click="batchDel" type="default">批量删除</a-button>
           <a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>
           <a-button @click="backFlowList" type="default" icon="rollback" :loading="loading">返回</a-button>
@@ -71,7 +71,7 @@
       <!---- for:树操作 =======------>
     </a-col>
     <!-- table区域-begin -->
-    <a-col :md="16" :sm="24">
+    <a-col :md="15" :sm="24">
       <a-card :bordered="false">
         <a-tabs defaultActiveKey="2">
           <a-tab-pane tab="字典信息" key="2">
@@ -81,7 +81,7 @@
                 <a-row :gutter="10">
                   <a-col :md="10" :sm="12">
                     <a-form-item label="字典名称" style="margin-left:8px">
-                      <a-input placeholder="请输入名称查询" v-decorator="['keyWord',{}]"></a-input>
+                      <a-input placeholder="请输入名称查询" v-decorator="['name',{}]"></a-input>
                     </a-form-item>
                   </a-col>
                   <span
@@ -185,7 +185,7 @@ const columns = [
   {
     title: '字典名称',
     align: 'center',
-    dataIndex: 'keyWord',
+    dataIndex: 'name',
     width: 200
   },
   {
@@ -449,7 +449,7 @@ export default {
       that.treeData = []
       if (value) {
         let obj = {
-          keyWord: value
+          name: value
         }
         try {
           dictTree(obj).then(res => {

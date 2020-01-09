@@ -20,9 +20,9 @@
           hasFeedback
         >
           <a-input
-            id="keyWord"
+            id="name"
             placeholder="请输入字典名称"
-            v-decorator="['keyWord', validatorRules.keyWork ]"
+            v-decorator="['name', validatorRules.keyWork ]"
           />
         </a-form-item>
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="字典值">
@@ -144,7 +144,7 @@ export default {
       this.sysDictId = record != null ? record.sysDictId.toString() : null
       this.$nextTick(() => {
         this.form.setFieldsValue(
-          pick(record, 'keyWord', 'sort', 'value', 'state', 'remark')
+          pick(record, 'name', 'sort', 'value', 'state', 'remark')
         )
       })
     },
