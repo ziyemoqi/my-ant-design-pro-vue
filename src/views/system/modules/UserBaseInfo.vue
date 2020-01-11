@@ -19,6 +19,13 @@
                 @click="handleReset"
               >重置</a-button>
               <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left: 8px">新增</a-button>
+              <a-button
+                @click="exportWord"
+                type="primary"
+                icon="download"
+                :loading="exporting"
+                style="margin-left: 8px"
+              >导出word</a-button>
               <a-dropdown v-if="selectedRowKeys.length > 0">
                 <a-menu slot="overlay">
                   <a-menu-item key="1" @click="batchDel">
@@ -107,6 +114,7 @@
 
 <script>
 import { userList, deleteBatch, delete_, resetPassword } from '@/api/user'
+import download from '@/utils/download'
 import UserModal from './UserModal'
 const columns = [
   {
@@ -115,7 +123,7 @@ const columns = [
     dataIndex: 'userName',
     width: 100
   },
-   {
+  {
     title: '所在部门',
     align: 'center',
     dataIndex: 'departName',
@@ -192,7 +200,8 @@ export default {
         total: 0
       },
       loading: false,
-      screenForm: this.$form.createForm(this)
+      screenForm: this.$form.createForm(this),
+      exporting: false
     }
   },
   filters: {
@@ -349,7 +358,7 @@ export default {
         cancelText: '取消',
         async onOk() {
           let obj = {
-            sysUserId:sysUserId
+            sysUserId: sysUserId
           }
           resetPassword({ sysUserId: sysUserId }).then(resp => {
             if (resp.code === 200) {
@@ -358,9 +367,19 @@ export default {
               _this.$message.error(resp.msg || '操作失败!')
             }
           })
-        },
+        }
       })
     },
+    // 导出word
+    async exportWord() {
+      this.exporting = true
+      await download(
+        '/sysUser/exportWord',
+        false,
+        false
+      )
+      this.exporting = false
+    }
   }
 }
 </script>

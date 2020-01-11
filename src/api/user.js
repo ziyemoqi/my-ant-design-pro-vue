@@ -38,7 +38,7 @@ const addUser = (params)=>post("/sysUser/add",params)
 // 用户修改
 const editUser = (params)=>put("/sysUser/edit",params)
 // 重置密码
-const resetPassword  = (params)=>get("/sysUser/resetPassword",params)
+const resetPassword  = (params)=>post("/sysUser/resetPassword",params)
 
 /**
  * 删除
@@ -46,8 +46,6 @@ const resetPassword  = (params)=>get("/sysUser/resetPassword",params)
 export function delete_(params) {
   return deleteAction("/sysUser/delete",params)
 }
-
-
 
 /**
 * 批量删除

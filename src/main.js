@@ -14,6 +14,7 @@ import './permission'
 import './utils/filter'
 import VueApexCharts from 'vue-apexcharts'
 import VueRouter from 'vue-router';
+import QS from 'qs'
 
 import {
   ACCESS_TOKEN,
@@ -35,6 +36,7 @@ Vue.use(VueAxios)
 Vue.use(VueApexCharts)
 Vue.component('apexchart', VueApexCharts)
 Vue.use(Viser)
+Vue.use(QS)
 
 const routerPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {

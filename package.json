@@ -24,6 +24,7 @@
     "lodash.pick": "^4.4.0",
     "nprogress": "^0.2.0",
     "opencollective-postinstall": "^2.0.2",
+    "qs": "^6.9.1",
     "string.prototype.padstart": "^3.0.0",
     "tinymce": "^5.0.2",
     "viser-vue": "^2.4.4",

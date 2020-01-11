@@ -194,7 +194,7 @@ import Bar from '@/components/chart/Bar'
 import Trend from '@/components/Trend'
 import { getLogInfo } from '@/api/log'
 import * as userApi from '@/api/user'
-import { deleteAction, get,downFile } from '@/api/manage'
+import { deleteAction, get} from '@/api/manage'
 
 const rankList = []
 for (let i = 0; i < 7; i++) {
@@ -244,7 +244,6 @@ export default {
     //初始化websocket
     // this.initWebSocket()
     // 测试导出
-    // this.exportExcel("前端传递的导出文件名称")
   },
   destroyed: function () { // 离开页面生命周期函数
     // this.websocketclose();
@@ -303,38 +302,6 @@ export default {
     },
     websocketclose: function(e) {
       console.log('connection closed (' + e.code + ')')
-    },
-    exportExcel(fileName){
-      if(!fileName || typeof fileName != "string"){
-        fileName = "导出文件"
-      }
-      let param = {...this.queryParam};
-      if(this.selectedRowKeys && this.selectedRowKeys.length>0){
-        param['selections'] = this.selectedRowKeys.join(",")
-      }
-      console.log("导出参数",param)
-       param ={
-        'name': '李四'
-      }
-      downFile("/test/excel/exportXls",param).then((data)=>{
-        if (!data) {
-          this.$message.warning("文件下载失败")
-          return
-        }
-        if (typeof window.navigator.msSaveBlob !== 'undefined') {
-          window.navigator.msSaveBlob(new Blob([data]), fileName+'.xls')
-        }else{
-          let url = window.URL.createObjectURL(new Blob([data]))
-          let link = document.createElement('a')
-          link.style.display = 'none'
-          link.href = url
-          link.setAttribute('download', fileName+'.xls')
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link); //下载完成移除元素
-          window.URL.revokeObjectURL(url); //释放掉blob对象
-        }
-      })
     },
   }
 }
