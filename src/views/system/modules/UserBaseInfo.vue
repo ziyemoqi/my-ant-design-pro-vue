@@ -276,6 +276,7 @@ export default {
     // 编辑
     handleEdit: function(record) {
       this.$refs.modalForm.title = '编辑'
+      this.$refs.modalForm.currentDeptId = this.currentDeptId
       this.$refs.modalForm.disableSubmit = false
       this.$refs.modalForm.edit(record)
     },
@@ -290,7 +291,7 @@ export default {
       if (this.currentDeptId == '') {
         this.$message.error('请选择一个部门!')
       } else {
-        this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId]
+        this.$refs.modalForm.currentDeptId = this.currentDeptId
         this.$refs.modalForm.add()
         this.$refs.modalForm.title = '新增'
       }

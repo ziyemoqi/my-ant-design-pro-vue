@@ -127,7 +127,6 @@ export default {
   },
   data() {
     return {
-      description: '这是菜单管理页面',
       columns: columns,
       loading: false,
       selectedRowKeys: [],

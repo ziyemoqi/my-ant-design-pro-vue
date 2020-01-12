@@ -32,6 +32,23 @@
           <a-input placeholder="请输入身份证号" v-decorator="[ 'idCard',validatorRules.idCard]" />
         </a-form-item>
 
+      <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select
+            mode="multiple"
+            style="width: 100%"
+            placeholder="请选择职务"
+            optionFilterProp="children"
+            v-decorator="['jobs',{rules: [{required: true, message: '请选择职务'}]}]"
+          >
+            <a-select-option value>请选择职务</a-select-option>
+            <a-select-option
+              v-for="(dict,dictindex) in dictList"
+              :key="dictindex.toString()"
+              :value="dict.value"
+            >{{ dict.jobs }}</a-select-option>
+          </a-select>
+        </a-form-item>
+
         <a-form-item label="联系方式" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input placeholder="请输入手机号码" v-decorator="[ 'phone',validatorRules.phone]" />
         </a-form-item>
@@ -97,6 +114,8 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { get } from '@/api/manage'
 import { addUser, editUser, checkIsOnly, queryUserRole } from '@/api/user'
 import { roleList } from '@/api/role'
+import { dictList } from '@/api/dict'
+
 export default {
   name: 'UserModal',
   data() {
@@ -111,7 +130,9 @@ export default {
       visible: false,
       model: {},
       roleList: [],
+      dictList:[],
       selectedRole: [],
+      selectedJob:[],
       labelCol: {
         xs: { span: 24 },
         sm: { span: 5 }
@@ -120,6 +141,7 @@ export default {
         xs: { span: 24 },
         sm: { span: 16 }
       },
+      currentDeptId: '',
       confirmLoading: false,
       headers: {},
       form: this.$form.createForm(this),
@@ -137,10 +159,15 @@ export default {
           ]
         },
         realname: { rules: [{ required: true, message: '请输入用户名称!' }] },
-        phone: { rules: [{
+        phone: {
+          rules: [
+            {
               required: true,
               message: '请输入手机号码!'
-            },{ validator: this.validatePhone }] },
+            },
+            { validator: this.validatePhone }
+          ]
+        },
         idCard: {
           rules: [
             {
@@ -176,6 +203,7 @@ export default {
       this.resetScreenSize()
       let that = this
       that.initialRoleList()
+      that.initialJobDictList()
       that.form.resetFields()
       if (record.hasOwnProperty('sysUserId')) {
         that.loadUserRoles(record.sysUserId)
@@ -186,18 +214,7 @@ export default {
       that.model = Object.assign({}, record)
       that.$nextTick(() => {
         that.form.setFieldsValue(
-          pick(
-            this.model,
-            'loginName',
-            'userName',
-            'email',
-            'address',
-            'idCard',
-            'phone',
-            'sort',
-            'state',
-            'remark'
-          )
+          pick(this.model, 'loginName', 'userName', 'email','jobs','address', 'idCard', 'phone', 'sort', 'state', 'remark')
         )
       })
     },
@@ -265,7 +282,9 @@ export default {
             values.birthday = values.birthday.format(this.dateFormat)
           }
           let formData = Object.assign(this.model, values)
+          formData.departId = this.currentDeptId
           formData.selectedroles = this.selectedRole.length > 0 ? this.selectedRole.join(',') : ''
+          formData.jobs = this.selectedJob.length > 0 ? this.selectedJob.join(',') : '' 
           let obj
           if (!this.model.sysUserId) {
             obj = addUser(formData)
@@ -309,7 +328,27 @@ export default {
         }
       })
     },
-
+    async initialJobDictList() {
+      let that = this
+      let obj = {
+        skey: '用户管理>用户职务',
+        mode: '1'
+      }
+      await dictList(obj).then(res => {
+        if (res.code === 200) {
+          that.dictList = [];
+            res.data.forEach((item) => {
+            that.dictList.push({
+              values: item.name,
+              jobs: item.value
+            })
+          });
+          console.log(that.dictList)
+        } else {
+          console.log(res.msg)
+        }
+      })
+    },
     refresh() {
       this.selectedDepartKeys = []
       this.checkedDepartKeys = []

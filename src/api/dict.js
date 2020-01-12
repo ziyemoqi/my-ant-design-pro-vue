@@ -13,6 +13,8 @@ const add = (params)=>post("/sysDict/add",params)
 const deleteById  = (params)=>deleteAction("/sysDict/delete",params)
 // 批量删除
 const deleteBatch  = (params)=>deleteAction("/sysDict/deleteBatch",params)
+// 查询字典
+const dictList = (params)=>get("/sysDict/getDict",params)
 
 export {
     dictTree,
@@ -20,6 +22,7 @@ export {
     deleteById,
     edit,
     add,
-    deleteBatch
+    deleteBatch,
+    dictList
 }
 
