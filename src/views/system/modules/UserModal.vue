@@ -343,7 +343,6 @@ export default {
               jobs: item.value
             })
           });
-          console.log(that.dictList)
         } else {
           console.log(res.msg)
         }

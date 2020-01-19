@@ -89,10 +89,6 @@ const columns = [
         return text
       }
     }
-  },{
-    title: 'icon',
-    dataIndex: 'icon',
-    key: 'icon'
   },
   {
     title: '组件',
@@ -105,6 +101,11 @@ const columns = [
     dataIndex: 'url',
     key: 'url',
     scopedSlots: { customRender: 'url' }
+  },
+  {
+    title: 'icon',
+    dataIndex: 'icon',
+    key: 'icon'
   },
   {
     title: '排序',
