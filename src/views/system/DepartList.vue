@@ -6,7 +6,6 @@
         <a-row style="margin-left: 14px">
           <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
           <a-button @click="handleAdd(2)" type="primary">添加子级部门</a-button>
-          <a-button title="删除多条数据" @click="batchDel" type="default">批量删除</a-button>
           <a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>
           <a-button @click="backFlowList" type="default" icon="rollback" :loading="loading">返回</a-button>
         </a-row>
@@ -411,35 +410,6 @@ export default {
         current: pagination.current,
         size: this.ipagination.pageSize
       })
-    },
-    // 批量删除
-    batchDel: function() {
-      if (this.checkedKeys.length <= 0) {
-        this.$message.warning('请选择一条记录！')
-      } else {
-        var ids = ''
-        for (var a = 0; a < this.checkedKeys.length; a++) {
-          ids += this.checkedKeys[a] + ','
-        }
-        var that = this
-        this.$confirm({
-          title: '确认删除',
-          content: '确定要删除所选中的 ' + this.checkedKeys.length + ' 条数据，及子节点数据吗?',
-          onOk: function() {
-            deleteBatch({ ids: ids }).then(res => {
-              if (res.code === 200) {
-                that.$message.success('删除成功!')
-                that.loadTree()
-                that.onClearSelected()
-                that.listDataSource = []
-                that.ipagination.total = 0
-              } else {
-                that.$message.warning(msg || '删除失败!')
-              }
-            })
-          }
-        })
-      }
     },
     // 部门搜索
     onSearch(value) {

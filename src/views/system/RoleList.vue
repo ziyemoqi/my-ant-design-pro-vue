@@ -67,7 +67,7 @@
             type="primary"
             icon="safety-certificate"
             @click="handlePerssion(record.sysRoleId)"
-          >授权</a-button>&nbsp;&nbsp;
+          >授权</a-button>&nbsp;
           <a-button
             type="primary"
             icon ="lock"
@@ -79,8 +79,8 @@
             icon ="unlock"
             v-if="record.state=== 1  "
             @click="handleState(record.sysRoleId,'0')"
-          >启用</a-button>&nbsp;&nbsp;
-          <a-button @click="handleEdit(record)">编辑</a-button>&nbsp;&nbsp;
+          >启用</a-button>&nbsp;
+          <a-button @click="handleEdit(record)">编辑</a-button>&nbsp;
           <a-button @click="handleDelete(record.sysRoleId)">删除</a-button>
         </span>
       </a-table>
@@ -98,7 +98,6 @@ import RoleModal from './modules/RoleModal'
 import UserRoleModal from './modules/UserRoleModal'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { filterObj } from '@/utils/util'
 import { rolePage, deleteByRoleId,edit, deleteBatch } from '@/api/role'
 const columns = [
   {
@@ -115,44 +114,45 @@ const columns = [
     title: '角色名称',
     align: 'center',
     dataIndex: 'roleName',
-    width: 200
+    width: 140
   },
   {
     title: '角色编码',
     align: 'center',
     dataIndex: 'roleCode',
-    width: 200
+    width: 140
   },
   {
     title: '状态',
     align: 'center',
     dataIndex: 'state',
     scopedSlots: { customRender: 'state' },
-    width: 120
+    width: 90
   },
   {
     title: '序号',
     dataIndex: 'sort',
     align: 'center',
-    width: 120
+    width: 90
   },
   {
     title: '备注',
     align: 'center',
-    dataIndex: 'remark'
+    dataIndex: 'remark',
+    width: 120
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     align: 'center',
-    width: 200
+    width: 180
   },
   {
     title: '操作',
     dataIndex: 'action',
     align: 'center',
     scopedSlots: { customRender: 'action' },
-    width: 360
+    width: 400
   }
 ]
 

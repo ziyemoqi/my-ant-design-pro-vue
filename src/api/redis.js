@@ -2,33 +2,19 @@ import { get, post,put,deleteAction } from '@/api/manage'
 
 // 分页查询数据
 const userPage = (params) => get("/redisPractice/redisUser/userPage", params)
-
-
-
-// ================================================================================
-// 角色添加
-const add = (params)=>post("/sysRole/add",params)
-// 角色修改
-const edit = (params)=>put("/sysRole/edit",params)
+// 根据用户ID查询
+const findUserById = (params) => get("/redisPractice/redisUser/findUserById", params)
+// 修改
+const edit = (params)=>put("/redisPractice/redisUser/updateUser",params)
 // 删除
-const deleteByRoleId  = (params)=>deleteAction("/sysRole/delete",params)
-// 批量删除
-export function deleteBatch(params) {
-  return deleteAction("/sysRole/deleteBatch",params)
-}
-// 重复校验
-const duplicateCheck = (params)=>get("/sysRole/duplicate",params)
-// 加载角色授权
-const queryRolePermission = (params)=>get("/sysRole/rolePermission",params)
-// 保存角色授权
-const saveRolePermission = (params)=>post("/sysRole/rolePermission",params)
+const deleteById  = (params)=>deleteAction("/redisPractice/redisUser/deleteUserById",params)
+// 添加
+const add = (params)=>post("/redisPractice/redisUser/add",params)
 
 export {
     userPage,
-    add,
+    findUserById,
     edit,
-    deleteByRoleId,
-    duplicateCheck,
-    queryRolePermission,
-    saveRolePermission
+    deleteById,
+    add
 }

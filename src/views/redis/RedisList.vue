@@ -7,32 +7,21 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="姓名" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
-              <a-input placeholder="请输入名称查询" v-decorator="['roleName',{}]"></a-input>
+              <a-input placeholder="请输入名称查询" v-decorator="['name',{}]"></a-input>
             </a-form-item>
           </a-col>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
               <a-button type="primary" icon="search" @click="searchQuery">查询</a-button>
-              <a-button @click="refresh" type="default" icon="reload" style="margin-left: 8px" :loading="loading">刷新</a-button>
               <a-button
                 style="margin-left: 8px"
                 type="primary"
                 icon="reload"
                 @click="searchReset"
               >重置</a-button>
-              
               <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left:10px">新增</a-button>
-              <a-dropdown v-if="selectedRowKeys.length > 0">
-                <a-menu slot="overlay">
-                  <a-menu-item key="1" @click="batchDel">
-                    <a-icon type="delete" />删除
-                  </a-menu-item>
-                </a-menu>
-                <a-button style="margin-left: 8px">
-                  批量操作
-                  <a-icon type="down" />
-                </a-button>
-              </a-dropdown>
+              <a-button @click="refresh" type="default" icon="reload" style="margin-left: 8px" :loading="loading">刷新</a-button>
+              <a-button icon="search" @click="searchById" style="margin-left: 8px">ID查询</a-button>
             </a-col>
           </span>
         </a-row>
@@ -41,12 +30,6 @@
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择&nbsp;
-        <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项&nbsp;&nbsp;
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
-
       <a-table
         ref="table"
         size="middle"
@@ -56,31 +39,27 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange"
       >
 
         <span slot="action" slot-scope="text, record">
           <a-button @click="handleEdit(record)">编辑</a-button>&nbsp;&nbsp;
-          <a-button @click="handleDelete(record.sysRoleId)">删除</a-button>
+          <a-button @click="handleDelete(record.redisUserId)">删除</a-button>
         </span>
       </a-table>
     </div>
     <!-- table区域-end -->
 
-    <!-- 表单区域 -->
-    <!-- <role-modal ref="modalForm" @ok="modalFormOk"></role-modal>
-    <user-role-modal ref="modalUserRole"></user-role-modal> -->
+    <!-- form表单 -->
+     <Dialog-Edit ref="dialogEdit" @ok="modalFormOk"></Dialog-Edit>
   </a-card>
 </template>
 
 <script>
-// import RoleModal from './modules/RoleModal'
-// import UserRoleModal from './modules/UserRoleModal'
+import DialogEdit from './modules/dialogEdit'
 import Vue from 'vue'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { filterObj } from '@/utils/util'
-import { userPage, deleteByRoleId,edit, deleteBatch } from '@/api/redis'
+import {userPage,findUserById,deleteById } from '@/api/redis'
+
 const columns = [
   {
     title: '#',
@@ -116,12 +95,6 @@ const columns = [
     dataIndex: 'remark'
   },
   {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    align: 'center',
-    width: 200
-  },
-  {
     title: '操作',
     dataIndex: 'action',
     align: 'center',
@@ -131,18 +104,16 @@ const columns = [
 ]
 
 export default {
-  name: 'RoleList_view',
-  // components: {
-  //   RoleModal,
-  //   UserRoleModal
-  // },
+  name: 'RedisList_view',
+  components: {
+    DialogEdit
+  },
 
   data() {
     return {
       dataSource: [],
       loading: false,
       screenForm: this.$form.createForm(this),
-      selectedRowKeys: [],
       columns: columns,
       ipagination: {
         current: 1,
@@ -194,18 +165,8 @@ export default {
     },
     // 新增
     handleAdd: function() {
-      this.$refs.modalForm.add()
-      this.$refs.modalForm.title = '新增'
-      this.$refs.modalForm.disableSubmit = false
-    },
-    // 取消选中
-    onClearSelected() {
-      this.selectedRowKeys = []
-      this.selectionRows = []
-    },
-    onSelectChange(selectedRowKeys, selectionRows) {
-      this.selectedRowKeys = selectedRowKeys
-      this.selectionRows = selectionRows
+      this.$refs.dialogEdit.add()
+      this.$refs.dialogEdit.title = '新增'
     },
     //分页、排序、筛选变化时触发
     handleTableChange(pagination, filters, sorter) {
@@ -222,9 +183,9 @@ export default {
     },
     // 编辑
     handleEdit: function(record) {
-      this.$refs.modalForm.edit(record)
-      this.$refs.modalForm.title = '编辑'
-      this.$refs.modalForm.disableSubmit = false
+      this.$refs.dialogEdit.edit(record)
+      this.$refs.dialogEdit.title = '编辑'
+      this.$refs.dialogEdit.disableSubmit = false
     },
     // 删除
     handleDelete: function(id) {
@@ -233,7 +194,7 @@ export default {
         title: '确认删除',
         content: '是否删除当前数据?',
         onOk: function() {
-          deleteByRoleId({ sysRoleId: id }).then(res => {
+          deleteById({ redisUserId: id }).then(res => {
             if (res.code === 200) {
               that.$message.success('操作成功!')
               that.loadData()
@@ -244,39 +205,28 @@ export default {
         }
       })
     },
-    // 批量删除
-    batchDel: function() {
-      if (this.selectedRowKeys.length <= 0) {
-        this.$message.warning('请选择一条记录！')
-        return
-      } else {
-        var ids = ''
-        for (var a = 0; a < this.selectedRowKeys.length; a++) {
-          ids += this.selectedRowKeys[a] + ','
-        }
-        var that = this
-        this.$confirm({
-          title: '确认删除',
-          content: '是否删除选中数据?',
-          onOk: function() {
-            deleteBatch({ ids: ids }).then(res => {
-              if (res.code === 200) {
-                that.$message.success('操作成功!')
-                that.loadData()
-                that.onClearSelected()
-              } else {
-                that.$message.warning(res.msg || '操作失败!')
-              }
-            })
-          }
-        })
-      }
-    },
     // 刷新
     refresh() {
       this.loading = true
-      this.onClearSelected()
       this.loadData()
+    },
+    // 根据ID查询
+    searchById(){
+      var that = this
+      that.$confirm({
+        title: '查询',
+        content: '确认查询ID为1的数据?',
+        onOk: function() {
+          findUserById({ redisUserId: '1' }).then(res => {
+            if (res.code === 200) {
+              console.log(res.data)
+              that.$message.success("查询成功！")
+            } else {
+              that.$message.warning(res.msg || '操作失败!')
+            }
+          })
+        }
+      })
     },
   }
 }
