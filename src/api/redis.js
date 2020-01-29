@@ -1,5 +1,6 @@
 import { get, post,put,deleteAction } from '@/api/manage'
 
+// ========== redis 基础操作 ==========
 // 分页查询数据
 const userPage = (params) => get("/redisPractice/redisUser/userPage", params)
 // 根据用户ID查询
@@ -11,10 +12,19 @@ const deleteById  = (params)=>deleteAction("/redisPractice/redisUser/deleteUserB
 // 添加
 const add = (params)=>post("/redisPractice/redisUser/add",params)
 
+// ========== redis pub sub ==========
+// 分页查询数据
+const pubSubPage = (params) => get("/redisPractice/redisPubSub/pubSubPage", params)
+// 发布消息
+const sendMessage = post("/redisPractice/redisPubSub/sendMessage")
+
+
 export {
     userPage,
     findUserById,
     edit,
     deleteById,
-    add
+    add,
+    pubSubPage,
+    sendMessage
 }
