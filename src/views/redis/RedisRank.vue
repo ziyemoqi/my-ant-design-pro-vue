@@ -27,7 +27,7 @@
                 style="margin-left: 8px"
                 :loading="loading"
               >刷新</a-button>
-              <a-button icon="search" @click="searchById" style="margin-left: 8px">ID查询</a-button>
+              <a-button icon="reload" @click="initData" style="margin-left: 8px">初始化数据</a-button>
             </a-col>
           </span>
         </a-row>
@@ -50,22 +50,16 @@
         <span slot="action" slot-scope="text, record">
           <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
           <a-button @click="handleDelete(record.redisUserId)" type="primary" icon="delete">删除</a-button>&nbsp;&nbsp;
-          <a-button @click="setExpireTime(record)" type="primary" icon="clock-circle">设置过期时间</a-button>&nbsp;&nbsp;
-          <a-button @click="expireState(record.redisUserId)" type="primary" icon="question">查看是否过期</a-button>
         </span>
       </a-table>
     </div>
     <!-- table区域-end -->
-
-    <!-- form表单 -->
-    <Dialog-Edit ref="dialogEdit" @ok="modalFormOk"></Dialog-Edit>
   </a-card>
 </template>
 
 <script>
-import DialogEdit from './modules/dialogEdit'
 import Vue from 'vue'
-import { userPage, findUserById, deleteById, setExpireTime, expireState } from '@/api/redis'
+import { userPage, initRankData, deleteById } from '@/api/redis'
 
 const columns = [
   {
@@ -111,10 +105,7 @@ const columns = [
 ]
 
 export default {
-  name: 'RedisList_view',
-  components: {
-    DialogEdit
-  },
+  name: 'RedisRank_view',
 
   data() {
     return {
@@ -136,7 +127,7 @@ export default {
     }
   },
   mounted() {
-    this.loadData()
+    // this.loadData()
   },
   methods: {
     async loadData(screenData) {
@@ -217,53 +208,22 @@ export default {
       this.loading = true
       this.loadData()
     },
-    // 根据ID查询
-    searchById() {
+    //初始化数据
+    initData() {
       var that = this
       that.$confirm({
-        title: '查询',
-        content: '确认查询ID为1的数据?',
+        title: '确认',
+        content: '确认初始化排行榜数据?',
         onOk: function() {
-          findUserById({ redisUserId: '1' }).then(res => {
+          initRankData().then(res => {
             if (res.code === 200) {
-              console.log(res.data)
-              that.$message.success('查询成功！')
+              that.$message.success('操作成功！')
             } else {
               that.$message.warning(res.msg || '操作失败!')
             }
           })
         }
       })
-    },
-    // 查看缓存是否过期
-    expireState(redisUserId) {
-      let that = this
-      expireState({ redisUserId: redisUserId }).then(res => {
-        if (res.code === 200) {
-          if(res.data === true){
-            that.$message.success('缓存有效！')
-          }else{
-            that.$message.success('缓存过期！') 
-          }
-        } else {
-          that.$message.warning(res.msg || '操作失败!')
-        }
-      })
-    },
-    // 设置过期时间
-    setExpireTime(redisUser) {
-      let that = this
-      setExpireTime(redisUser)
-        .then(res => {
-          if (res.code === 200) {
-            that.$message.success('已设置该数据一分钟内有效!')
-          } else {
-            that.$message.warning(res.msg || '操作失败!')
-          }
-        })
-        .finally(() => {
-          that.loading = false
-        })
     }
   }
 }
