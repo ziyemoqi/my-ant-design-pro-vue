@@ -28,7 +28,18 @@ const sendMessage = (params) => post("/redisPractice/redisPubSub/sendMessage", p
 // ========= redis rank ============
 // 初始化数据
 const initRankData =  (params) => post("/redisPractice/redisRank/initRankData",params)
-
+// 查询数据
+const initRank = (params) => get("/redisPractice/redisRank/initRank", params)
+// 查询排行榜前10
+const scoreTop10 = (params) => get("/redisPractice/redisRank/scoreTop10", params)
+// 添加
+const rankAdd = (params)=>post("/redisPractice/redisRank/add",params)
+// 查询指定人的排名和分数
+const userInfo = (params) => get("/redisPractice/redisRank/userInfo", params)
+// 查询指定人的排名和分数
+const scopeCount = (params) => get("/redisPractice/redisRank/scopeCount", params)
+// 添加
+const addScore = (params)=>post("/redisPractice/redisRank/addScore",params)
 
 export {
     userPage,
@@ -40,5 +51,11 @@ export {
     sendMessage,
     setExpireTime,
     expireState,
-    initRankData
+    initRankData,
+    initRank,
+    scoreTop10,
+    rankAdd,
+    userInfo,
+    scopeCount,
+    addScore
 }

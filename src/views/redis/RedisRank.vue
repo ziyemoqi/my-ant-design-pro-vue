@@ -5,21 +5,21 @@
       <!-- 搜索区域 -->
       <a-form layout="inline" :form="screenForm" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="8">
-            <a-form-item label="姓名" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
-              <a-input placeholder="请输入名称查询" v-decorator="['name',{}]"></a-input>
-            </a-form-item>
-          </a-col>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
-              <a-button type="primary" icon="search" @click="searchQuery">查询</a-button>
+              <a-button type="primary" icon="search" @click="searchScore('1')">按总成绩排名</a-button>
               <a-button
-                style="margin-left: 8px"
                 type="primary"
-                icon="reload"
-                @click="searchReset"
-              >重置</a-button>
-              <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left:10px">新增</a-button>
+                icon="search"
+                style="margin-left: 8px"
+                @click="searchScore('2')"
+              >按中文成绩排名</a-button>
+              <a-button
+                type="primary"
+                icon="search"
+                style="margin-left: 8px"
+                @click="searchScore('3')"
+              >按数学成绩排名</a-button>
               <a-button
                 @click="refresh"
                 type="default"
@@ -27,7 +27,12 @@
                 style="margin-left: 8px"
                 :loading="loading"
               >刷新</a-button>
+              <a-button icon="plus" @click="rankAdd" style="margin-left: 8px">新增</a-button>
+              <a-button icon="plus" @click="addScore" style="margin-left: 8px">乔治_1加分500</a-button>
+
               <a-button icon="reload" @click="initData" style="margin-left: 8px">初始化数据</a-button>
+              <a-button icon="search" @click="userInfo" style="margin-left: 8px">查询指定人的排名和分数</a-button>
+              <a-button icon="search" @click="scopeCount" style="margin-left: 8px">统计分数区间人数</a-button>
             </a-col>
           </span>
         </a-row>
@@ -40,18 +45,11 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="redisUserId"
+        rowKey="redisRankId"
         :columns="columns"
         :dataSource="dataSource"
-        :pagination="ipagination"
         :loading="loading"
-        @change="handleTableChange"
-      >
-        <span slot="action" slot-scope="text, record">
-          <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
-          <a-button @click="handleDelete(record.redisUserId)" type="primary" icon="delete">删除</a-button>&nbsp;&nbsp;
-        </span>
-      </a-table>
+      ></a-table>
     </div>
     <!-- table区域-end -->
   </a-card>
@@ -59,7 +57,7 @@
 
 <script>
 import Vue from 'vue'
-import { userPage, initRankData, deleteById } from '@/api/redis'
+import { initRank, initRankData, scoreTop10, rankAdd, userInfo, scopeCount, addScore } from '@/api/redis'
 
 const columns = [
   {
@@ -79,28 +77,22 @@ const columns = [
     width: 200
   },
   {
-    title: '年龄',
+    title: '总成绩',
     align: 'center',
-    dataIndex: 'age',
+    dataIndex: 'score',
     width: 200
   },
   {
-    title: '序号',
-    dataIndex: 'sort',
+    title: '中文分数',
+    dataIndex: 'chineseScore',
     align: 'center',
-    width: 120
+    width: 200
   },
   {
-    title: '备注',
+    title: '数学分数',
+    dataIndex: 'mathScore',
     align: 'center',
-    dataIndex: 'remark'
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    align: 'center',
-    scopedSlots: { customRender: 'action' },
-    width: 560
+    width: 200
   }
 ]
 
@@ -112,95 +104,63 @@ export default {
       dataSource: [],
       loading: false,
       screenForm: this.$form.createForm(this),
-      columns: columns,
-      ipagination: {
-        current: 1,
-        pageSize: 10,
-        pageSizeOptions: ['10', '20', '30'],
-        showTotal: (total, range) => {
-          return range[0] + '-' + range[1] + ' 共' + total + '条'
-        },
-        showQuickJumper: true,
-        showSizeChanger: true,
-        total: 0
-      }
+      columns: columns
     }
   },
   mounted() {
-    // this.loadData()
+    this.loadData()
   },
   methods: {
     async loadData(screenData) {
       let that = this
-      let obj = {
-        current: that.ipagination.current,
-        size: that.ipagination.pageSize,
-        ...screenData
-      }
       this.loading = true
-      await userPage(obj).then(res => {
-        if (res.code === 200) {
+      await initRank().then(res => {
+        if (res.code === 200 && res.data) {
+          let dataSource = res.data
+          for (let node of dataSource) {
+            node.name = node.value
+            node.redisRankId = node.value
+          }
           this.dataSource = res.data
-          that.ipagination.total = res.page.total
         }
         this.loading = false
       })
     },
-    // 表单查询
-    searchQuery(e) {
-      e.preventDefault()
-      this.ipagination.current = 1
-      let { ...others } = this.screenForm.getFieldsValue()
-      this.loadData({
-        ...others
-      })
-    },
-    // 表单重置
-    searchReset() {
-      this.screenForm.resetFields()
-      this.ipagination.current = 1
-      this.loadData()
-    },
-    // 新增
-    handleAdd: function() {
-      this.$refs.dialogEdit.add()
-      this.$refs.dialogEdit.title = '新增'
-    },
-    //分页、排序、筛选变化时触发
-    handleTableChange(pagination, filters, sorter) {
-      if (Object.keys(sorter).length > 0) {
-        this.isorter.column = sorter.field
-        this.isorter.order = 'ascend' == sorter.order ? 'asc' : 'desc'
-      }
-      this.ipagination = pagination
-      this.loadData()
-    },
-    // 新增/修改 成功时，重载列表
-    modalFormOk() {
-      this.loadData()
-    },
-    // 编辑
-    handleEdit: function(record) {
-      this.$refs.dialogEdit.edit(record)
-      this.$refs.dialogEdit.title = '编辑'
-      this.$refs.dialogEdit.disableSubmit = false
-    },
-    // 删除
-    handleDelete: function(id) {
-      var that = this
-      that.$confirm({
-        title: '确认删除',
-        content: '是否删除当前数据?',
-        onOk: function() {
-          deleteById({ redisUserId: id }).then(res => {
-            if (res.code === 200) {
-              that.$message.success('操作成功!')
-              that.loadData()
-            } else {
-              that.$message.warning(res.msg || '操作失败!')
+    // 总成绩排名
+    searchScore(type) {
+      let that = this
+      that.loading = false
+      scoreTop10({ type: type }).then(res => {
+        if (res.code === 200) {
+          if (res.data) {
+            let dataSource = res.data
+            if (type === '1') {
+              for (let node of dataSource) {
+                node.name = node.value
+                node.redisRankId = node.value
+              }
+            }else if (type === '2'){
+              for (let node of dataSource) {
+                node.name = node.value
+                node.chineseScore = node.score
+                node.redisRankId = node.value
+                node.score = ''
+              }
+            }else {
+              for (let node of dataSource) {
+                node.name = node.value
+                node.mathScore = node.score
+                node.redisRankId = node.value
+                node.score = ''
+              }
             }
-          })
+            that.dataSource = res.data
+          } else {
+            that.$message.warning('暂无数据，请尝试初始化数据！')
+            that.dataSource = []
+          }
         }
+        that.loading = false
       })
     },
     // 刷新
@@ -218,10 +178,60 @@ export default {
           initRankData().then(res => {
             if (res.code === 200) {
               that.$message.success('操作成功！')
+              that.loadData()
             } else {
               that.$message.warning(res.msg || '操作失败!')
             }
           })
+        }
+      })
+    },
+    // 新增某人的分数到排行榜中
+    rankAdd() {
+      var that = this
+      rankAdd().then(res => {
+        if (res.code === 200) {
+          that.$message.success('操作成功！')
+          that.loadData()
+        } else {
+          that.$message.warning(res.msg || '操作失败!')
+        }
+      })
+    },
+    // 新增某人的分数到排行榜中
+    userInfo() {
+      var that = this
+      userInfo().then(res => {
+        if (res.code === 200) {
+          let score = res.data.value
+          let num = res.data.rankNum
+          that.$message.success('乔治_1的成绩是' + score + '排名是' + num)
+        } else {
+          that.$message.warning(res.msg || '操作失败!')
+        }
+      })
+    },
+    // 统计分数区间人数
+    scopeCount() {
+      var that = this
+      scopeCount().then(res => {
+        if (res.code === 200) {
+          let count = res.data
+          that.$message.success('50~80区间人数为' + count)
+        } else {
+          that.$message.warning(res.msg || '操作失败!')
+        }
+      })
+    },
+    // 乔治_1加分500
+    addScore() {
+      var that = this
+      addScore().then(res => {
+        if (res.code === 200) {
+          that.$message.success('操作成功！')
+          that.loadData()
+        } else {
+          that.$message.warning(res.msg || '操作失败!')
         }
       })
     }
