@@ -3,7 +3,7 @@
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <!-- 搜索区域 -->
-      <a-form layout="inline" :form="screenForm" @keyup.enter.native="searchQuery">
+      <a-form layout="inline" >
         <a-row :gutter="24">
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
@@ -103,7 +103,6 @@ export default {
     return {
       dataSource: [],
       loading: false,
-      screenForm: this.$form.createForm(this),
       columns: columns
     }
   },

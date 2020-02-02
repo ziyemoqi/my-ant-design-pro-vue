@@ -1,5 +1,5 @@
 <template>
-  <a-card :bordered="false" class="card-area">
+<a-card :bordered="false" class="card-area">
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <!-- 搜索区域 -->

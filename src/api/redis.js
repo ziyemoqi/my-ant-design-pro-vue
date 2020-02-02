@@ -18,7 +18,6 @@ const setExpireTime = (params)=>post("/redisPractice/redisUser/setExpireTime",pa
 // 查看缓存是否过期
 const expireState = (params) => get("/redisPractice/redisUser/expireState", params)
 
-
 // ========== redis pub sub ==========
 // 分页查询数据
 const pubSubPage = (params) => get("/redisPractice/redisPubSub/pubSubPage", params)
@@ -41,6 +40,12 @@ const scopeCount = (params) => get("/redisPractice/redisRank/scopeCount", params
 // 添加
 const addScore = (params)=>post("/redisPractice/redisRank/addScore",params)
 
+
+// ========= redis counter ============
+// 实现自增序列号
+const importDevice = (params)=>post("/redisPractice/redisCounter/importDevice",params)
+
+
 export {
     userPage,
     findUserById,
@@ -57,5 +62,6 @@ export {
     rankAdd,
     userInfo,
     scopeCount,
-    addScore
+    addScore,
+    importDevice
 }
