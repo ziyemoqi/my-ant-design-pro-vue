@@ -38,14 +38,14 @@
             style="width: 100%"
             placeholder="请选择职务"
             optionFilterProp="children"
-            v-decorator="['jobs',{rules: [{required: true, message: '请选择职务'}]}]"
+             v-model="selectedJob"
           >
             <a-select-option value>请选择职务</a-select-option>
             <a-select-option
-              v-for="(dict,dictindex) in dictList"
-              :key="dictindex.toString()"
+              v-for="(dict) in dictList"
+              :key="dict.value"
               :value="dict.value"
-            >{{ dict.jobs }}</a-select-option>
+            >{{ dict.job }}</a-select-option>
           </a-select>
         </a-form-item>
 
@@ -212,9 +212,12 @@ export default {
       that.userId = record.sysUserId
       that.visible = true
       that.model = Object.assign({}, record)
+      if(this.model.jobs){
+        this.selectedJob = this.model.jobs.split(",")
+      }
       that.$nextTick(() => {
         that.form.setFieldsValue(
-          pick(this.model, 'loginName', 'userName', 'email','jobs','address', 'idCard', 'phone', 'sort', 'state', 'remark')
+          pick(this.model, 'loginName', 'userName', 'email','address', 'idCard', 'phone', 'sort', 'state', 'remark')
         )
       })
     },
@@ -336,11 +339,11 @@ export default {
       }
       await dictList(obj).then(res => {
         if (res.code === 200) {
-          that.dictList = [];
+            that.dictList = [];
             res.data.forEach((item) => {
             that.dictList.push({
-              values: item.name,
-              jobs: item.value
+              value: item.sysDictId,
+              job: item.name
             })
           });
         } else {

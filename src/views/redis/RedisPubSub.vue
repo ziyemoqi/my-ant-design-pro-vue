@@ -31,8 +31,7 @@
         :pagination="ipagination"
         :loading="loading"
         @change="handleTableChange"
-      >
-      </a-table>
+      ></a-table>
     </div>
     <!-- table区域-end -->
   </a-card>
@@ -115,9 +114,9 @@ export default {
     },
     // 发布
     add: function() {
-        let that = this
-         that.loading = true
-      sendMessage
+      let that = this
+      that.loading = true
+      sendMessage()
         .then(res => {
           if (res.code === 200) {
             that.$message.success('发布成功!')
@@ -130,6 +129,25 @@ export default {
           that.loading = false
         })
     },
+
+
+// if(!this.model.redisUserId){
+//               obj=add(formData)
+//             }else{
+//               obj=edit(formData)
+//             }
+//             obj.then((res)=>{
+//               if(res.code === 200){
+//                 that.$message.success('操作成功!');
+//                 that.$emit('ok');
+//               }else{
+//                 that.$message.warning(res.msg ||'操作失败!');
+//               }
+//             }).finally(() => {
+//               that.confirmLoading = false;
+//               that.close();
+//             })
+
     //分页、排序、筛选变化时触发
     handleTableChange(pagination, filters, sorter) {
       if (Object.keys(sorter).length > 0) {

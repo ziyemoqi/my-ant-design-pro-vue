@@ -19,13 +19,6 @@
                 @click="handleReset"
               >重置</a-button>
               <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left: 8px">新增</a-button>
-              <a-button
-                @click="exportWord"
-                type="primary"
-                icon="download"
-                :loading="exporting"
-                style="margin-left: 8px"
-              >导出word</a-button>
               <a-dropdown v-if="selectedRowKeys.length > 0">
                 <a-menu slot="overlay">
                   <a-menu-item key="1" @click="batchDel">
@@ -114,7 +107,6 @@
 
 <script>
 import { userList, deleteBatch, delete_, resetPassword } from '@/api/user'
-import download from '@/utils/download'
 import UserModal from './UserModal'
 const columns = [
   {
@@ -201,7 +193,6 @@ export default {
       },
       loading: false,
       screenForm: this.$form.createForm(this),
-      exporting: false
     }
   },
   filters: {
@@ -370,16 +361,6 @@ export default {
           })
         }
       })
-    },
-    // 导出word
-    async exportWord() {
-      this.exporting = true
-      await download(
-        '/sysUser/exportWord',
-        false,
-        false
-      )
-      this.exporting = false
     }
   }
 }

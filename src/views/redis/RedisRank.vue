@@ -7,31 +7,18 @@
         <a-row :gutter="24">
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
-              <a-button type="primary" icon="search" @click="searchScore('1')">按总成绩排名</a-button>
-              <a-button
-                type="primary"
-                icon="search"
-                style="margin-left: 8px"
-                @click="searchScore('2')"
-              >按中文成绩排名</a-button>
-              <a-button
-                type="primary"
-                icon="search"
-                style="margin-left: 8px"
-                @click="searchScore('3')"
-              >按数学成绩排名</a-button>
               <a-button
                 @click="refresh"
                 type="default"
                 icon="reload"
-                style="margin-left: 8px"
                 :loading="loading"
               >刷新</a-button>
-              <a-button icon="plus" @click="rankAdd" style="margin-left: 8px">新增</a-button>
-              <a-button icon="plus" @click="addScore" style="margin-left: 8px">乔治_1加分500</a-button>
-
               <a-button icon="reload" @click="initData" style="margin-left: 8px">初始化数据</a-button>
-              <a-button icon="search" @click="userInfo" style="margin-left: 8px">查询指定人的排名和分数</a-button>
+              <a-button icon="reload" @click="clearData" style="margin-left: 8px">清除数据</a-button>
+              <a-button type="primary" icon="search" @click="searchScore('1')" style="margin-left: 8px">排行榜TOP10</a-button>
+              <a-button icon="plus" @click="rankAdd" style="margin-left: 8px">新增</a-button>
+              <a-button icon="plus" @click="addScore" style="margin-left: 8px">乔治_1加10分</a-button>
+              <a-button icon="search" @click="userInfo" style="margin-left: 8px">查询乔治_1的排名和分数</a-button>
               <a-button icon="search" @click="scopeCount" style="margin-left: 8px">统计分数区间人数</a-button>
             </a-col>
           </span>
@@ -57,7 +44,7 @@
 
 <script>
 import Vue from 'vue'
-import { initRank, initRankData, scoreTop10, rankAdd, userInfo, scopeCount, addScore } from '@/api/redis'
+import { getData,clearData, initRankData, scoreTop10, rankAdd, userInfo, scopeCount, addScore } from '@/api/redis'
 
 const columns = [
   {
@@ -77,21 +64,9 @@ const columns = [
     width: 200
   },
   {
-    title: '总成绩',
+    title: '成绩',
     align: 'center',
     dataIndex: 'score',
-    width: 200
-  },
-  {
-    title: '中文分数',
-    dataIndex: 'chineseScore',
-    align: 'center',
-    width: 200
-  },
-  {
-    title: '数学分数',
-    dataIndex: 'mathScore',
-    align: 'center',
     width: 200
   }
 ]
@@ -113,7 +88,7 @@ export default {
     async loadData(screenData) {
       let that = this
       this.loading = true
-      await initRank().then(res => {
+      await getData().then(res => {
         if (res.code === 200 && res.data) {
           let dataSource = res.data
           for (let node of dataSource) {
@@ -121,6 +96,8 @@ export default {
             node.redisRankId = node.value
           }
           this.dataSource = res.data
+        }else {
+           this.dataSource = []
         }
         this.loading = false
       })
@@ -154,6 +131,7 @@ export default {
               }
             }
             that.dataSource = res.data
+            that.$message.success('成功获取榜单前10名！')
           } else {
             that.$message.warning('暂无数据，请尝试初始化数据！')
             that.dataSource = []
@@ -176,7 +154,25 @@ export default {
         onOk: function() {
           initRankData().then(res => {
             if (res.code === 200) {
-              that.$message.success('操作成功！')
+              that.$message.success('操作成功，已生成200条初始数据！')
+              that.loadData()
+            } else {
+              that.$message.warning(res.msg || '操作失败!')
+            }
+          })
+        }
+      })
+    },
+    // 清除数据
+    clearData() {
+      var that = this
+      that.$confirm({
+        title: '确认',
+        content: '确认清除排行榜数据?',
+        onOk: function() {
+          clearData().then(res => {
+            if (res.code === 200) {
+              that.$message.success('操作成功，已清除缓存！')
               that.loadData()
             } else {
               that.$message.warning(res.msg || '操作失败!')
@@ -190,21 +186,21 @@ export default {
       var that = this
       rankAdd().then(res => {
         if (res.code === 200) {
-          that.$message.success('操作成功！')
+          that.$message.success('操作成功,成绩榜单中新增一名学生信息！')
           that.loadData()
         } else {
           that.$message.warning(res.msg || '操作失败!')
         }
       })
     },
-    // 新增某人的分数到排行榜中
+    // 获取指定人的分数到排行榜中
     userInfo() {
       var that = this
       userInfo().then(res => {
         if (res.code === 200) {
-          let score = res.data.value
+          let score = res.data.score
           let num = res.data.rankNum
-          that.$message.success('乔治_1的成绩是' + score + '排名是' + num)
+          that.$message.success('乔治_1的成绩是' + score + ',排名是' + num)
         } else {
           that.$message.warning(res.msg || '操作失败!')
         }
@@ -216,7 +212,7 @@ export default {
       scopeCount().then(res => {
         if (res.code === 200) {
           let count = res.data
-          that.$message.success('50~80区间人数为' + count)
+          that.$message.success('成绩排行榜50~80区间人数为' + count)
         } else {
           that.$message.warning(res.msg || '操作失败!')
         }

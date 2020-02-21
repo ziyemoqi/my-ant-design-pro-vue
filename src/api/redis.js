@@ -28,7 +28,9 @@ const sendMessage = (params) => post("/redisPractice/redisPubSub/sendMessage", p
 // 初始化数据
 const initRankData =  (params) => post("/redisPractice/redisRank/initRankData",params)
 // 查询数据
-const initRank = (params) => get("/redisPractice/redisRank/initRank", params)
+const getData = (params) => get("/redisPractice/redisRank/getData", params)
+//清除数据
+const clearData =  (params) => post("/redisPractice/redisRank/clearData",params)
 // 查询排行榜前10
 const scoreTop10 = (params) => get("/redisPractice/redisRank/scoreTop10", params)
 // 添加
@@ -57,11 +59,12 @@ export {
     setExpireTime,
     expireState,
     initRankData,
-    initRank,
+    getData,
     scoreTop10,
     rankAdd,
     userInfo,
     scopeCount,
     addScore,
-    importDevice
+    importDevice,
+    clearData
 }
