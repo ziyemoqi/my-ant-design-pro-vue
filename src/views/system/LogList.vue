@@ -130,6 +130,11 @@ const columns = [
     align: 'center',
     dataIndex: 'createTime'
   },
+{
+    title: '耗时',
+    align: 'center',
+    dataIndex: 'costTime'
+  },
   {
     title: '访问IP',
     align: 'center',
