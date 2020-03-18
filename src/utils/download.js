@@ -21,7 +21,7 @@ export default function downloadFile(url, data, postForm) {
             }
         }
         Axios.request({
-            baseURL: 'http://192.168.0.243:8082/lionherding',
+            baseURL: 'http://192.168.0.243:8082/deepLearning',
             url,
             method: 'POST',
             headers: {

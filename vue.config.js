@@ -33,9 +33,9 @@ module.exports = {
   devServer: {
     port: 3000,
     proxy: {
-      '/lionherding': {
+      '/deepLearning': {
         // target: 'http://192.168.0.243:8082', // 接口地址
-        target: 'http://localhost:8080', // 本地接口地址
+        target: 'http://localhost:9091', // 本地接口地址
         ws: false,
         changeOrigin: true
       }
