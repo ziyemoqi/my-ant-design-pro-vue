@@ -8,7 +8,7 @@ import qs from 'qs'
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: '/deepLearning', // api base_url
+  baseURL: process.env.VUE_APP_API,
   timeout: 10000 // 请求超时时间
 })
 
@@ -71,10 +71,11 @@ const err = (error) => {
   return Promise.reject(error)
 }
 // / request interceptor
-service.interceptors.request.use(config => {
+service.interceptors.request.use(
+  config => {
   const token = Vue.ls.get(ACCESS_TOKEN)
   if (token) {
-    config.headers['X-Access-Token'] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
+    config.headers['Authorization'] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
   }
   if (config.method == 'get') {
     config.data = {
@@ -86,6 +87,7 @@ service.interceptors.request.use(config => {
 }, (error) => {
   return Promise.reject(error)
 })
+
 
 // response interceptor
 service.interceptors.response.use((response) => {
