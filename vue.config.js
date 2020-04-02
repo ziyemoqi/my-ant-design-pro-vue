@@ -36,7 +36,7 @@ module.exports = {
       '/deepLearning': {
         // target: 'http://192.168.0.243:8082', // 接口地址
         target: 'http://localhost:9091', // 本地接口地址
-        ws: false,
+        ws: true,
         changeOrigin: true
       }
     }

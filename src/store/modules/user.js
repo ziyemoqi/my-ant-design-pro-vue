@@ -39,8 +39,6 @@ const user = {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
           if (response.code == '200') {
-            console.log("1221")
-            console.log(response.data)
             let result = response.data
             let userInfo = result.userInfo
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
@@ -66,8 +64,6 @@ const user = {
       return new Promise((resolve, reject) => {
         let v_token = Vue.ls.get(ACCESS_TOKEN)
         let params = { token: v_token }
-        console.log('11111111111111111')
-        console.log(params)
         queryPermissionsByToken(params).then(response => {
           if (response.code == '200') {
             let menuData = response.data.menu
@@ -98,11 +94,11 @@ const user = {
         commit('SET_TOKEN', '')
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
-        logout(logoutToken).then(() => {
+        // logout(logoutToken).then(() => {
           resolve()
-        }).catch(() => {
-          resolve()
-        })
+        // }).catch(() => {
+        //   resolve()
+        // })
       })
     },
 
