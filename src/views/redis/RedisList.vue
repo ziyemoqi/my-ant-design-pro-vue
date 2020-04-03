@@ -226,7 +226,6 @@ export default {
         onOk: function() {
           findUserById({ redisUserId: '1' }).then(res => {
             if (res.code === 200) {
-              console.log(res.data)
               that.$message.success('查询成功！')
             } else {
               that.$message.warning(res.msg || '操作失败!')

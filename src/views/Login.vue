@@ -107,7 +107,6 @@ export default {
   },
   created() {
     Vue.ls.remove(ACCESS_TOKEN)
-    
   },
   methods: {
     ...mapActions(['Login', 'Logout']),

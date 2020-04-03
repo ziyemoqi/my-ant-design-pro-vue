@@ -25,6 +25,7 @@ export const USER_NAME = 'Login_Username'
 export const USER_INFO = 'Login_Userinfo'
 export const USER_AUTH = 'LOGIN_USER_BUTTON_AUTH'
 export const SYS_BUTTON_AUTH = 'SYS_BUTTON_AUTH'
+export const PWD_STRONG = 'PWD_STRONG'
 
 export const CONTENT_WIDTH_TYPE = {
   Fluid: 'Fluid',

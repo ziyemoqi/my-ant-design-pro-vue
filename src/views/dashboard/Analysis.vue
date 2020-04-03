@@ -184,6 +184,7 @@
 
 <script>
 import ChartCard from '@/components/chart/ChartCard'
+import Vue from 'vue'
 import ACol from 'ant-design-vue/es/grid/Col'
 import ATooltip from 'ant-design-vue/es/tooltip/Tooltip'
 import MiniArea from '@/components/chart/MiniArea'
@@ -195,6 +196,7 @@ import Trend from '@/components/Trend'
 import { getLogInfo } from '@/api/log'
 import * as userApi from '@/api/user'
 import { deleteAction, get} from '@/api/manage'
+import { PWD_STRONG } from '@/store/mutation-types'
 
 const rankList = []
 for (let i = 0; i < 7; i++) {
@@ -243,12 +245,38 @@ export default {
   mounted() {
     //初始化websocket
     // this.initWebSocket()
-    // 测试导出
+    this.checkPwdStrong()
   },
   destroyed: function () { // 离开页面生命周期函数
     // this.websocketclose();
   },
   methods: {
+    checkPwdStrong() {
+      let pwdStrong = Vue.ls.get(PWD_STRONG)
+      if(pwdStrong) {
+        if(pwdStrong === 'EASY') {
+            this.$notification['warning']({
+              message: '温馨提醒',
+              description:
+                '您的密码非常常用，会被几乎瞬间破解！',
+              duration: 5,
+              style : {
+                height: '100px'
+              }
+            });
+        } else if (pwdStrong === 'MIDIUM') {
+          this.$notification['warning']({
+              message: '温馨提醒',
+              description:
+                '您的密码可能是一个单词后跟着几个数字，这种组合非常普遍，会被迅速破解!',
+              duration: 5,
+              style : {
+                height: '120px'
+              }
+            });
+        }
+      }
+    },
     // timer () {
     //  return setInterval(() => {
     //   this.testWebsocket()
@@ -293,7 +321,6 @@ export default {
     websocketonmessage: function(e) {
       this.num ++
       var data = eval('(' + e.data + ')')
-      // console.log(data)
       this.$notification.success({
         message: '系统消息',
         description:'第'+ this.num+'次推送,'+ data.content

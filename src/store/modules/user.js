@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { login, logout } from '@/api/user'
 import { queryPermissionsByToken } from '@/api/permission'
-import { ACCESS_TOKEN, USER_NAME, USER_INFO, USER_AUTH, SYS_BUTTON_AUTH } from "@/store/mutation-types"
+import { ACCESS_TOKEN, USER_NAME, USER_INFO, USER_AUTH, SYS_BUTTON_AUTH, PWD_STRONG } from "@/store/mutation-types"
 import { welcome } from '@/utils/util'
 
 const user = {
@@ -11,7 +11,8 @@ const user = {
     welcome: '',
     picture: '',
     permissionList: [],
-    info: {}
+    info: {},
+    pwdStrong: '',
   },
 
   mutations: {
@@ -31,6 +32,9 @@ const user = {
     SET_INFO: (state, info) => {
       state.info = info
     },
+    SET_PWDSTRONG: (state, pwdStrong) => {
+      state.pwdStrong = pwdStrong
+    },
   },
 
   actions: {
@@ -41,10 +45,12 @@ const user = {
           if (response.code == '200') {
             let result = response.data
             let userInfo = result.userInfo
-            Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-            Vue.ls.set(USER_NAME, userInfo.userName, 7 * 24 * 60 * 60 * 1000)
-            Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(ACCESS_TOKEN, result.token, 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_NAME, userInfo.userName, 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_INFO, userInfo, 24 * 60 * 60 * 1000)
+            Vue.ls.set(PWD_STRONG, result.pwdStrong, 60 * 1000)
             commit('SET_TOKEN', result.token)
+            commit('SET_PWDSTRONG', result.pwdStrong)
             commit('SET_INFO', userInfo)
             commit('SET_NAME', { userName: userInfo.userName, welcome: welcome() })
             commit('SET_PICTURE', userInfo.picture)
@@ -78,7 +84,6 @@ const user = {
             }
             resolve(response)
           } else {
-            console.log(response.msg)
             reject(response.msg)
           }
         }).catch(error => {
@@ -90,7 +95,7 @@ const user = {
     // 登出
     Logout({ commit, state }) {
       return new Promise((resolve, reject) => {
-        let logoutToken = state.token;
+        // let logoutToken = state.token;
         commit('SET_TOKEN', '')
         commit('SET_PERMISSIONLIST', [])
         Vue.ls.remove(ACCESS_TOKEN)
