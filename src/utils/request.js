@@ -11,70 +11,13 @@ const service = axios.create({
   baseURL: process.env.VUE_APP_API,
   timeout: 10000
 })
-// const err = (error) => {
-//   debugger
-//   if (error.response) {
-//     let data = error.response.data
-//     const token = Vue.ls.get(ACCESS_TOKEN)
-//     console.log('------异常响应------', error.response.status)
-//     switch (error.response.status) {
-//       case 403:
-//         notification.error({ message: '系统提示', description: '拒绝访问', duration: 4 })
-//         break
-//       case 500:
-//         if (token && data.message === 'Token失效，请重新登录') {
-        //   Modal.error({
-        //     title: '登录已过期',
-        //     content: '很抱歉，登录已过期，请重新登录',
-        //     okText: '重新登录',
-        //     mask: false,
-        //     onOk: () => {
-        //       store.dispatch('Logout').then(() => {
-        //         Vue.ls.remove(ACCESS_TOKEN)
-        //         window.location.reload()
-        //       })
-        //     }
-        //   })
-        // }
-//         break
-//       case 400:
-//         notification.error({ message: '系统提示', description: '数据请求有误!', duration: 4 })
-//       case 404:
-//         notification.error({ message: '系统提示', description: '请求资源未找到!', duration: 4 })
-//         break
-//       case 405:
-//         notification.error({ message: '系统提示', description: '请求类型有误!', duration: 4 })
-//         break
-//       case 504:
-//         notification.error({ message: '系统提示', description: '网络超时' })
-//         break
-//       case 401:
-//         notification.error({ message: '系统提示', description: '未授权，请重新登录', duration: 4 })
-//         if (token) {
-//           store.dispatch('Logout').then(() => {
-//             setTimeout(() => {
-//               window.location.reload()
-//             }, 1500)
-//           })
-//         }
-//         break
-//       default:
-//         notification.error({
-//           message: '系统提示',
-//           description: data.message,
-//           duration: 4
-//         })
-//         break
-//     }
-//   }
-//   return Promise.reject(error)
-// }
+
 // / request interceptor
 service.interceptors.request.use(
   config => {
   const token = Vue.ls.get(ACCESS_TOKEN)
   if (token) {
-    config.headers['Authorization'] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
+    config.headers['authorization'] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
   }
   if (config.method == 'get') {
     config.data = {
@@ -91,6 +34,10 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use((response) => {
   const res = response.data
+  const token = response.headers['authorization']
+  if (token) {
+    Vue.ls.set(ACCESS_TOKEN, token, 24 * 60 * 60 * 1000)
+  }
     if (res.code !== 0) {
       // 登录验证
       if (res.code === 40103) {

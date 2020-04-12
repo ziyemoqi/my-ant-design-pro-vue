@@ -210,15 +210,15 @@ export default {
   methods: {
     loadTree() {
       var that = this
-      queryTreeList().then(res => {
+      queryTreeList({'menuType':'0'}).then(res => {
         if (res.code === 200) {
-          that.treeData = []
-          let treeList = res.data.treeList
-          for (let a = 0; a < treeList.length; a++) {
-            let temp = treeList[a]
-            temp.isLeaf = temp.leaf
-            that.treeData.push(temp)
-          }
+          that.treeData = res.data.treeList
+          // let treeList = res.data.treeList
+          // for (let a = 0; a < treeList.length; a++) {
+          //   let temp = treeList[a]
+          //   // temp.isLeaf = temp.leaf
+          //   that.treeData.push(temp)
+          // }
         }else {
           that.$message.warning(res.msg || '数据加载错误')
         }

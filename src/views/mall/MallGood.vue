@@ -1,32 +1,31 @@
 <template>
-<a-card :bordered="false" class="card-area">
+  <a-card :bordered="false" class="card-area">
     <div class="table-page-search-wrapper">
       <!-- 搜索区域 -->
       <a-form layout="inline" :form="screenForm" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="姓名" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
-              <a-input placeholder="请输入名称查询" v-decorator="['name',{}]"></a-input>
+            <a-form-item label="商品名称" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
+              <a-input placeholder="请输入..." v-decorator="['name']"></a-input>
             </a-form-item>
           </a-col>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
-              <a-button type="primary" icon="search" @click="searchQuery">查询</a-button>
+              <a-button @click="handleAdd" type="primary" icon="plus" >新增</a-button>
+              <a-button type="primary" icon="search" @click="searchQuery" style="margin-left:10px">查询</a-button>
               <a-button
                 style="margin-left: 8px"
                 type="primary"
                 icon="reload"
                 @click="searchReset"
               >重置</a-button>
-              <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left:10px">新增</a-button>
-              <a-button
+                <a-button
                 @click="refresh"
                 type="default"
                 icon="reload"
                 style="margin-left: 8px"
                 :loading="loading"
               >刷新</a-button>
-              <a-button icon="search" @click="searchById" style="margin-left: 8px">ID查询</a-button>
             </a-col>
           </span>
         </a-row>
@@ -39,7 +38,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="redisUserId"
+        rowKey="mallGoodId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -48,9 +47,7 @@
       >
         <span slot="action" slot-scope="text, record">
           <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
-          <a-button @click="handleDelete(record.redisUserId)" type="primary" icon="delete">删除</a-button>&nbsp;&nbsp;
-          <a-button @click="setExpireTime(record)" type="primary" icon="clock-circle">设置过期时间</a-button>&nbsp;&nbsp;
-          <a-button @click="expireState(record.redisUserId)" type="primary" icon="question">查看是否过期</a-button>
+          <a-button @click="handleDelete(record.mallGoodId)" type="primary" icon="delete">删除</a-button>&nbsp;&nbsp;
         </span>
       </a-table>
     </div>
@@ -62,9 +59,9 @@
 </template>
 
 <script>
-import DialogEdit from './modules/dialogEdit'
+import DialogEdit from './modules/dialogGoodEdit'
 import Vue from 'vue'
-import { userPage, findUserById, deleteById, setExpireTime, expireState } from '@/api/redis'
+import { page,delete_ } from '@/api/mall/mallGood'
 
 const columns = [
   {
@@ -78,39 +75,64 @@ const columns = [
     }
   },
   {
-    title: '姓名',
+    title: '商品名称',
     align: 'center',
     dataIndex: 'name',
     width: 200
   },
   {
-    title: '年龄',
+    title: '图片',
     align: 'center',
-    dataIndex: 'age',
-    width: 200
+    dataIndex: 'pic',
+    width: 150
   },
   {
-    title: '序号',
-    dataIndex: 'sort',
+    title: '商品描述',
+    align: 'center',
+    dataIndex: 'description',
+    width: 150
+  },
+  {
+    title: '价格',
+    dataIndex: 'price',
     align: 'center',
     width: 120
   },
   {
-    title: '备注',
+    title: '销量',
+    dataIndex: 'sale',
     align: 'center',
-    dataIndex: 'remark'
+    width: 100
+  },
+  {
+    title: '库存',
+    align: 'center',
+    dataIndex: 'stock',
+    width: 100
+  },
+  {
+    title: '库存预警',
+    align: 'center',
+    dataIndex: 'lowStock',
+    width: 100
+  },
+  {
+    title: '排序',
+    align: 'center',
+    dataIndex: 'sort',
+    width: 100
   },
   {
     title: '操作',
     dataIndex: 'action',
     align: 'center',
     scopedSlots: { customRender: 'action' },
-    width: 560
+    width: 300
   }
 ]
 
 export default {
-  name: 'RedisList_view',
+  name: 'mallBrandList_view',
   components: {
     DialogEdit
   },
@@ -146,7 +168,7 @@ export default {
         ...screenData
       }
       this.loading = true
-      await userPage(obj).then(res => {
+      await page(obj).then(res => {
         if (res.code === 200) {
           this.dataSource = res.data
           that.ipagination.total = res.page.total
@@ -200,7 +222,7 @@ export default {
         title: '确认删除',
         content: '是否删除当前数据?',
         onOk: function() {
-          deleteById({ redisUserId: id }).then(res => {
+          delete_({ mallGoodId: id }).then(res => {
             if (res.code === 200) {
               that.$message.success('操作成功!')
               that.loadData()
@@ -215,53 +237,6 @@ export default {
     refresh() {
       this.loading = true
       this.loadData()
-    },
-    // 根据ID查询
-    searchById() {
-      var that = this
-      that.$confirm({
-        title: '查询',
-        content: '确认查询ID为1的数据?',
-        onOk: function() {
-          findUserById({ redisUserId: '1' }).then(res => {
-            if (res.code === 200) {
-              that.$message.success('查询成功！')
-            } else {
-              that.$message.warning(res.msg || '操作失败!')
-            }
-          })
-        }
-      })
-    },
-    // 查看缓存是否过期
-    expireState(redisUserId) {
-      let that = this
-      expireState({ redisUserId: redisUserId }).then(res => {
-        if (res.code === 200) {
-          if(res.data === true){
-            that.$message.success('缓存有效！')
-          }else{
-            that.$message.success('缓存过期！') 
-          }
-        } else {
-          that.$message.warning(res.msg || '操作失败!')
-        }
-      })
-    },
-    // 设置过期时间
-    setExpireTime(redisUser) {
-      let that = this
-      setExpireTime(redisUser)
-        .then(res => {
-          if (res.code === 200) {
-            that.$message.success('已设置该数据一分钟内有效!')
-          } else {
-            that.$message.warning(res.msg || '操作失败!')
-          }
-        })
-        .finally(() => {
-          that.loading = false
-        })
     }
   }
 }

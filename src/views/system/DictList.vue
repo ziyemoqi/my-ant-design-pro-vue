@@ -323,7 +323,7 @@ export default {
       return tree
     },
     setThisExpandedKeys(node) {
-      if (node.id === '#' ) {
+      if (node.id === 'root' ) {
         this.iExpandedKeys.push(node.key)
         for (let a = 0; a < node.children.length; a++) {
           this.setThisExpandedKeys(node.children[a])
