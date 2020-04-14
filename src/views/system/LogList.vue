@@ -202,13 +202,13 @@ export default {
       ipagination: {
         current: 1,
         pageSize: 10,
+        total: 0,
         pageSizeOptions: ['10', '20', '30'],
         showTotal: (total, range) => {
           return range[0] + '-' + range[1] + ' 共 ' + total + ' 条'
         },
         showQuickJumper: true,
         showSizeChanger: true,
-        total: 0
       },
       loading: false,
       screenForm: this.$form.createForm(this),
@@ -229,13 +229,18 @@ export default {
     this.loadData()
   },
   methods: {
-    loadData(screenData) {
+    loadData() {
       let that = this
       this.loading = true
+      let screenForm = this.screenForm.getFieldsValue()
+      if (screenForm.dateRange) {
+          screenForm['beginTime'] = screenForm.dateRange[0].format('YYYY-MM-DD')
+          screenForm['endTime'] = screenForm.dateRange[1].format('YYYY-MM-DD')
+        }
       let obj = {
         current: that.ipagination.current,
         size: that.ipagination.pageSize,
-        ...screenData
+        ...screenForm
       }
       logPage(obj).then(res => {
         if (res.code === 200) {
@@ -250,15 +255,8 @@ export default {
     // form表单条件查询
     handleScreenSubmit(e) {
       e.preventDefault()
-      this.ipagination.pageNo = 1
-      let {dateRange, ...others } = this.screenForm.getFieldsValue()
-      this.loadData({
-        ...others,
-        ...(dateRange ? {
-          beginTime: dateRange[0].format('YYYY-MM-DD'),
-          endTime: dateRange[1].format('YYYY-MM-DD')
-        } : {})
-      })
+      this.ipagination.current = 1
+      this.loadData()
     },
     // 重置
     handleReset() {

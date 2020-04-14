@@ -11,21 +11,11 @@
           </a-col>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
-              <a-button @click="handleAdd" type="primary" icon="plus" >新增</a-button>
-              <a-button type="primary" icon="search" @click="searchQuery" style="margin-left:10px">查询</a-button>
-              <a-button
-                style="margin-left: 8px"
-                type="primary"
-                icon="reload"
-                @click="searchReset"
-              >重置</a-button>
-                <a-button
-                @click="refresh"
-                type="default"
-                icon="reload"
-                style="margin-left: 8px"
-                :loading="loading"
-              >刷新</a-button>
+              <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
+              <a-button type="primary" icon="search" style="margin-left:10px" @click="searchQuery">查询</a-button>
+              <a-button style="margin-left: 8px" type="primary" icon="reload" @click="searchReset">重置</a-button>
+              <a-button type="default" icon="reload" style="margin-left: 8px" @click="refresh" :loading="loading">刷新</a-button>
+              <a-button type='primary' ghost icon="shopping-cart" style="margin-left: 8px" @click="createOrder">购买</a-button>
             </a-col>
           </span>
         </a-row>
@@ -55,6 +45,12 @@
 
     <!-- form表单 -->
     <Dialog-Edit ref="dialogEdit" @ok="modalFormOk"></Dialog-Edit>
+
+    <dialog-create-order
+      :key="dialogCreateOrderKey"
+      :visible.sync="dialogCreateOrderVisible"
+      @submitted="loadData"
+    ></dialog-create-order>
   </a-card>
 </template>
 
@@ -62,6 +58,7 @@
 import DialogEdit from './modules/dialogGoodEdit'
 import Vue from 'vue'
 import { page,delete_ } from '@/api/mall/mallGood'
+import dialogCreateOrder from './modules/dialogCreateOrder';
 
 const columns = [
   {
@@ -132,9 +129,10 @@ const columns = [
 ]
 
 export default {
-  name: 'mallBrandList_view',
+  name: 'mallGoodList_view',
   components: {
-    DialogEdit
+    DialogEdit,
+    dialogCreateOrder
   },
 
   data() {
@@ -153,15 +151,18 @@ export default {
         showQuickJumper: true,
         showSizeChanger: true,
         total: 0
-      }
+      },
+      dialogCreateOrderKey: 0,
+      dialogCreateOrderVisible: false,
     }
   },
   mounted() {
     this.loadData()
   },
   methods: {
-    async loadData(screenData) {
+    async loadData() {
       let that = this
+      let screenData = this.screenForm.getFieldsValue()
       let obj = {
         current: that.ipagination.current,
         size: that.ipagination.pageSize,
@@ -180,10 +181,7 @@ export default {
     searchQuery(e) {
       e.preventDefault()
       this.ipagination.current = 1
-      let { ...others } = this.screenForm.getFieldsValue()
-      this.loadData({
-        ...others
-      })
+      this.loadData()
     },
     // 表单重置
     searchReset() {
@@ -237,6 +235,11 @@ export default {
     refresh() {
       this.loading = true
       this.loadData()
+    },
+    // 购买
+    createOrder() {
+      this.dialogCreateOrderVisible = true;
+      this.dialogCreateOrderKey++;
     }
   }
 }

@@ -167,8 +167,9 @@ export default {
     this.loadData()
   },
   methods: {
-    async loadData(screenData) {
+    async loadData() {
       let that = this
+      let screenData = this.screenForm.getFieldsValue()
       let obj = {
         current: that.ipagination.current,
         size: that.ipagination.pageSize,
@@ -187,10 +188,7 @@ export default {
     searchQuery(e) {
       e.preventDefault()
       this.ipagination.current = 1
-      let { ...others } = this.screenForm.getFieldsValue()
-      this.loadData({
-        ...others
-      })
+      this.loadData()
     },
     // 表单重置
     searchReset() {

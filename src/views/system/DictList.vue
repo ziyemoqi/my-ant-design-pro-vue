@@ -407,10 +407,12 @@ export default {
     //分页、排序、筛选变化时触发
     handleTableChange(pagination, filters, sorter) {
       this.ipagination = pagination
+      let screenData = this.screenForm.getFieldsValue()
       this.queryChildrenDict({
         parentId: this.currSelected.key,
         current: pagination.current,
-        size: this.ipagination.pageSize
+        size: this.ipagination.pageSize,
+        ...screenData
       })
     },
     // 字典搜索

@@ -208,10 +208,11 @@ export default {
   },
   methods: {
     // 加载数据
-    loadData(screenData) {
+    loadData() {
       let that = this
       if (that.currentDeptId === '') return
       this.loading = true
+      let screenData = this.screenForm.getFieldsValue()
       let obj = {
         current: that.ipagination.current,
         size: that.ipagination.pageSize,
