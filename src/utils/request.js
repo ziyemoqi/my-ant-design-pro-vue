@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import axios from 'axios'
 import store from '@/store'
-import { Modal, notification } from 'ant-design-vue'
+import { Modal} from 'ant-design-vue'
 import { VueAxios } from './axios'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import qs from 'qs'
 
 // 创建 axios 实例
 const service = axios.create({
@@ -12,7 +11,7 @@ const service = axios.create({
   timeout: 10000
 })
 
-// / request interceptor
+// request interceptor
 service.interceptors.request.use(
   config => {
   const token = Vue.ls.get(ACCESS_TOKEN)

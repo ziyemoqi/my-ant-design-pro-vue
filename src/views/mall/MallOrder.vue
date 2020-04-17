@@ -9,13 +9,20 @@
               <a-input placeholder="请输入..." v-decorator="['orderNo']"></a-input>
             </a-form-item>
           </a-col>
-          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-            <a-col :md="6" :sm="24">
+          <a-col :md="8" :sm="12">
+            <a-form-item label="申请时间">
+                <a-range-picker
+                  v-decorator="['dateRange']"
+                  :showTime="{
+                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')]
+              }" format="YYYY-MM-DD HH:mm:ss" />
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
               <a-button type="primary" icon="search" @click="searchQuery" style="margin-left:10px">查询</a-button>
               <a-button style="margin-left: 8px" type="primary" icon="reload" @click="searchReset" >重置</a-button>
               <a-button type="default" icon="reload" style="margin-left: 8px" :loading="loading" @click="refresh">刷新</a-button>
             </a-col>
-          </span>
         </a-row>
       </a-form>
     </div>
@@ -26,7 +33,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="mallGoodId"
+        rowKey="mallOrderId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -57,6 +64,7 @@
 <script>
 import Vue from 'vue'
 import { page } from '@/api/mall/mallOrder'
+import moment from 'moment'
 
 const columns = [
   {
@@ -168,7 +176,8 @@ export default {
         showQuickJumper: true,
         showSizeChanger: true,
         total: 0
-      }
+      },
+      moment,
     }
   },
 
@@ -193,11 +202,19 @@ export default {
   methods: {
     async loadData() {
       let that = this
+      let screenForm = []
       let screenData = this.screenForm.getFieldsValue()
+      if (screenData.dateRange) {
+        screenForm['payStartTime'] = screenData.dateRange[0].format('YYYY-MM-DD')
+        screenForm['payEndTime'] = screenData.dateRange[1].format('YYYY-MM-DD')
+      }
+      if(screenData.orderNo) {
+        screenForm['orderNo'] = screenData.orderNo
+      }
       let obj = {
         current: that.ipagination.current,
         size: that.ipagination.pageSize,
-        ...screenData
+        ...screenForm
       }
       this.loading = true
       await page(obj).then(res => {

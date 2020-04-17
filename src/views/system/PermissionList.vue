@@ -91,16 +91,16 @@ const columns = [
     }
   },
   {
-    title: '组件',
-    dataIndex: 'component',
-    key: 'component',
-    scopedSlots: { customRender: 'component' }
-  },
-  {
     title: '路径',
     dataIndex: 'url',
     key: 'url',
     scopedSlots: { customRender: 'url' }
+  },
+  {
+    title: '组件',
+    dataIndex: 'component',
+    key: 'component',
+    scopedSlots: { customRender: 'component' }
   },
   {
     title: 'icon',

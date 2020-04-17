@@ -234,9 +234,10 @@ export default {
       this.loading = true
       let screenForm = this.screenForm.getFieldsValue()
       if (screenForm.dateRange) {
-          screenForm['beginTime'] = screenForm.dateRange[0].format('YYYY-MM-DD')
-          screenForm['endTime'] = screenForm.dateRange[1].format('YYYY-MM-DD')
-        }
+        screenForm['beginTime'] = screenForm.dateRange[0].format('YYYY-MM-DD')
+        screenForm['endTime'] = screenForm.dateRange[1].format('YYYY-MM-DD')
+        this.$delete(screenForm,'dateRange')
+      }
       let obj = {
         current: that.ipagination.current,
         size: that.ipagination.pageSize,

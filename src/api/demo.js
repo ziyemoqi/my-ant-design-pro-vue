@@ -1,10 +1,12 @@
 import { get,post,deleteAction,put} from '@/api/manage'
 
-// =========  导出API  =========
-// 导出word
-// const exportWord = (params)=>post("",params)
+// =========  导入导出  =========
 
-export {
-    // exportWord
+/**
+ * 分页信息 
+ * @param {*} params 
+ */
+export function page(params) {
+    return get("/demo/page", params)
 }
 
