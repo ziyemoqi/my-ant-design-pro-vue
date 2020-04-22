@@ -19,7 +19,7 @@ export function login(parameter) {
  */
 export function logout(logoutToken) {
   return axios({
-    url: '/sysUser/logout',
+    url: '/logout',
     method: 'post',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',

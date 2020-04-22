@@ -32,29 +32,11 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
       >
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">
-              更多
-              <a-icon type="down" />
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a href="javascript:;" @click="handleAddSub(record)">添加子菜单</a>
-              </a-menu-item>
-
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <span v-if="record.menuType !== 2">
+            <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;
+            <a-button @click="handleDetail(record)" type="primary" icon="diff">详情</a-button>&nbsp;
+            <a-button @click="handleDelete(record.id)" type="primary" icon="delete">删除</a-button>
+          </span>
         </span>
       </a-table>
     </div>
@@ -78,6 +60,7 @@ const columns = [
     title: '菜单类型',
     dataIndex: 'menuType',
     key: 'menuType',
+    align: 'center',
     customRender: function(text) {
       if (text == 0) {
         return '菜单'
@@ -94,21 +77,27 @@ const columns = [
     title: '路径',
     dataIndex: 'url',
     key: 'url',
+    align: 'center',
     scopedSlots: { customRender: 'url' }
   },
   {
     title: '组件',
     dataIndex: 'component',
     key: 'component',
+    align: 'center',
     scopedSlots: { customRender: 'component' }
   },
   {
-    title: 'icon',
-    dataIndex: 'icon',
-    key: 'icon'
+    title: '权限编码',
+    dataIndex: 'permsCode',
+    key: 'permsCode',
+    align: 'center',
+    width: 300,
+    scopedSlots: { customRender: 'permsCode' }
   },
   {
     title: '排序',
+    align: 'center',
     dataIndex: 'sort',
     key: 'sort'
   },
@@ -117,7 +106,7 @@ const columns = [
     dataIndex: 'action',
     scopedSlots: { customRender: 'action' },
     align: 'center',
-    width: 150
+    width: 350
   }
 ]
 
@@ -175,22 +164,23 @@ export default {
       this.$refs.modalForm.title = "编辑";
       this.$refs.modalForm.disableSubmit = false;
     },
-    handleAddSub(record) {
-      this.$refs.modalForm.title = '添加子菜单'
-      this.$refs.modalForm.localMenuType = 1
-      this.$refs.modalForm.disableSubmit = false
-      this.$refs.modalForm.edit({ status: '1', permsType: '1', route: true, parentId: record.id })
-    },
+    // 删除
     handleDelete: function (id) {
       var that = this
-      delete_({sysPermissionId: id}).then((res) => {
-        if (res.code === 200 ) {
-          that.$message.success('操作成功！');
-          that.loadData();
-        } else {
-          that.$message.error(res.msg || '操作失败！');
+      that.$confirm({
+        title: '确认删除',
+        content: '是否删除当前数据?',
+        onOk: function() {
+          delete_({ sysPermissionId: id }).then(res => {
+            if (res.code === 200) {
+              that.$message.success('操作成功!')
+              that.loadData()
+            } else {
+              that.$message.warning(res.msg || '操作失败!')
+            }
+          })
         }
-      });
+      })
     },
     onClearSelected() {
       this.selectedRowKeys = []

@@ -37,7 +37,7 @@ service.interceptors.response.use((response) => {
   if (token) {
     Vue.ls.set(ACCESS_TOKEN, token, 24 * 60 * 60 * 1000)
   }
-    if (res.code !== 0) {
+    if (res.code !== 200) {
       // 登录验证
       if (res.code === 40103) {
         Modal.error({

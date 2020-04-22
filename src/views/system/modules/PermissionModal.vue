@@ -19,11 +19,10 @@
             >
               <a-radio :value="0">一级菜单</a-radio>
               <a-radio :value="1">子菜单</a-radio>
-              <a-radio :value="2">按钮/权限</a-radio>
             </a-radio-group>
           </a-form-item>
 
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" :label="menuLabel" hasFeedback>
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="菜单名称" hasFeedback>
             <a-input
               placeholder="请输入菜单名称"
               v-decorator="[ 'name', validatorRules.name]"
@@ -60,7 +59,7 @@
             />
           </a-form-item>
 
-          <a-form-item v-show="show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="前端组件">
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="前端组件">
             <a-input
               placeholder="请输入前端组件"
               v-decorator="[ 'component',validatorRules.component]"
@@ -68,51 +67,13 @@
             />
           </a-form-item>
 
-          <a-form-item
-            v-show="localMenuType==0"
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="默认跳转地址"
-          >
-            <a-input
-              placeholder="请输入路由参数 redirect"
-              v-decorator="[ 'redirect',{}]"
-              :readOnly="disableSubmit"
-            />
-          </a-form-item>
-
-          <a-form-item v-show="!show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="授权标识">
-            <a-input
-              placeholder="多个用逗号分隔, 如: user:list,user:create"
-              v-decorator="[ 'permsCode', {}]"
-              :readOnly="disableSubmit"
-            />
-          </a-form-item>
-
-          <a-form-item v-show="!show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="授权策略">
-            <a-radio-group
-              v-decorator="['permsType',{'initialValue':1}]"
-            >
-              <a-radio value="1">显示</a-radio>
-              <a-radio value="2">禁用</a-radio>
-            </a-radio-group>
-          </a-form-item>
-          <a-form-item v-show="!show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="状态">
-            <a-radio-group
-              v-decorator="['status',{'initialValue':0}]"
-            >
-              <a-radio value="0">无效</a-radio>
-              <a-radio value="1">有效</a-radio>
-            </a-radio-group>
-          </a-form-item>
-
-          <a-form-item v-show="show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="菜单图标">
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="菜单图标">
             <a-input placeholder="点击右侧按钮选择图标" v-model="model.icon" :readOnly="disableSubmit">
               <a-icon slot="addonAfter" type="setting" @click="selectIcons" />
             </a-input>
           </a-form-item>
 
-          <a-form-item v-show="show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
             <a-input-number
               placeholder="请输入菜单排序"
               style="width: 200px"
@@ -121,20 +82,12 @@
             />
           </a-form-item>
 
-          <a-form-item v-show="show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="是否路由菜单">
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="是否路由菜单">
             <a-switch checkedChildren="是" unCheckedChildren="否" v-model="routeSwitch" />
           </a-form-item>
 
-          <a-form-item v-show="show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="隐藏路由">
-            <a-switch checkedChildren="是" unCheckedChildren="否" v-model="menuHidden" />
-          </a-form-item>
-
-          <a-form-item v-show="show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="是否缓存路由">
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="是否缓存路由">
             <a-switch checkedChildren="是" unCheckedChildren="否" v-model="isKeepalive" />
-          </a-form-item>
-
-          <a-form-item v-show="show" :labelCol="labelCol" :wrapperCol="wrapperCol" label="聚合路由">
-            <a-switch checkedChildren="是" unCheckedChildren="否" v-model="alwaysShow" />
           </a-form-item>
         </a-form>
 
@@ -171,12 +124,8 @@ export default {
       disableSubmit: false,
       model: {},
       localMenuType: 0,
-      alwaysShow: false, //表单元素-聚合路由
-      menuHidden: false, //表单元素-隐藏路由
       routeSwitch: true, //是否路由菜单
       isKeepalive: true, //是否缓存路由
-      show: true, //根据菜单类型，动态显示隐藏表单元素
-      menuLabel: '菜单名称',
       isRequrie: true, // 是否需要验证
       labelCol: {
         xs: { span: 24 },
@@ -198,9 +147,8 @@ export default {
     validatorRules: function() {
       return {
         name: { rules: [{ required: true, message: '请输入菜单标题!' }] },
-        component: { rules: [{ required: this.show, message: '请输入前端组件!' }] },
-        url: { rules: [{ required: this.show, message: '请输入菜单路径!' }] },
-        permsType: { rules: [{ required: true, message: '请输入授权策略!' }] }
+        component: { rules: [{ required: true, message: '请输入前端组件!' }] },
+        url: { rules: [{ required: true, message: '请输入菜单路径!' }] }
       }
     }
   },
@@ -213,19 +161,13 @@ export default {
       queryTreeList({'menuType':'0'}).then(res => {
         if (res.code === 200) {
           that.treeData = res.data.treeList
-          // let treeList = res.data.treeList
-          // for (let a = 0; a < treeList.length; a++) {
-          //   let temp = treeList[a]
-          //   // temp.isLeaf = temp.leaf
-          //   that.treeData.push(temp)
-          // }
         }else {
           that.$message.warning(res.msg || '数据加载错误')
         }
       })
     },
     add() {
-      this.edit({ status: '1', permsType: '1', isRoute: true })
+      this.edit({ status: '1', isRoute: true })
     },
     edit(record) {
       this.resetScreenSize() // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
@@ -233,9 +175,6 @@ export default {
       this.model = Object.assign({}, record)
       //--------------------------------------------------------------------------------------------------
       //根据菜单类型，动态展示页面字段
-      this.alwaysShow = !record.alwaysShow ? false : true
-      this.menuHidden = !record.hidden ? false : true
-
       if (record.isRoute != null) {
         this.routeSwitch = record.isRoute ? true : false
       }
@@ -245,9 +184,6 @@ export default {
       } else {
         this.isKeepalive = false // 升级兼容 如果没有（后台没有传过来、或者是新建）默认为false
       }
-
-      this.show = record.menuType == 2 ? false : true
-      this.menuLabel = record.menuType == 2 ? '按钮/权限' : '菜单名称'
 
       if (this.model.parentId) {
         this.localMenuType = 1
@@ -261,14 +197,10 @@ export default {
       let fieldsVal = pick(
         this.model,
         'name',
-        'permsCode',
-        'permsType',
         'component',
         'url',
         'sort',
-        'menuType',
-        'status',
-        'redirect'
+        'menuType'
       )
       this.$nextTick(() => {
         this.form.setFieldsValue(fieldsVal)
@@ -284,8 +216,6 @@ export default {
       // 触发表单验证
       this.form.validateFields((err, values) => {
         if (!err) {
-          this.model.alwaysShow = this.alwaysShow
-          this.model.hidden = this.menuHidden
           this.model.isRoute = this.routeSwitch
           this.model.keepAlive = this.isKeepalive
           let formData = Object.assign(this.model, values)
@@ -310,25 +240,19 @@ export default {
       let that = this
       // 组装数据
       let currData = {
-        alwaysShow: formData.alwaysShow,
         parentId: formData.parentId,
         component: formData.component,
-        hidden: formData.hidden ? 1 : 0,
         icon: formData.icon,
         isRoute: formData.isRoute,
         keepAlive: formData.keepAlive,
         menuType: formData.menuType,
         name: formData.name,
-        permsCode: formData.permsCode,
-        permsType: formData.permsType,
-        redirect: formData.redirect,
         url: formData.url,
-        status: formData.status,
         sort: formData.sort
       }
       addPermission(currData)
         .then(res => {
-          if (res.code) {
+          if (res.code === 200 ) {
             that.$message.success('操作成功！')
             that.$emit('ok')
           } else {
@@ -351,14 +275,9 @@ export default {
         name: formData.name,
         url: formData.url,
         component: formData.component,
-        permsCode: formData.permsCode,
-        permsType: formData.permsType,
-        redirect: formData.redirect,
         icon: formData.icon,
         isRoute: formData.isRoute,
-        hidden: formData.hidden ? 1 : 0,
         keepAlive: formData.keepAlive,
-        alwaysShow: formData.alwaysShow,
         status: formData.status,
         sort: formData.sort
       }
@@ -388,13 +307,6 @@ export default {
     },
     onChangeMenuType(e) {
       this.localMenuType = e.target.value
-      if (e.target.value == 2) {
-        this.show = false
-        this.menuLabel = '按钮/权限'
-      } else {
-        this.show = true
-        this.menuLabel = '菜单名称'
-      }
       this.$nextTick(() => {
         this.form.validateFields(['url', 'component'], { force: true })
       })
