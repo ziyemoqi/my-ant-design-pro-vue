@@ -35,7 +35,7 @@
           <span v-if="record.menuType !== 2">
             <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;
             <a-button @click="handleDetail(record)" type="primary" icon="diff">详情</a-button>&nbsp;
-            <a-button @click="handleDelete(record.id)" type="primary" icon="delete">删除</a-button>
+            <a-button type="danger" @click="handleDelete(record.id)" ghost icon="delete">删除</a-button>
           </span>
         </span>
       </a-table>

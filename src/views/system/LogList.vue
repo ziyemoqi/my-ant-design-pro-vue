@@ -99,7 +99,7 @@
         </span>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleDetail(record)">详情</a>
+          <a-button icon="diff" @click="handleDetail(record)">详情</a-button>
         </span>
       </a-table>
     </div>

@@ -58,12 +58,16 @@ service.interceptors.response.use((response) => {
     } else {
       return response.data
     }
-}, err=>{
-  if (axios.isCancel(error)) {
-    console.log('request cancel')
+}, error=>{
+  if(error.response.status === 403){
+    console.log(error.response.status);
   } else {
-    let { response } = error
-    return response ? response.data : Promise.reject(error)
+    if (axios.isCancel(error)) {
+      console.log('request cancel')
+    } else {
+      let { response } = error
+      return response ? response.data : Promise.reject(error)
+    }
   }
 })
 

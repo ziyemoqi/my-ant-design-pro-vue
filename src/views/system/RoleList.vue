@@ -80,8 +80,8 @@
             v-if="record.state=== 1  "
             @click="handleState(record.sysRoleId,'0')"
           >启用</a-button>&nbsp;
-          <a-button @click="handleEdit(record)">编辑</a-button>&nbsp;
-          <a-button @click="handleDelete(record.sysRoleId)">删除</a-button>
+          <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;
+          <a-button type="danger" @click="handleDelete(record.sysRoleId)" ghost icon="delete">删除</a-button>
         </span>
       </a-table>
     </div>

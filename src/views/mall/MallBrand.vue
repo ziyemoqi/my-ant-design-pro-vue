@@ -58,7 +58,7 @@
       
         <span slot="action" slot-scope="text, record">
           <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
-          <a-button @click="handleDelete(record.mallBrandId)" type="primary" icon="delete">删除</a-button>&nbsp;&nbsp;
+          <a-button type="danger" @click="handleDelete(record.mallBrandId)" ghost icon="delete">删除</a-button>
         </span>
       </a-table>
     </div>
