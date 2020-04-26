@@ -29,7 +29,7 @@
         </a-menu-item>
         <a-menu-item key="2" @click="updatePassword">
           <a-icon type="unlock" />
-          <span>密码修改</span>
+          <span>修改密码</span>
         </a-menu-item>
       </a-menu>
     </a-dropdown>
@@ -91,9 +91,8 @@ export default {
       })
     },
     updatePassword () {
-      this.$message.warning("功能开发中，敬请期待！")
-      // const username = this.userInfo().username
-      // this.$refs.userPassword.show(username)
+      const sysUserId = this.userInfo().sysUserId
+      this.$refs.userPassword.show(sysUserId)
     }
   }
 }

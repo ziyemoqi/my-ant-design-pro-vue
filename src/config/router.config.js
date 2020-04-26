@@ -5,13 +5,12 @@ import { UserLayout, TabLayout } from '@/components/layouts'
  * @type {[null,null]}
  */
 export const asyncRouterMap = [
-
   {
     path: '/',
     name: 'dashboard',
     component: TabLayout,
     meta: { title: '首页' },
-    redirect: '/dashboard/workplace',
+    redirect: '/dashboard/Analysis',
     children: [
     ]
   },
@@ -25,7 +24,6 @@ export const asyncRouterMap = [
  * @type { *[] }
  */
 export const constantRouterMap = [
-
   {
     path: '/user',
     component: UserLayout,

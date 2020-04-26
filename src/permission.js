@@ -15,7 +15,7 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   if (Vue.ls.get(ACCESS_TOKEN)) {
     if (to.path === '/user/login') {
-      next({ path: '/dashboard/workplace' })
+      next({ path: '/dashboard/Analysis' })
       NProgress.done()
     } else {
       if (store.getters.permissionList.length === 0) {
@@ -57,12 +57,12 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       next({ path: '/user/login', query: { redirect: to.fullPath } })
-      NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
+      NProgress.done()
     }
   }
 })
 
 router.afterEach(() => {
   console.log('------------------------路由守卫后置---------------------')
-  NProgress.done() // finish progress bar
+  NProgress.done()
 })

@@ -10,19 +10,18 @@
   >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="旧密码">
-          <a-input type="password" placeholder="请输入旧密码" v-decorator="[ 'oldpassword', validatorRules.oldpassword]" />
+          <a-input type="password" placeholder="请输入旧密码" v-decorator="[ 'oldPassword', validatorRules.oldPassword]" />
         </a-form-item>
 
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="新密码">
-          <a-input type="password" placeholder="请输入新密码" v-decorator="[ 'password', validatorRules.password]" />
+          <a-input type="password" placeholder="请输入新密码" v-decorator="[ 'passWord', validatorRules.password]" />
         </a-form-item>
 
         <a-form-item
@@ -31,7 +30,6 @@
           label="确认新密码">
           <a-input type="password" @blur="handleConfirmBlur" placeholder="请确认新密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
         </a-form-item>
-
       </a-form>
     </a-spin>
   </a-modal>
@@ -39,7 +37,7 @@
 
 <script>
 
-// import { putAction } from '@/api/manage'
+import { put } from '@/api/manage'
 
 export default {
   name: 'UserPassword',
@@ -50,7 +48,7 @@ export default {
       visible: false,
       confirmLoading: false,
       validatorRules: {
-        oldpassword: {
+        oldPassword: {
           rules: [{
             required: true, message: '请输入旧密码!'
           }]
@@ -79,18 +77,17 @@ export default {
         xs: { span: 24 },
         sm: { span: 16 }
       },
-
+      sysUserId: '',
       form: this.$form.createForm(this),
-      url: 'sys/user/updatePassword',
-      username: ''
+      url: 'sysUser/updatePassword',
     }
   },
   methods: {
-    show (uname) {
-      if (!uname) {
+    show (sysUserId) {
+      if (!sysUserId) {
         this.$message.warning('当前系统无登陆用户!')
       } else {
-        this.username = uname
+        this.sysUserId = sysUserId
         this.form.resetFields()
         this.visible = true
       }
@@ -110,18 +107,17 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           that.confirmLoading = true
-          const params = Object.assign({ username: this.username }, values)
-          this.$message.success('修改密码提交数据!')
-          // putAction(this.url, params).then((res) => {
-          //   if (res.success) {
-          //     that.$message.success(res.message)
-          //     that.close()
-          //   } else {
-          //     that.$message.warning(res.message)
-          //   }
-          // }).finally(() => {
-          //   that.confirmLoading = false
-          // })
+          const params = Object.assign({'sysUserId':this.sysUserId},values)
+          put(this.url, params).then((res) => {
+            if (res.data === 'success') {
+              that.$message.success('修改成功')
+              that.close()
+            } else {
+              that.$message.warning(res.msg || '修改失败')
+            }
+          }).finally(() => {
+            that.confirmLoading = false
+          })
         }
       })
     },
@@ -134,7 +130,7 @@ export default {
     },
     compareToFirstPassword  (rule, value, callback) {
       const form = this.form
-      if (value && value !== form.getFieldValue('password')) {
+      if (value && value !== form.getFieldValue('passWord')) {
         callback(new Error('两次输入的密码不一样！'))
       } else {
         callback()

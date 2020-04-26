@@ -214,13 +214,20 @@ export default {
         ...screenData
       }
       this.loading = true
-      await rolePage(obj).then(res => {
-        if (res.code === 200) {
-          this.dataSource = res.data
-          that.ipagination.total = res.page.total
-        }
-        this.loading = false
-      })
+      try {
+        await rolePage(obj).then(res => {
+          if (res.code === 200) {
+            this.dataSource = res.data
+            that.ipagination.total = res.page.total
+          } else {
+            that.$message.error(res.msg)
+          }
+        })
+      } catch(e){
+        that.$message.error('查询失败！')
+      } finally{
+        that.loading = false
+      }
     },
     // 表单查询
     searchQuery(e) {

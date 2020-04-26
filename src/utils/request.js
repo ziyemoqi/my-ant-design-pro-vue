@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import axios from 'axios'
+import router from '@/router'
 import store from '@/store'
 import { Modal} from 'ant-design-vue'
 import { VueAxios } from './axios'
@@ -29,7 +30,6 @@ service.interceptors.request.use(
   return Promise.reject(error)
 })
 
-
 // response interceptor
 service.interceptors.response.use((response) => {
   const res = response.data
@@ -37,38 +37,50 @@ service.interceptors.response.use((response) => {
   if (token) {
     Vue.ls.set(ACCESS_TOKEN, token, 24 * 60 * 60 * 1000)
   }
-    if (res.code !== 200) {
-      // 登录验证
-      if (res.code === 40103) {
-        Modal.error({
-          title: '登录已过期',
-          content: '很抱歉，登录信息已过期，请重新登录',
-          okText: '重新登录',
-          mask: false,
-          onOk: () => {
-            store.dispatch('Logout').then(() => {
-              Vue.ls.remove(ACCESS_TOKEN)
-              window.location.reload()
-            })
-          }
-        })
-      } else {
-        return response.data
-      }
+  if (res.code !== 200) {
+    // 登录验证
+    if (res.code === 40103) {
+      Modal.error({
+        title: '登录已过期',
+        content: '很抱歉，登录信息已过期，请重新登录',
+        okText: '重新登录',
+        mask: false,
+        onOk: () => {
+          store.dispatch('Logout').then(() => {
+            Vue.ls.remove(ACCESS_TOKEN)
+            window.location.reload()
+          })
+        }
+      })
     } else {
       return response.data
     }
-}, error=>{
-  if(error.response.status === 403){
-    console.log(error.response.status);
   } else {
-    if (axios.isCancel(error)) {
-      console.log('request cancel')
-    } else {
-      let { response } = error
-      return response ? response.data : Promise.reject(error)
+    return response.data
+  }
+}, error=>{
+  if(error && error.response){
+    switch (error.response.status) {
+      case 403:
+        // router.push({ name:'error-404'});
+        error.message = '请求出错(403)'
+        // this.$message.error('12312312')
+
+        break;
+      case 404:
+        router.push({ name:'error-404'});
+        //  error.message = '服务器错误(500)';
+        break;
+
+      case 500:
+        router.push({ name:'error-500'});
+        //  error.message = '服务器错误(500)';
+        break;
+
+      default: error.message = `连接出错(${error.response.status})!`;
     }
   }
+  return Promise.reject(error);
 })
 
 const installer = {
