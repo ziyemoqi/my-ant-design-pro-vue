@@ -95,7 +95,7 @@
 
 <script>
 import RoleModal from './modules/RoleModal'
-import UserRoleModal from './modules/UserRoleModal2'
+import UserRoleModal from './modules/UserRoleModal'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { rolePage, deleteByRoleId,edit, deleteBatch } from '@/api/role'

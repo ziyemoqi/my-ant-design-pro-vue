@@ -15,18 +15,10 @@ export function login(parameter) {
 
 /**
  * 登出
- * @param {*} logoutToken 
+ * @param {*} params 
  */
-export function logout(logoutToken) {
-  return axios({
-    url: '/logout',
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8',
-      'X-Access-Token':  logoutToken
-    }
-  })
-}
+const logout = (params)=>post("/sysUser/logout",params)
+
 
 /**
  * 根据部门ID加载有效用户
@@ -66,7 +58,8 @@ export {
   editUser,
   checkIsOnly,
   queryUserRole,
-  resetPassword
+  resetPassword,
+  logout,
 }
 
 /**

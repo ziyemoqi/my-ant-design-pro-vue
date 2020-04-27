@@ -23,6 +23,22 @@
           <a-input-number :min="1" :precision="2" v-decorator="['price', { rules: [{required: true, message: '请输入价格'}] }]" style="width:100%"  placeholder="请输入..." />
         </a-form-item>
 
+        <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-upload
+            name="file"
+            listType="picture-card"
+            :showUploadList="false"
+            :action="appApi"
+            :beforeUpload="validImg"
+            @change="handleChangeBaseImg"
+          >
+            <img v-if="imgUrl" :src="imgUrl" alt="头像" style="width: 100px;height: 100px" />
+            <div v-else>
+              <a-icon :type="uploading ? 'loading' : 'plus'" />
+            </div>
+          </a-upload>
+        </a-form-item>
+
         <a-form-item label="库存" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input-number :min="1" v-decorator="['stock', { rules: [{required: true, message: '请输入库存'}] }]" style="width:100%"  placeholder="请输入..." />
         </a-form-item>
@@ -77,6 +93,10 @@
         },
         confirmLoading: false,
         form: this.$form.createForm(this),
+        appApi: process.env.VUE_APP_API + '/upload/img/',
+        imgUrl: '',
+        headImg: '',
+        uploading: false,
         validatorRules:{
           name:{
             rules: [
@@ -138,6 +158,27 @@
       handleCancel () {
         this.close()
       },
+      validImg(file) {
+        let size = file.size;
+        let limitSize = size / 1024 / 1024;
+        if (limitSize > 3) {
+          this.$message.warning('请上传少于3M的图片!');
+          return false;
+        }
+      },
+      handleChangeBaseImg(info) {
+        if (info.file.status === 'uploading') {
+          this.uploading = true;
+          return;
+        }
+        console.log('1221')
+        console.log(info.file.response.data)
+        if (info.file.status === 'done') {
+          this.imgUrl = process.env.VUE_APP_IMG + info.file.response.data;
+          this.headImg = info.file.response.data;
+          this.uploading = false;
+        }
+      }
     }
   }
 </script>

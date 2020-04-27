@@ -70,15 +70,16 @@ export default {
     getAvatar () {
       return window._CONFIG['imgDomainURL'] + '/' + this.avatar()
     },
+    // 退出登录
     handleLogout () {
       let that = this
       this.$confirm({
         title: '提示',
         content: '真的要注销登录吗 ?',
         onOk () {
+
           return that.Logout({}).then(() => {
             window.location.href = '/'
-            // window.location.reload()
           }).catch(err => {
             that.$message.error({
               title: '错误',
@@ -90,6 +91,7 @@ export default {
         }
       })
     },
+    // 修改密码
     updatePassword () {
       const sysUserId = this.userInfo().sysUserId
       this.$refs.userPassword.show(sysUserId)

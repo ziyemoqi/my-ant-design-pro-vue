@@ -13,15 +13,12 @@
       <a-form-item label="所拥有的权限">
         <a-tree
           checkable
-          @check="onCheck"
-          :checkedKeys="checkedKeys"
           @expand="onExpand"
-          @select="onTreeNodeSelect"
-          :selectedKeys="selectedKeys"
-          :expandedKeys="expandedKeysss"
+          :expandedKeys="expandedKeys"
+          :autoExpandParent="autoExpandParent"
+          v-model="checkedKeys"
           :treeData="treeData"
-        >
-        </a-tree>
+        />
       </a-form-item>
     </a-form>
 
@@ -42,54 +39,51 @@ export default {
   data() {
     return {
       roleId: '',
-      treeData: [],
       defaultCheckedKeys: [],
       checkedKeys: [],
-      halfCheckedKeys: [],
-      expandedKeysss: [],
       allTreeKeys: [],
       autoExpandParent: true,
-      checkStrictly: false,
-      title: '角色权限配置',
+      title: '角色权限配置替换页',
       visible: false,
       loading: false,
-      selectedKeys: []
+      expandedKeys: [],
+      halfCheckedKeys: [],
+      treeData: []
     }
   },
   methods: {
-    onTreeNodeSelect(id) {
-      if (id && id.length > 0) {
-        this.selectedKeys = id
-      }
-      this.$refs.datarule.show(this.selectedKeys[0], this.roleId)
-    },
-    onCheck(checkedKeys, { halfCheckedKeys }) {
-      // 保存选中的和半选中的，后面保存的时候合并提交
-      this.checkedKeys = checkedKeys
-      this.halfCheckedKeys = halfCheckedKeys
-    },
+    // 显示抽屉
     show(roleId) {
       this.roleId = roleId
       this.visible = true
     },
+    // 展开/关闭节点
+    onExpand(expandedKeys) {
+      this.expandedKeys = expandedKeys;
+      this.autoExpandParent = false;
+    },
+    // 选中节点
+    onCheck(checkedKeys, { halfCheckedKeys }) {
+      this.checkedKeys = checkedKeys
+      this.halfCheckedKeys = halfCheckedKeys
+    },
+    // 关闭抽屉
     close() {
       this.reset()
       this.$emit('close')
       this.visible = false
     },
-    onExpand(expandedKeys) {
-      this.expandedKeysss = expandedKeys
-      this.autoExpandParent = false
-    },
+    // 清除数据
     reset() {
-      this.expandedKeysss = []
+      this.expandedKeys = []
       this.checkedKeys = []
       this.defaultCheckedKeys = []
       this.loading = false
     },
+    // 提交数据
     handleSubmit() {
       let that = this
-      let checkedKeys = [...that.checkedKeys, ...that.halfCheckedKeys]
+      let checkedKeys = [...that.checkedKeys , ...that.halfCheckedKeys]
       const permissionIds = checkedKeys.join(',')
       let params = {
         sysRoleId: that.roleId,
@@ -118,35 +112,28 @@ export default {
       }
       return keyLeafPair
     }
+
   },
   watch: {
     visible() {
       if (this.visible) {
         permissionMapTree().then(res => {
-          let treeList = res.data.treeList
-          this.treeData = treeList
+          this.treeData = res.data.treeList
           this.allTreeKeys = res.data.ids
           const keyLeafPairs = this.convertTreeListToKeyLeafPairs(this.treeData)
           queryRolePermission({ sysRoleId: this.roleId }).then(res => {
-            console.log('打印拥有节点')
-            console.log(res.data)
-            // 过滤出 leaf node 即可，即选中的
-            // Tree组件中checkStrictly默认为false的时候，选中子节点，父节点会自动设置选中或半选中
-            // 保存 checkedKeys 以及 halfCheckedKeys 以便于未做任何操作时提交表单数据
             const checkedKeys = [...res.data].filter(key => {
-              const keyLeafPair = keyLeafPairs.filter(item => item.key === key)[0]
-              return keyLeafPair && keyLeafPair.leaf
+              const keyLeafPair = keyLeafPairs.filter(item =>item.key === key)[0]
+              return keyLeafPair  && keyLeafPair.leaf
             })
             const halfCheckedKeys = [...res.data].filter(key => {
               const keyLeafPair = keyLeafPairs.filter(item => item.key === key)[0]
               return keyLeafPair && !keyLeafPair.leaf
             })
             this.checkedKeys = [...checkedKeys]
-            console.log('打印选中节点')
-            console.log(this.checkedKeys)
             this.halfCheckedKeys = [...halfCheckedKeys]
             this.defaultCheckedKeys = [...halfCheckedKeys, ...checkedKeys]
-            this.expandedKeysss = this.allTreeKeys
+            this.expandedKeys = this.allTreeKeys
           })
         })
       }
