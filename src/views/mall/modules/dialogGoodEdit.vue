@@ -23,7 +23,7 @@
           <a-input-number :min="1" :precision="2" v-decorator="['price', { rules: [{required: true, message: '请输入价格'}] }]" style="width:100%"  placeholder="请输入..." />
         </a-form-item>
 
-        <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="商品图片" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-upload
             name="file"
             listType="picture-card"
@@ -32,7 +32,7 @@
             :beforeUpload="validImg"
             @change="handleChangeBaseImg"
           >
-            <img v-if="imgUrl" :src="imgUrl" alt="头像" style="width: 100px;height: 100px" />
+            <img v-if="imgUrl" :src="imgUrl" alt="商品图片" style="width: 100px;height: 100px" />
             <div v-else>
               <a-icon :type="uploading ? 'loading' : 'plus'" />
             </div>
@@ -95,7 +95,7 @@
         form: this.$form.createForm(this),
         appApi: process.env.VUE_APP_API + '/upload/img/',
         imgUrl: '',
-        headImg: '',
+        goodImg: '',
         uploading: false,
         validatorRules:{
           name:{
@@ -114,6 +114,8 @@
         this.confirmLoading = false
         this.form.resetFields()
         this.model = Object.assign({}, record)
+        this.imgUrl = process.env.VUE_APP_IMG + this.model.pic
+        this.goodImg = this.model.pic
         this.visible = true
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'name','stock','price','lowStock','description','sort','remark'))
@@ -133,7 +135,7 @@
               this.$message.warning('库存值应大于库存预警值！')
             }else {
               that.confirmLoading = true;
-              let formData = Object.assign(this.model, values)
+              let formData = Object.assign(this.model, values,{"pic" : this.goodImg})
               let obj
               if(!this.model.mallGoodId){
                 obj=add(formData)
@@ -161,8 +163,8 @@
       validImg(file) {
         let size = file.size;
         let limitSize = size / 1024 / 1024;
-        if (limitSize > 3) {
-          this.$message.warning('请上传少于3M的图片!');
+        if (limitSize > 5) {
+          this.$message.warning('请上传少于5M的图片!');
           return false;
         }
       },
@@ -171,11 +173,9 @@
           this.uploading = true;
           return;
         }
-        console.log('1221')
-        console.log(info.file.response.data)
         if (info.file.status === 'done') {
           this.imgUrl = process.env.VUE_APP_IMG + info.file.response.data;
-          this.headImg = info.file.response.data;
+          this.goodImg = info.file.response.data;
           this.uploading = false;
         }
       }

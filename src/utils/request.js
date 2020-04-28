@@ -15,7 +15,6 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
-    debugger
   const token = Vue.ls.get(ACCESS_TOKEN)
   if (token) {
     config.headers['authorization'] = token // 让每个请求携带自定义 token 请根据实际情况自行修改

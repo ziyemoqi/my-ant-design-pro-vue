@@ -35,10 +35,15 @@
         :loading="loading"
         @change="handleTableChange"
       >
-        <span slot="action" slot-scope="text, record">
-          <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
-          <a-button type="danger" @click="handleDelete(record.mallGoodId)" ghost icon="delete">删除</a-button>
-        </span>
+
+      <span slot="pic" slot-scope="text">
+        <img class='img' alt="" :src="imgUrl+text" />
+      </span>
+
+      <span slot="action" slot-scope="text, record">
+        <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
+        <a-button type="danger" @click="handleDelete(record.mallGoodId)" ghost icon="delete">删除</a-button>
+      </span>
       </a-table>
     </div>
     <!-- table区域-end -->
@@ -81,6 +86,7 @@ const columns = [
     title: '图片',
     align: 'center',
     dataIndex: 'pic',
+    scopedSlots: { customRender: 'pic' },
     width: 150
   },
   {
@@ -154,6 +160,7 @@ export default {
       },
       dialogCreateOrderKey: 0,
       dialogCreateOrderVisible: false,
+      imgUrl: process.env.VUE_APP_IMG,
     }
   },
   mounted() {
@@ -242,4 +249,9 @@ export default {
 </script>
 <style scoped>
 @import '~@assets/less/common.less';
+.img {
+    flex: none;
+    width: 60px;
+    height: 60px;
+  }
 </style>

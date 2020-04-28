@@ -6,6 +6,7 @@
         <a-row :gutter="24">
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
+              <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
               <a-button type="primary" icon="export" @click="exportExcel"  :loading="excelloading" style="margin-left: 8px" >导出Excel</a-button>
               <a-button type="primary" icon="download" @click="exportWord"  :loading="exporting" style="margin-left: 8px" >导出word</a-button>
               <a-button type="default" icon="reload" style="margin-left: 8px" @click="refresh" :loading="loading">刷新</a-button>
@@ -28,10 +29,18 @@
         :loading="loading"
         @change="handleTableChange"
       >
+
+      <span slot="action" slot-scope="text, record">
+        <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
+        <a-button type="danger" @click="handleDelete(record.demoId)" ghost icon="delete">删除</a-button>
+      </span>
+
       </a-table>
     </div>
     <!-- table区域-end -->
 
+    <!-- form表单 -->
+    <Dialog-Edit ref="dialogEdit" @ok="modalFormOk"></Dialog-Edit>
 
   </a-card>
 </template>
@@ -39,8 +48,8 @@
 <script>
 import Vue from 'vue'
 import download from '@/utils/download'
-import { page } from '@/api/demo'
-
+import { page,deleteById } from '@/api/demo'
+import DialogEdit from './modules/dialogEdit'
 
 const columns = [
   {
@@ -82,11 +91,21 @@ const columns = [
     align: 'center',
     dataIndex: 'sort',
     width: 100
+  },
+  {
+    title: '操作',
+    dataIndex: 'action',
+    align: 'center',
+    scopedSlots: { customRender: 'action' },
+    width: 300
   }
 ]
 
 export default {
-  name: 'ImportExport_view',
+  name: 'DemoList_view',
+   components: {
+    DialogEdit,
+  },
   data() {
     return {
       exporting: false,
@@ -154,7 +173,40 @@ export default {
       let payload = {}
       await download('/demo/export/exportExcel', payload, false)
       this.excelloading = false
-    }
+    },
+    // 新增
+    handleAdd: function() {
+      this.$refs.dialogEdit.add()
+      this.$refs.dialogEdit.title = '新增'
+    },
+     // 编辑
+    handleEdit: function(record) {
+      this.$refs.dialogEdit.edit(record)
+      this.$refs.dialogEdit.title = '编辑'
+      this.$refs.dialogEdit.disableSubmit = false
+    },
+    // 删除
+    handleDelete: function(id) {
+      var that = this
+      that.$confirm({
+        title: '确认删除',
+        content: '是否删除当前数据?',
+        onOk: function() {
+          deleteById({ demoId: id }).then(res => {
+            if (res.code === 200) {
+              that.$message.success('操作成功!')
+              that.loadData()
+            } else {
+              that.$message.warning(res.msg || '操作失败!')
+            }
+          })
+        }
+      })
+    },
+    // 新增/修改 成功时，重载列表
+    modalFormOk() {
+      this.loadData()
+    },
   }
 }
 </script>
