@@ -11,7 +11,7 @@
     <!-- 设置 -->
     <a-dropdown>
       <span class="action action-full ant-dropdown-link user-dropdown-menu">
-        <a-avatar class="avatar" size="small" :src="getAvatar()"/>
+        <a-avatar class="avatar" size="small" :src="getHeadImg()"/>
         <span v-if="isDesktop()">欢迎您，{{ username() }}</span>
       </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
@@ -66,9 +66,9 @@ export default {
   },
   methods: {
     ...mapActions(['Logout']),
-    ...mapGetters(['username', 'avatar', 'userInfo']),
-    getAvatar () {
-      return window._CONFIG['imgDomainURL'] + '/' + this.avatar()
+    ...mapGetters(['username', 'headImg', 'userInfo']),
+    getHeadImg () {
+      return process.env.VUE_APP_IMG + this.headImg()
     },
     // 退出登录
     handleLogout () {

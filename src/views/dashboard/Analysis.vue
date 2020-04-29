@@ -132,25 +132,25 @@
             <a-row>
               <a-col :span="8">
                 <div class="head-info" :class="center && 'center'">
-                  <span>今日IP</span>
+                  <span>访问IP</span>
                   <p>
-                    <a>{{ logInfo.todayIp }}</a>
+                    <a>{{ logInfo.ipAddress }}</a>
                   </p>
                 </div>
               </a-col>
               <a-col :span="8">
                 <div class="head-info" :class="center && 'center'">
-                  <span>今日访问</span>
+                  <span>我的访问次数</span>
                   <p>
-                    <a>{{ logInfo.todayVisitCount }}</a>
+                    <a>{{ logInfo.visitCount }}</a>
                   </p>
                 </div>
               </a-col>
               <a-col :span="8">
                 <div class="head-info" :class="center && 'center'">
-                  <span>访问总览</span>
+                  <span>上次登录时间</span>
                   <p>
-                    <a>{{ logInfo.totalVisitCount }}</a>
+                    <a>{{ logInfo.lastLoginTime }}</a>
                   </p>
                 </div>
               </a-col>

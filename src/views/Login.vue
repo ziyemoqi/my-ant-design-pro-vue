@@ -10,7 +10,7 @@
       <a-form-item>
         <a-input
           size="large"
-          v-decorator="['loginName',validatorRules.loginName,{ validator: this.handleUsernameOrEmail }]"
+          v-decorator="['loginName',validatorRules.loginName]"
           type="text"
           placeholder="Account"
         >
@@ -34,24 +34,18 @@
         <a-col :span="14">
           <a-form-item>
             <a-input
-              v-decorator="['inputCode',validatorRules.inputCode]"
-              size="large"
-              type="text"
-              @change="inputCodeChange"
-              placeholder="Verify Code"
-            >
-              <a-icon
-                slot="prefix"
-                v-if=" inputCodeContent==verifiedCode "
-                type="smile"
-                :style="{ color: 'rgba(0,0,0,.25)' }"
-              />
-              <a-icon slot="prefix" v-else type="frown" :style="{ color: 'rgba(0,0,0,.25)' }" />
-            </a-input>
+                ref="code"
+                 size="large"
+                v-decorator="[
+                  'verifyCode',
+                  {rules: [{ required: true, message: '请输入验证码' }]}
+                ]"
+                placeholder="请输入验证码"
+              ></a-input>
           </a-form-item>
         </a-col>
         <a-col :span="10">
-          <picture-verify-code @success="generateCode" style="float: right"></picture-verify-code>
+          <base-img class="verify-img" v-if="verifyImg" :src="verifyImg" @click.native="getVerifyCode"></base-img>
         </a-col>
       </a-row>
 
@@ -82,25 +76,22 @@ import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import PictureVerifyCode from '@/components/user/PictureVerifyCode'
+import { getVerifyCode } from '@/api/user'
 
 export default {
-  components: {
-    PictureVerifyCode
-  },
   data() {
     return {
       submitting: false,
-      // loginType: 0 email, 1 username
-      loginType: 0,
       form: this.$form.createForm(this),
       rememberMe: true,
       validatorRules: {
         loginName: { rules: [{ required: true, message: '请输入用户名!', validator: 'click' }] },
         password: { rules: [{ required: true, message: '请输入密码!', validator: 'click' }] },
-        inputCode: { rules: [{ required: true, message: '请输入验证码!' }, { validator: this.validateInputCode }] }
+        inputCode: { rules: [{ required: true, message: '请输入验证码!' }] }
       },
       verifiedCode: '',
+      verifyKey: '',
+      verifyImg: '',
       inputCodeContent: '',
       inputCodeNull: true
     }
@@ -108,19 +99,18 @@ export default {
   created() {
     Vue.ls.remove(ACCESS_TOKEN)
   },
+  mounted () {
+    this.getVerifyCode()
+  },
   methods: {
+    async getVerifyCode () {
+      let { data: { verifyKey, verifyFile } } = await getVerifyCode()
+      this.verifyImg = 'data:image/jpg;base64,' + verifyFile
+      this.verifyKey = verifyKey
+    },
     ...mapActions(['Login', 'Logout']),
     generateCode(value) {
       this.verifiedCode = value.toLowerCase()
-    },
-    handleUsernameOrEmail(rule, value, callback) {
-      let regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/
-      if (regex.test(value)) {
-        this.loginType = 0
-      } else {
-        this.loginType = 1
-      }
-      callback()
     },
     handleSubmit(e) {
       e.preventDefault()
@@ -131,7 +121,7 @@ export default {
           let loginParams = {
             ...values,
             remember_me: that.rememberMe,
-            loginType: that.loginType
+            verifyKey: this.verifyKey
           }
           that.Login(loginParams)
             .then(res => {
@@ -159,24 +149,6 @@ export default {
       })
       this.submitting = false
     },
-
-    validateInputCode(rule, value, callback) {
-      if (!value || this.verifiedCode === this.inputCodeContent) {
-        callback()
-      } else {
-        callback(new Error('您输入的验证码不正确!'))
-      }
-    },
-    
-    inputCodeChange(e) {
-      this.inputCodeContent = e.target.value
-      if (!e.target.value || e.target.value === 0) {
-        this.inputCodeNull = true
-      } else {
-        this.inputCodeContent = this.inputCodeContent.toLowerCase()
-        this.inputCodeNull = false
-      }
-    }
   }
 }
 </script>
@@ -226,4 +198,16 @@ export default {
 .valid-error .ant-select-selection__placeholder {
   color: #f5222d;
 }
+ .verify-img {
+    float: right;
+    width: 130px;
+    height: 40px;
+    cursor: pointer;
+    /deep/ .base-img {
+      height: 100%;
+      .base-img-item {
+        height: 100%;
+      }
+    }
+  }
 </style>

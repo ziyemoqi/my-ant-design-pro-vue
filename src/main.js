@@ -11,9 +11,10 @@ import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.less'
 import Viser from 'viser-vue'
 import './permission'
+import './components'
 import './utils/filter'
 import VueApexCharts from 'vue-apexcharts'
-import VueRouter from 'vue-router';
+import VueRouter from 'vue-router'
 
 import {
   ACCESS_TOKEN,

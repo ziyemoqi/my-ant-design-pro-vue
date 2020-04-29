@@ -51,6 +51,13 @@ const checkIsOnly = (params)=>get("/sysUser/checkIsOnly",params)
 // 查询用户的角色列表
 const queryUserRole = (params)=>get("/sysUser/queryUserRole",params);
 
+/**
+ * 获取图片验证码
+ * @param {*} params 
+ */
+export function getVerifyCode(params) {
+  return get("/auth/getImageVerify",params)
+}
 
 export {
   userList,

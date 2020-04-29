@@ -9,7 +9,7 @@ const user = {
     token: '',
     userName: '',
     welcome: '',
-    picture: '',
+    headImg: '',
     permissionList: [],
     info: {},
     pwdStrong: '',
@@ -23,8 +23,8 @@ const user = {
       state.userName = userName
       state.welcome = welcome
     },
-    SET_PICTURE: (state, picture) => {
-      state.picture = picture
+    SET_PICTURE: (state, headImg) => {
+      state.headImg = headImg
     },
     SET_PERMISSIONLIST: (state, permissionList) => {
       state.permissionList = permissionList
@@ -53,7 +53,7 @@ const user = {
             commit('SET_PWDSTRONG', result.pwdStrong)
             commit('SET_INFO', userInfo)
             commit('SET_NAME', { userName: userInfo.userName, welcome: welcome() })
-            commit('SET_PICTURE', userInfo.picture)
+            commit('SET_PICTURE', userInfo.headImg)
             resolve(response)
           } else {
             reject(response)
