@@ -15,17 +15,13 @@
         <span v-if="isDesktop()">欢迎您，{{ username() }}</span>
       </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
-        <a-menu-item key="0">
-          <router-link :to="{ name: 'account-center' }">
+        <a-menu-item key="0" @click="accountCenter">
             <a-icon type="user"/>
             <span>个人中心</span>
-          </router-link>
         </a-menu-item>
-        <a-menu-item key="1">
-          <router-link :to="{ name: 'account-settings-base' }">
-            <a-icon type="setting"/>
-            <span>账户设置</span>
-          </router-link>
+        <a-menu-item key="1" @click="accountSetting">
+              <a-icon type="setting"/>
+              <span>账户设置</span>
         </a-menu-item>
         <a-menu-item key="2" @click="updatePassword">
           <a-icon type="unlock" />
@@ -90,6 +86,14 @@ export default {
         onCancel () {
         }
       })
+    },
+    // 个人中心
+    accountCenter() {
+      this.$message.warning('功能开发中,敬请期待!')
+    },
+    // 账号设置
+    accountSetting () {
+      this.$message.warning('功能开发中,敬请期待!')
     },
     // 修改密码
     updatePassword () {
