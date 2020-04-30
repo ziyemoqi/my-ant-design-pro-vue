@@ -148,6 +148,7 @@ export default {
         duration: 4
       })
       this.submitting = false
+      this.getVerifyCode()
     },
   }
 }
