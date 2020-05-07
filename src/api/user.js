@@ -56,7 +56,7 @@ const queryUserRole = (params)=>get("/sysUser/queryUserRole",params);
  * @param {*} params 
  */
 export function getVerifyCode(params) {
-  return get("/auth/getImageVerify",params)
+  return get("/auth/imageVerifyCode",params)
 }
 
 export {

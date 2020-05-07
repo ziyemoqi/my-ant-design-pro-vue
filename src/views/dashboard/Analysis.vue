@@ -195,6 +195,7 @@ import Bar from '@/components/chart/Bar'
 import Trend from '@/components/Trend'
 import { getLogInfo } from '@/api/log'
 import * as userApi from '@/api/user'
+import { mapActions, mapGetters } from 'vuex'
 import { deleteAction, get} from '@/api/manage'
 import { PWD_STRONG } from '@/store/mutation-types'
 
@@ -240,17 +241,18 @@ export default {
       this.loading = !this.loading
     }, 1000)
     this.initLogInfo()
-    // this.timer()
+    this.timer()
   },
   mounted() {
     //初始化websocket
-    // this.initWebSocket()
+    this.initWebSocket()
     this.checkPwdStrong()
   },
   destroyed: function () { // 离开页面生命周期函数
-    // this.websocketclose();
+    this.websocketclose();
   },
   methods: {
+    ...mapGetters(['userInfo']),
     checkPwdStrong() {
       let pwdStrong = Vue.ls.get(PWD_STRONG)
       if(pwdStrong) {
@@ -277,11 +279,11 @@ export default {
         }
       }
     },
-    // timer () {
-    //  return setInterval(() => {
-    //   this.testWebsocket()
-    //  }, 1000 * 60 * 10)
-    // },
+    timer () {
+     return setInterval(() => {
+      this.testWebsocket()
+     }, 1000 * 60 * 10)
+    },
     initLogInfo() {
       getLogInfo().then(res => {
         if (res.code === 200) {
@@ -290,9 +292,8 @@ export default {
       })
     },
     testWebsocket(){
-      // console.log(new Date())
       let params = {
-        userId: '99999',
+        userId: this.userInfo().sysUserId,
         content: '欢迎来到新的世界！',
         level: '0',
         type: '0',
@@ -303,7 +304,7 @@ export default {
     },
     initWebSocket: function() {
       // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
-      var userId = '99999'
+      var userId = this.userInfo().sysUserId
       var url =
         window._CONFIG['domianURL'].replace('https://', 'ws://').replace('http://', 'ws://') + '/websocket/' + userId
       this.websock = new WebSocket(url)
