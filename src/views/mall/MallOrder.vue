@@ -41,6 +41,17 @@
         @change="handleTableChange"
       >
 
+       <span slot="state" slot-scope="text">
+          <span v-if="text === 0 ">已取消</span>
+          <span v-else-if="text === 10 ">未付款</span>
+          <span v-else-if="text === 20 ">已付款</span>
+          <span v-else-if="text === 40 ">已发货</span>
+          <span v-else-if="text === 50 ">交易成功</span>
+          <span v-else-if="text === 60 ">交易关闭</span>
+          <span v-else-if="text === 70 ">无效订单</span>
+          <span v-else>未知</span>
+        </span>
+
         <span slot="payType" slot-scope="text">
           <a-tag color="green" v-if="text === 0 ">支付宝</a-tag>
           <a-tag color="blue" v-else-if="text === 1 ">微信</a-tag>
@@ -105,6 +116,13 @@ const columns = [
     title: '支付金额',
     align: 'center',
     dataIndex: 'payAmount',
+    width: 80
+  },
+  {
+    title: '支付状态',
+    dataIndex: 'state',
+    scopedSlots: { customRender: 'state' },
+    align: 'center',
     width: 80
   },
   {

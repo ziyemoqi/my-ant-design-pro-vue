@@ -59,6 +59,9 @@ export function getVerifyCode(params) {
   return get("/auth/imageVerifyCode",params)
 }
 
+// 分页查询用户
+const chatPage = (params) => get("/sysUser/chatPage", params)
+
 export {
   userList,
   addUser,
@@ -67,6 +70,7 @@ export {
   queryUserRole,
   resetPassword,
   logout,
+  chatPage
 }
 
 /**
