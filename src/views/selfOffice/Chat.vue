@@ -46,7 +46,7 @@
         </span>
 
       <span slot="action" slot-scope="text, record">
-        <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
+        <a-button @click="handleChat(record)" type="primary" icon="message">聊天</a-button>&nbsp;&nbsp;
       </span>
 
       </a-table>
@@ -54,7 +54,7 @@
     <!-- table区域-end -->
 
     <!-- form表单 -->
-    <!-- <Dialog-Edit ref="dialogEdit" @ok="modalFormOk"></Dialog-Edit> -->
+    <Dialog-Chat-Message ref="dialogMessage" @ok="modalFormOk"></Dialog-Chat-Message>
 
   </a-card>
 </template>
@@ -64,7 +64,7 @@ import Vue from 'vue'
 import download from '@/utils/download'
 import { page,deleteById } from '@/api/demo'
 import { chatPage } from '@/api/user'
-// import DialogEdit from './modules/dialogEdit'
+import DialogChatMessage from './modules/dialogChatMessage'
 
 const columns = [
   {
@@ -133,9 +133,9 @@ const columns = [
 
 export default {
   name: 'Chat_view',
-//    components: {
-//     DialogEdit,
-//   },
+   components: {
+    DialogChatMessage,
+  },
   data() {
     return {
       dataSource: [],
@@ -186,11 +186,11 @@ export default {
       this.ipagination = pagination
       this.loadData()
     },
-     // 编辑
-    handleEdit: function(record) {
-      this.$refs.dialogEdit.edit(record)
-      this.$refs.dialogEdit.title = '编辑'
-      this.$refs.dialogEdit.disableSubmit = false
+     // 聊天
+    handleChat: function(record) {
+      this.$refs.dialogMessage.init(record)
+      this.$refs.dialogMessage.title = '聊天'
+      this.$refs.dialogMessage.disableSubmit = false
     },
     // 新增/修改 成功时，重载列表
     modalFormOk() {
