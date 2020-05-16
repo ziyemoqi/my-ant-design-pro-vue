@@ -40,8 +40,19 @@
         <img class='img' alt="" :src="imgUrl+text" />
       </span>
 
+      <span slot="state" slot-scope="text">
+        <a-tag color="brown" v-if="text === '0' ">待审核</a-tag>
+          <a-tag color="blue" v-else-if="text === '1' ">已通过</a-tag>
+          <a-tag color="red" v-else-if="text === '2' ">已拒绝</a-tag>
+          <a-tag color="green" v-else-if="text === '3' ">已上架</a-tag>
+          <a-tag color="Thistle" v-else>已下架</a-tag>
+      </span>
+
       <span slot="action" slot-scope="text, record">
-        <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
+        <a-button @click="handleEdit(record)" type="primary" icon="edit" >编辑</a-button>&nbsp;
+        <a-button v-if="record.state=== '0' " @click="checkGood(record)" type="primary" icon="check" >审核&nbsp;</a-button>
+        <a-button v-if="record.state=== '4' || record.state === '1' " @click="upOrDown(record.mallGoodId,'3')" icon="rise" >上架&nbsp;</a-button>
+        <a-button v-if="record.state=== '3' " @click="upOrDown(record.mallGoodId,'4')" type="dashed" icon="fall" >下架</a-button>&nbsp;
         <a-button type="danger" @click="handleDelete(record.mallGoodId)" ghost icon="delete">删除</a-button>
       </span>
       </a-table>
@@ -62,7 +73,7 @@
 <script>
 import DialogEdit from './modules/dialogGoodEdit'
 import Vue from 'vue'
-import { page,delete_ } from '@/api/mall/mallGood'
+import { page,delete_,updateGood } from '@/api/mall/mallGood'
 import dialogCreateOrder from './modules/dialogCreateOrder';
 
 const columns = [
@@ -90,12 +101,6 @@ const columns = [
     width: 150
   },
   {
-    title: '商品描述',
-    align: 'center',
-    dataIndex: 'description',
-    width: 150
-  },
-  {
     title: '价格',
     dataIndex: 'price',
     align: 'center',
@@ -114,15 +119,10 @@ const columns = [
     width: 100
   },
   {
-    title: '库存预警',
+    title: '状态',
     align: 'center',
-    dataIndex: 'lowStock',
-    width: 100
-  },
-  {
-    title: '排序',
-    align: 'center',
-    dataIndex: 'sort',
+    dataIndex: 'state',
+    scopedSlots: { customRender: 'state' },
     width: 100
   },
   {
@@ -130,7 +130,7 @@ const columns = [
     dataIndex: 'action',
     align: 'center',
     scopedSlots: { customRender: 'action' },
-    width: 300
+    width: 400
   }
 ]
 
@@ -216,6 +216,13 @@ export default {
       this.$refs.dialogEdit.title = '编辑'
       this.$refs.dialogEdit.disableSubmit = false
     },
+    // 审核
+    checkGood: function(record) {
+      this.$refs.dialogEdit.edit(record)
+      this.$refs.dialogEdit.title = '审核'
+      this.$refs.dialogEdit.checkFlag = true
+      this.$refs.dialogEdit.disableSubmit = false
+    },
     // 删除
     handleDelete: function(id) {
       var that = this
@@ -243,7 +250,36 @@ export default {
     createOrder() {
       this.dialogCreateOrderVisible = true;
       this.dialogCreateOrderKey++;
-    }
+    },
+    // 上下架
+    upOrDown(mallGoodId, state) {
+      let msg = '上架'
+      if (state === '4') {
+        msg = '下架'
+      }
+      let _this = this
+      _this.$confirm({
+        title: '提示',
+        content: '您确定要' + msg + '此商品吗?',
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        async onOk() {
+          let obj = {
+            mallGoodId,
+            state
+          }
+          updateGood(obj).then(resp => {
+            if (resp.code === 200) {
+              _this.$message.success('操作成功!')
+              _this.loadData()
+            } else {
+              _this.$message.error(resp.msg || '操作失败!')
+            }
+          })
+        },
+      })
+    },
   }
 }
 </script>

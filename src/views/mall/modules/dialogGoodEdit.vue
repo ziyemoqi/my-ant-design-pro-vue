@@ -1,17 +1,25 @@
 <template>
   <a-modal
     :title="title"
-    :width="700"
+    :width="800"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭"
     wrapClassName="ant-modal-cust-warp"
-    style="top:5%;height: 95%;overflow-y: hidden">
+    style="top:5%;height: 100%;overflow-y: hidden">
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
+        
+         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="审核结果" v-if="checkFlag">
+          <a-radio-group buttonStyle="solid" v-decorator="[ 'state', {'initialValue':1}]">
+            <a-radio-button :value="1">审核通过</a-radio-button>
+            <a-radio-button :value="2">审核拒绝</a-radio-button>
+          </a-radio-group>
+        </a-form-item>
+
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -51,7 +59,7 @@
            <a-textarea
               v-decorator="['description']"
               placeholder="请输入..."
-              :rows="4" 
+              :rows="2" 
             />
         </a-form-item>
 
@@ -63,7 +71,7 @@
           <a-textarea
               v-decorator="['remark']"
               placeholder="请输入..."
-              :rows="4" 
+              :rows="2" 
             />
         </a-form-item>
 
@@ -104,6 +112,7 @@
               { min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur' }
             ]}
         },
+        checkFlag: false
       }
     },
     methods: {

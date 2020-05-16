@@ -6,6 +6,7 @@
         <a-row :gutter="24">
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
+              <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
               <a-button type="default" icon="reload" style="margin-left: 8px" @click="refresh" :loading="loading">刷新</a-button>
             </a-col>
           </span>
@@ -19,7 +20,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="sysUserId"
+        rowKey="mallShippingId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -27,26 +28,9 @@
         @change="handleTableChange"
       >
 
-        <span slot="sex" slot-scope="text">
-          <a-tag color="green" v-if="text === 0 ">女</a-tag>
-          <a-tag color="blue" v-else-if="text === 1 ">男</a-tag>
-          <a-tag color="yellow" v-else-if="text === 2 ">保密</a-tag>
-          <a-tag color="red" v-else>未知</a-tag>
-        </span>
-
-        <span slot="online" slot-scope="text">
-          <a-tag color="red" v-if="text === '0' ">离线</a-tag>
-          <a-tag color="green" v-else-if="text === '1' ">在线</a-tag>
-          <a-tag color="yellow" v-else-if="text === '2' ">隐身</a-tag>
-          <a-tag color="red" v-else>未知</a-tag>
-        </span>
-
-         <span slot="pic" slot-scope="text">
-            <img class='img' alt="" :src="imgUrl+text" />
-        </span>
-
       <span slot="action" slot-scope="text, record">
-        <a-button @click="handleChat(record)" type="primary" icon="message">聊天</a-button>&nbsp;&nbsp;
+        <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
+        <a-button type="danger" @click="handleDelete(record.mallShippingId)" ghost icon="delete">删除</a-button>
       </span>
 
       </a-table>
@@ -54,15 +38,15 @@
     <!-- table区域-end -->
 
     <!-- form表单 -->
-    <Dialog-Chat-Message ref="dialogMessage" @ok="modalFormOk"></Dialog-Chat-Message>
+    <Dialog-Edit ref="dialogEdit" @ok="modalFormOk"></Dialog-Edit>
 
   </a-card>
 </template>
 
 <script>
 import Vue from 'vue'
-import { chatPage } from '@/api/user'
-import DialogChatMessage from './modules/dialogChatMessage'
+import { page,delete_ } from '@/api/mall/shipping'
+import DialogEdit from './modules/dialogShippingEdit'
 
 const columns = [
   {
@@ -76,48 +60,26 @@ const columns = [
     }
   },
   {
-    title: '姓名',
+    title: '收货人',
     align: 'center',
-    dataIndex: 'userName',
+    dataIndex: 'receiverName',
+    width: 200
+  },
+  {
+    title: '联系方式',
+    align: 'center',
+    dataIndex: 'receiverPhone',
     width: 150
+  },{
+    title: '收货地址',
+    align: 'center',
+    dataIndex: 'receiverProvince',
+    width: 250
   },
   {
-    title: '头像',
+    title: '详细地址',
     align: 'center',
-    dataIndex: 'headImg',
-    scopedSlots: { customRender: 'pic' },
-    width: 150
-  },
-  {
-    title: '状态',
-    align: 'center',
-    dataIndex: 'online',
-    scopedSlots: { customRender: 'online' },
-    width: 150
-  },
-  {
-    title: '年龄',
-    align: 'center',
-    dataIndex: 'age',
-    width: 80
-  },
-   {
-    title: '生日',
-    align: 'center',
-    dataIndex: 'birthday',
-    width: 130
-  },
-  {
-    title: '性别',
-    align: 'center',
-    dataIndex: 'sex',
-    scopedSlots: { customRender: 'sex' },
-    width: 100
-  },
-  {
-    title: '手机',
-    align: 'center',
-    dataIndex: 'phone',
+    dataIndex: 'receiverAddress',
     width: 150
   },
   {
@@ -125,14 +87,14 @@ const columns = [
     dataIndex: 'action',
     align: 'center',
     scopedSlots: { customRender: 'action' },
-    width: 150
+    width: 200
   }
 ]
 
 export default {
-  name: 'Chat_view',
+  name: 'Shipping_view',
    components: {
-    DialogChatMessage,
+    DialogEdit,
   },
   data() {
     return {
@@ -151,7 +113,6 @@ export default {
         showSizeChanger: true,
         total: 0
       },
-      imgUrl: process.env.VUE_APP_IMG,
     }
   },
   mounted() {
@@ -167,7 +128,7 @@ export default {
         ...screenData
       }
       this.loading = true
-      await chatPage(obj).then(res => {
+      await page(obj).then(res => {
         if (res.code === 200) {
           this.dataSource = res.data
           that.ipagination.total = res.page.total
@@ -184,11 +145,34 @@ export default {
       this.ipagination = pagination
       this.loadData()
     },
-     // 聊天
-    handleChat: function(record) {
-      this.$refs.dialogMessage.init(record)
-      this.$refs.dialogMessage.title = '聊天'
-      this.$refs.dialogMessage.disableSubmit = false
+    // 新增
+    handleAdd: function() {
+      this.$refs.dialogEdit.add()
+      this.$refs.dialogEdit.title = '新增收货地址'
+    },
+     // 编辑
+    handleEdit: function(record) {
+      this.$refs.dialogEdit.edit(record)
+      this.$refs.dialogEdit.title = '编辑收货地址'
+      this.$refs.dialogEdit.disableSubmit = false
+    },
+    // 删除
+    handleDelete: function(id) {
+      var that = this
+      that.$confirm({
+        title: '确认删除',
+        content: '是否删除当前数据?',
+        onOk: function() {
+          delete_({ mallShippingId: id }).then(res => {
+            if (res.code === 200) {
+              that.$message.success('操作成功!')
+              that.loadData()
+            } else {
+              that.$message.warning(res.msg || '操作失败!')
+            }
+          })
+        }
+      })
     },
     // 新增/修改 成功时，重载列表
     modalFormOk() {
@@ -199,9 +183,4 @@ export default {
 </script>
 <style scoped>
 @import '~@assets/less/common.less';
-.img {
-    flex: none;
-    width: 60px;
-    height: 60px;
-  }
 </style>

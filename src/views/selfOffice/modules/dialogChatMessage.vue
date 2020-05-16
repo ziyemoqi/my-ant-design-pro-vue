@@ -61,10 +61,12 @@ export default {
           datetime: moment().subtract(2, 'hour'),
         },
       ],
+      messageData: [],
       moment,
       confirmLoading: false,
       visible: false,
       model: {},
+      receiveUserHeadImg: '',
       title:"聊天信息",
     };
   },
@@ -72,12 +74,8 @@ export default {
     init (record) {
         this.confirmLoading = false
         this.model = Object.assign({}, record)
-        // this.imgUrl = process.env.VUE_APP_IMG + this.model.pic
-        // this.goodImg = this.model.pic
+        this.receiveUserHeadImg = process.env.VUE_APP_IMG + this.model.pic
         this.visible = true
-        // this.$nextTick(() => {
-        //   this.form.setFieldsValue(pick(this.model,'name','stock','price','lowStock','description','sort','remark'))
-        // });
       },
       close () {
         this.$emit('close')
@@ -90,44 +88,26 @@ export default {
       handleOk () {
         const that = this
         let obj = {
-          receiveUserId: '123123',
-          content: '1'
+          receiveUserId: that.model.sysUserId,
+          content: '你好啊！'
         }
         sendMessage(obj).then(resp => {
           if (resp.code === 200) {
-            console.log(resp)
+            console.log(resp.data)
+            let handleData =  this.handleMessageData(resp.data)
+            
           } else {
             that.$message.error(resp.msg || '发送失败!')
           }
         })
-        // 触发表单验证
-        // this.form.validateFields((err, values) => {
-        //   if (!err) {
-        //     if(values.lowStock > values.stock) {
-        //       this.$message.warning('库存值应大于库存预警值！')
-        //     }else {
-        //       that.confirmLoading = true;
-        //       let formData = Object.assign(this.model, values,{"pic" : this.goodImg})
-        //       let obj
-        //       if(!this.model.mallGoodId){
-        //         obj=add(formData)
-        //       }else{
-        //         obj=updateGood(formData)
-        //       }
-        //       obj.then((res)=>{
-        //         if(res.code === 200){
-        //           that.$message.success('操作成功!');
-        //           that.$emit('ok');
-        //         }else{
-        //           that.$message.warning(res.msg ||'操作失败!');
-        //         }
-        //       }).finally(() => {
-        //         that.confirmLoading = false;
-        //         that.close();
-        //       })
-        //     }
-        //   }
-        // })
+      },
+      // 处理聊天记录
+      handleMessageData(data) {
+        console.log("开始处理聊天信息")
+        for (let node of data) {
+          console.log(node)
+        }
+        return data
       },
   }
 };
