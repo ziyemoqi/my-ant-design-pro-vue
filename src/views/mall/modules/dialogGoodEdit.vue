@@ -47,6 +47,14 @@
           </a-upload>
         </a-form-item>
 
+         <a-form-item label="所属类目" :labelCol="labelCol" :wrapperCol="wrapperCol" >
+          <a-cascader
+            :options="goodClassOptions"
+            placeholder="请选择..."
+            v-decorator="['classArr', { rules: [{ required: true, message: '请选择商品类目' }]}]"/>
+        </a-form-item>
+
+
         <a-form-item label="库存" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input-number :min="1" v-decorator="['stock', { rules: [{required: true, message: '请输入库存'}] }]" style="width:100%"  placeholder="请输入..." />
         </a-form-item>
@@ -81,8 +89,9 @@
 </template>
 
 <script>
-  import pick from 'lodash.pick'
-  import {updateGood,add} from '@/api/mall/mallGood'
+import pick from 'lodash.pick'
+import {updateGood,add} from '@/api/mall/mallGood'
+import {classList} from '@/api/mall/mallGoodClass'
 
   export default {
     name: "dialogEdit",
@@ -112,10 +121,36 @@
               { min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur' }
             ]}
         },
-        checkFlag: false
+        checkFlag: false,
+        goodClassOptions: [],
       }
     },
+    mounted() {
+      this.classInit();
+    },
     methods: {
+      // 获取商品类目
+      async classInit() {
+        let { code, data } = await classList();
+        if (code === 200) {
+          this.goodClassOptions = this.handleClassTreeData(data);
+        } else {
+          this.$message.warn('未获取到商品类目数据！');
+        }
+      },
+      // 处理商品类目
+      handleClassTreeData(tree) {
+        for (let node of tree) {
+          node.label = node.name
+          node.value = node.mallGoodClassId
+          node.scopedSlots = {
+            icon: 'icon',
+            title: 'title'
+          }
+          if (node.children) node.children = this.handleClassTreeData(node.children)
+        }
+        return tree
+      },
       add () {
         this.edit({});
       },
@@ -126,8 +161,13 @@
         this.imgUrl = process.env.VUE_APP_IMG + this.model.pic
         this.goodImg = this.model.pic
         this.visible = true
+        let classArr= [record.pclassId,record.classId]
+        let obj = {
+          ...record,
+          classArr
+        }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','stock','price','lowStock','description','sort','remark'))
+          this.form.setFieldsValue(pick(obj,'name','stock','price','lowStock','description','sort','remark','classArr'))
         });
       },
       close () {
@@ -144,7 +184,8 @@
               this.$message.warning('库存值应大于库存预警值！')
             }else {
               that.confirmLoading = true;
-              let formData = Object.assign(this.model, values,{"pic" : this.goodImg})
+              let classId = values.classArr[1]
+              let formData = Object.assign(this.model, values,{"pic" : this.goodImg,'classId':classId})
               let obj
               if(!this.model.mallGoodId){
                 obj=add(formData)
