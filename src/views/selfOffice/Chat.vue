@@ -46,7 +46,7 @@
         </span>
 
       <span slot="action" slot-scope="text, record">
-        <a-button @click="handleChat(record)" type="primary" icon="message">聊天</a-button>&nbsp;&nbsp;
+        <a-button :disabled="userInfo().sysUserId === record.sysUserId" @click="handleChat(record)" type="primary" icon="message">聊天</a-button>&nbsp;&nbsp;
       </span>
 
       </a-table>
@@ -63,6 +63,7 @@
 import Vue from 'vue'
 import { chatPage } from '@/api/user'
 import DialogChatMessage from './modules/dialogChatMessage'
+import { mapGetters } from 'vuex'
 
 const columns = [
   {
@@ -158,6 +159,7 @@ export default {
     this.loadData()
   },
   methods: {
+     ...mapGetters(['userInfo']),
     async loadData() {
       let that = this
       let screenData = this.screenForm.getFieldsValue()

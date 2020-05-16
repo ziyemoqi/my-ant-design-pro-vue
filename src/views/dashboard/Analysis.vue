@@ -237,11 +237,11 @@ export default {
     }
   },
   created() {
-    setTimeout(() => {
-      this.loading = !this.loading
-    }, 1000)
+    // setTimeout(() => {
+    //   this.loading = !this.loading
+    // }, 1000)
     this.initLogInfo()
-    this.timer()
+    // this.timer()
   },
   mounted() {
     //初始化websocket
@@ -279,28 +279,12 @@ export default {
         }
       }
     },
-    timer () {
-     return setInterval(() => {
-      this.testWebsocket()
-     }, 1000 * 60 * 10)
-    },
     initLogInfo() {
       getLogInfo().then(res => {
         if (res.code === 200) {
           this.logInfo = res.data.logInfo
         }
       })
-    },
-    testWebsocket(){
-      let params = {
-        userId: this.userInfo().sysUserId,
-        content: '欢迎来到新的世界！',
-        level: '0',
-        type: '0',
-        modelType: '0',
-        rid: '123456'
-        };
-      userApi.tempApi2(params)
     },
     initWebSocket: function() {
       // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
@@ -324,9 +308,8 @@ export default {
       var data = eval('(' + e.data + ')')
       this.$notification.success({
         message: '系统消息',
-        description:'第'+ this.num+'次推送,'+ data.content
+        description: '您有新的消息,请及时查看'
       })
-      console.log('第'+ this.num+'次推送,'+ new Date())
     },
     websocketclose: function(e) {
       console.log('connection closed (' + e.code + ')')
