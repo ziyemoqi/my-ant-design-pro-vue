@@ -4,7 +4,7 @@ import { get, post,put,deleteAction } from '@/api/manage'
  * 类目树分页信息 
  * @param {*} params 
  */
-export function page(params) {
+export function classTree(params) {
     return get("/mallGoodClass/classTree", params)
 }
 
@@ -12,7 +12,7 @@ export function page(params) {
  * 子级类目信息 
  * @param {*} params 
  */
-export function children(params) {
+export function childrenClass(params) {
     return get("/mallGoodClass/childrenClass", params)
 }
 

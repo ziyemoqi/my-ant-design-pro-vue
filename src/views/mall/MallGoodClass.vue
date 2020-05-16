@@ -4,8 +4,8 @@
       <a-card :bordered="false">
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
-          <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
-          <a-button @click="handleAdd(2)" type="primary">添加子级部门</a-button>
+          <a-button @click="handleAdd(1)" type="primary">添加一级类目</a-button>
+          <a-button @click="handleAdd(2)" type="primary">添加子级类目</a-button>
           <a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>
           <a-button @click="backFlowList" type="default" icon="rollback" :loading="loading">返回</a-button>
         </a-row>
@@ -21,11 +21,6 @@
               >取消选择</a>
             </div>
           </a-alert>
-          <a-input-search
-            @search="onSearch"
-            style="width:100%;margin-top: 10px"
-            placeholder="请输入部门名称"
-          />
           <!-- 树-->
           <a-col :md="10" :sm="24">
             <template>
@@ -73,49 +68,7 @@
     <a-col :md="15" :sm="24">
       <a-card :bordered="false">
         <a-tabs defaultActiveKey="2">
-          <a-tab-pane tab="部门信息" key="2">
-            <div class="table-page-search-wrapper">
-              <!-- FORM搜索区域 -->
-              <a-form layout="inline" :form="screenForm" @submit.prevent="handleScreenSubmit">
-                <a-row :gutter="10">
-                  <a-col :md="10" :sm="12">
-                    <a-form-item label="部门名称" style="margin-left:8px">
-                      <a-input placeholder="请输入名称查询" v-decorator="['departName',{}]"></a-input>
-                    </a-form-item>
-                  </a-col>
-                  <span
-                    style="float: left;overflow: hidden;"
-                    class="table-page-search-submitButtons"
-                  >
-                    <a-col :md="6" :sm="24">
-                      <a-button
-                        type="primary"
-                        icon="search"
-                        style="margin-left: 18px"
-                        html-type="submit"
-                      >查询</a-button>
-                      <a-button
-                        type="primary"
-                        icon="reload"
-                        style="margin-left: 8px"
-                        @click="handleReset"
-                      >重置</a-button>
-                    </a-col>
-                  </span>
-                  <a-dropdown v-if="selectedRowKeys.length > 0">
-                    <a-menu slot="overlay">
-                      <a-menu-item key="1" @click="listBatchDel">
-                        <a-icon type="delete" />删除
-                      </a-menu-item>
-                    </a-menu>
-                    <a-button style="margin-left: 8px">
-                      批量操作
-                      <a-icon type="down" />
-                    </a-button>
-                  </a-dropdown>
-                </a-row>
-              </a-form>
-            </div>
+          <a-tab-pane tab="类目信息" key="2">
             <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
               <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择
               <a style="font-weight: 600">{{selectedRowKeys.length }}</a>项
@@ -126,7 +79,7 @@
                 ref="table"
                 size="middle"
                 :bordered="true"
-                rowKey="sysDeptId"
+                rowKey="mallGoodClassId"
                 :columns="columns"
                 :dataSource="listDataSource"
                 :pagination="ipagination"
@@ -134,37 +87,10 @@
                 :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
                 @change="handleTableChange"
               >
-                <span slot="state" slot-scope="text">
-                  <a-badge :status="text | stateTypeFilter" :text="text | stateFilter" />
-                </span>
                 <span slot="action" slot-scope="text, record">
                   <a @click="handleEdit(record)">编辑</a>
                   <a-divider type="vertical" />
-                  <a v-if="record.state=== 0 " @click="handleState(record.sysDeptId,'1')">停用</a>
-                  <a-divider v-if="record.state === 0 " type="vertical" />
-                  <a v-if="record.state=== 1  " @click="handleState(record.sysDeptId,'0')">启用</a>
-                  <a-divider v-if="record.state=== 1 " type="vertical" />
-
-                  <a-dropdown>
-                    <a class="ant-dropdown-link">
-                      更多
-                      <a-icon type="down" />
-                    </a>
-                    <a-menu slot="overlay">
-                      <a-menu-item>
-                        <a href="javascript:;" @click="handleDetail(record)">详情</a>
-                      </a-menu-item>
-
-                      <a-menu-item>
-                        <a-popconfirm
-                          title="确定要删除此部门吗?"
-                          @confirm="() => handleDelete(record.sysDeptId)"
-                        >
-                          <a>删除</a>
-                        </a-popconfirm>
-                      </a-menu-item>
-                    </a-menu>
-                  </a-dropdown>
+                  <a href="javascript:;" @click="handleDelete(record.mallGoodClassId)">删除</a>
                 </span>
               </a-table>
             </div>
@@ -172,37 +98,19 @@
         </a-tabs>
       </a-card>
     </a-col>
-    <depart-modal ref="departModal" @ok="add_loadTree"></depart-modal>
+    <mall-good-class-modal ref="classModal" @ok="add_loadTree"></mall-good-class-modal>
   </a-row>
 </template>
 <script>
-import DepartModal from './modules/DepartModal'
+import MallGoodClassModal from './modules/MallGoodClassModal'
 import pick from 'lodash.pick'
-import { departTree, childrenDept, deleteByDepartId, deleteBatch, editByDeptId } from '@/api/dept'
+import { classTree, childrenClass,delete_ } from '@/api/mall/mallGoodClass'
 const columns = [
   {
-    title: '部门名称',
+    title: '类目名称',
     align: 'center',
-    dataIndex: 'departName',
+    dataIndex: 'name',
     width: 130
-  },
-  {
-    title: '办公电话',
-    align: 'center',
-    dataIndex: 'telephone',
-    width: 140
-  },
-  {
-    title: '办公地址',
-    align: 'center',
-    dataIndex: 'address'
-  },
-  {
-    title: '状态',
-    align: 'center',
-    dataIndex: 'state',
-    scopedSlots: { customRender: 'state' },
-    width: 100
   },
   {
     title: '序号',
@@ -219,21 +127,10 @@ const columns = [
   }
 ]
 
-const stateMap = {
-  '0': {
-    state: 'success',
-    text: '启用'
-  },
-  '1': {
-    state: 'warning',
-    text: '停用'
-  }
-}
-
 export default {
   name: 'DepartList_view',
   components: {
-    DepartModal
+    MallGoodClassModal
   },
   data() {
     return {
@@ -271,27 +168,19 @@ export default {
       selectedRowKeys: []
     }
   },
-  filters: {
-    stateFilter(type) {
-      return stateMap[type].text
-    },
-    stateTypeFilter(type) {
-      return stateMap[type].state
-    }
-  },
   mounted() {
     this.loadTree()
   },
   methods: {
-    // 加载部门树
+    // 加载类目树
     async loadTree() {
       var that = this
       that.loading = true
       that.treeData = []
       try {
-        let { code, data, msg } = await departTree()
+        let { code, data, msg } = await classTree()
         if (code === 200) {
-          let handleTreeData = this.handleDeptTreeData(data)
+          let handleTreeData = this.handleClassTreeData(data)
           for (let i = 0; i < handleTreeData.length; i++) {
             let temp = handleTreeData[i]
             that.treeData.push(temp)
@@ -307,8 +196,8 @@ export default {
         this.loading = false
       }
     },
-    // 处理部门树数据 ====== loadTree 子方法 ======
-    handleDeptTreeData(tree) {
+    // 处理树数据 ====== loadTree 子方法 ======
+    handleClassTreeData(tree) {
       for (let node of tree) {
         node.key = node.id
         node.value = node.id
@@ -316,7 +205,7 @@ export default {
           icon: 'icon',
           title: 'title'
         }
-        if (node.children) node.children = this.handleDeptTreeData(node.children)
+        if (node.children) node.children = this.handleClassTreeData(node.children)
       }
       return tree
     },
@@ -367,14 +256,14 @@ export default {
         size: this.ipagination.pageSize,
         parentId: record.id
       }
-      this.queryChildrenDept(obj)
+      this.queryChildrenClass(obj)
     },
-    //  触发onSelect事件时,查询右侧list
-    queryChildrenDept(obj) {
+    // 触发onSelect事件时,查询右侧list
+    queryChildrenClass(obj) {
       let that = this
       this.listLoading = true
       try {
-        childrenDept(obj).then(res => {
+        childrenClass(obj).then(res => {
           if (res.code === 200) {
             that.listDataSource = res.data
             that.ipagination.total = res.page.total
@@ -406,47 +295,12 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       this.ipagination = pagination
       let others = this.screenForm.getFieldsValue()
-      this.queryChildrenDept({
+      this.queryChildrenClass({
         parentId: this.currSelected.key,
         current: pagination.current,
         size: this.ipagination.pageSize,
         ...others
       })
-    },
-    // 部门搜索
-    onSearch(value) {
-      let that = this
-      that.loading = true
-      that.treeData = []
-      if (value) {
-        let obj = {
-          departName: value
-        }
-        try {
-          departTree(obj).then(res => {
-            if (res.code === 200) {
-              that.onClearSelected()
-              that.listDataSource = []
-              that.ipagination.total = 0
-              let handleTreeData = this.handleDeptTreeData(res.data)
-              for (let i = 0; i < handleTreeData.length; i++) {
-                let temp = handleTreeData[i]
-                that.treeData.push(temp)
-                that.setThisExpandedKeys(temp)
-                that.getAllKeys(temp)
-              }
-            } else {
-              that.$message.error(res.msg || '数据获取失败,请联系系统管理员')
-            }
-          })
-        } catch (e) {
-          that.$message.error(msg || '查询失败！')
-        } finally {
-          this.loading = false
-        }
-      } else {
-        that.loadTree()
-      }
     },
     // 当前选择
     getCurrSelectedTitle() {
@@ -460,22 +314,22 @@ export default {
       this.form.resetFields()
       this.selectedKeys = []
     },
-    // 部门新增
+    // 类目新增
     handleAdd(num) {
-      this.$refs.departModal.title = '新增'
-      this.$refs.departModal.addFlag = true
+      this.$refs.classModal.title = '新增'
+      this.$refs.classModal.addFlag = true
       if (num == 1) {
-        this.$refs.departModal.add()
+        this.$refs.classModal.add()
       } else {
         let key = this.currSelected.key
         if (!key) {
           this.$message.warning('请先选中一条记录!')
           return false
         }
-        this.$refs.departModal.add(key)
+        this.$refs.classModal.add(key)
       }
     },
-    // 部门新增后的回调
+    // 类目新增后的回调
     add_loadTree() {
       this.loadTree()
       let obj = {
@@ -483,85 +337,43 @@ export default {
         current: 1,
         size: this.ipagination.pageSize
       }
-      this.queryChildrenDept(obj)
-    },
-    // 删除单条信息
-    handleDelete(sysDeptId) {
-      let that = this
-      deleteByDepartId({ sysDeptId: sysDeptId }).then(resp => {
-        if (resp.code === 200) {
-          that.$message.success('删除成功!')
-          that.loadTree()
-          that.queryChildrenDept({ parentId: that.currSelected.key })
-        } else {
-          that.$message.error(resp.msg || '删除失败!')
-        }
-      })
-    },
-    //list 条件查询
-    handleScreenSubmit(e) {
-      e.preventDefault()
-      let { ...others } = this.screenForm.getFieldsValue()
-      let obj = {
-        ...others,
-        current: 1,
-        size: this.ipagination.pageSize,
-        parentId: this.currSelected.key
-      }
-      this.queryChildrenDept(obj)
+      this.queryChildrenClass(obj)
     },
     // 重置
     emptyCurrForm() {
       this.form.resetFields()
     },
-    // list重置
-    handleReset() {
-      this.screenForm.resetFields()
-      let obj = {
-        current: 1,
-        size: this.ipagination.pageSize,
-        parentId: this.selectedKeys[0]
-      }
-      this.queryChildrenDept(obj)
-    },
     // list 编辑
     handleEdit: function(record) {
-      this.$refs.departModal.title = '编辑'
-      this.$refs.departModal.addFlag = false
-      this.$refs.departModal.disableSubmit = false
-      this.$refs.departModal.edit(record)
+      this.$refs.classModal.title = '编辑'
+      this.$refs.classModal.addFlag = false
+      this.$refs.classModal.disableSubmit = false
+      this.$refs.classModal.edit(record)
     },
     // list 详情
     handleDetail(record) {
-      this.$refs.departModal.title = '详情'
-      this.$refs.departModal.addFlag = false
-      this.$refs.departModal.disableSubmit = true
-      this.$refs.departModal.edit(record)
+      this.$refs.classModal.title = '详情'
+      this.$refs.classModal.addFlag = false
+      this.$refs.classModal.disableSubmit = true
+      this.$refs.classModal.edit(record)
     },
-    // 启用停用
-    handleState(sysDeptId, state) {
-      let msg = '启用'
-      if (state === '1') {
-        msg = '停用'
-      }
+    // 删除单条信息
+    handleDelete(mallGoodClassId) {
       let _this = this
       _this.$confirm({
         title: '提示',
-        content: '您确定要' + msg + '此部门吗?',
+        content: '您确定要删除此类目吗?',
         okText: '确定',
         okType: 'danger',
         cancelText: '取消',
         async onOk() {
-          let obj = {
-            sysDeptId,
-            state
-          }
-          editByDeptId(obj).then(resp => {
+          delete_({ mallGoodClassId: mallGoodClassId }).then(resp => {
             if (resp.code === 200) {
-              _this.$message.success('操作成功!')
-              _this.queryChildrenDept({ parentId: _this.currSelected.key })
+              _this.$message.success('删除成功!')
+              _this.loadTree()
+              _this.queryChildrenClass({ parentId: _this.currSelected.key })
             } else {
-              _this.$message.error(resp.msg || '操作失败!')
+              _this.$message.error(resp.msg || '删除失败!')
             }
           })
         },
@@ -586,7 +398,7 @@ export default {
               if (res.code === 200) {
                 that.$message.success('删除成功!')
                 that.loadTree()
-                that.queryChildrenDept({
+                that.queryChildrenClass({
                   parentId: that.currSelected.key,
                   current: 1,
                   size: that.ipagination.pageSize
