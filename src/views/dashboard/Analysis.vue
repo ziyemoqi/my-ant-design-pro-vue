@@ -237,11 +237,15 @@ export default {
     }
   },
   created() {
-    // setTimeout(() => {
-    //   this.loading = !this.loading
-    // }, 1000)
+    setTimeout(() => {
+      this.loading = !this.loading
+    }, 1000)
     this.initLogInfo()
-    // this.timer()
+    console.log('********************************************')
+    console.log('与世界斗争的这些年,你是否光彩依旧，兴致盎然！')
+    console.log('你在电脑前看这段文字,')
+    console.log('写文字的人在未来等你。')
+    console.log('********************************************')
   },
   mounted() {
     //初始化websocket
@@ -298,10 +302,10 @@ export default {
       this.websock.onclose = this.websocketclose
     },
     websocketonopen: function() {
-      console.log('WebSocket连接成功')
+      // console.log('WebSocket连接成功')
     },
     websocketonerror: function(e) {
-      console.log('WebSocket连接发生错误')
+      console.log('WebSocket ERROR')
     },
     websocketonmessage: function(e) {
       this.num ++

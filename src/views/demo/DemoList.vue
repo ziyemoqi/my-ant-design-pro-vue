@@ -144,6 +144,8 @@ export default {
         if (res.code === 200) {
           this.dataSource = res.data
           that.ipagination.total = res.page.total
+        } else {
+          that.$message.warning(res.msg || '操作失败!')
         }
         this.loading = false
       })

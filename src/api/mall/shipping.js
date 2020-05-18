@@ -31,3 +31,11 @@ export function editById(params) {
 export function delete_(params) {
     return deleteAction("/mallShipping",params)
 }
+
+/**
+ * 查询所有收货地址
+ * @param {*} params 
+ */
+export function shipingList(params) {
+    return get("/mallShipping/shipingList",params)
+}

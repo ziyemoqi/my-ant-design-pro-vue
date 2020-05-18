@@ -59,10 +59,6 @@
           <a-input-number :min="1" v-decorator="['stock', { rules: [{required: true, message: '请输入库存'}] }]" style="width:100%"  placeholder="请输入..." />
         </a-form-item>
 
-        <a-form-item label="库存预警值" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input-number :min="1" v-decorator="['lowStock', { rules: [{required: true, message: '请输入库存预警值'}] }]" style="width:100%"  placeholder="请输入..." />
-        </a-form-item>
-
         <a-form-item label="商品描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
            <a-textarea
               v-decorator="['description']"
@@ -157,18 +153,23 @@ import {classList} from '@/api/mall/mallGoodClass'
       edit (record) {
         this.confirmLoading = false
         this.form.resetFields()
-        this.model = Object.assign({}, record)
-        this.imgUrl = process.env.VUE_APP_IMG + this.model.pic
-        this.goodImg = this.model.pic
         this.visible = true
-        let classArr= [record.pclassId,record.classId]
-        let obj = {
-          ...record,
-          classArr
+        if(record.mallGoodId){
+          this.model = Object.assign({}, record)
+          this.imgUrl = process.env.VUE_APP_IMG + this.model.pic
+          this.goodImg = this.model.pic
+          let classArr= [record.pclassId,record.classId]
+          let obj = {
+            ...record,
+            classArr
+          }
+          this.$nextTick(() => {
+            this.form.setFieldsValue(pick(obj,'name','stock','price','description','sort','remark','classArr'))
+          });
+        }else {
+          this.imgUrl = ''
+          this.goodImg = ''
         }
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(obj,'name','stock','price','lowStock','description','sort','remark','classArr'))
-        });
       },
       close () {
         this.$emit('close')

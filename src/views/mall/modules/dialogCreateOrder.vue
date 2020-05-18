@@ -31,7 +31,11 @@
               />
             <template v-else>{{ text }}</template>
             </div>
-            <div :key="col" v-if="col === 'goodPic' || col === 'goodPrice'">
+            <div :key="col" v-if="col === 'goodPic'">
+                 <img v-if="record.editable" class='img' alt="" :src="imgUrl+text" />
+              <template v-else><img class='img' alt="" :src="imgUrl+text" /></template>
+              </div>
+            <div :key="col" v-if="col === 'goodPrice'">
                 <a-input
                   :key="col"
                   v-if="record.editable"
@@ -57,7 +61,7 @@
             <template v-if="record.editable">
               <span v-if="record.isNew">
                 <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
-                  <a>删除</a>
+                  <a>移除</a>
                 </a-popconfirm>
               </span>
             </template>
@@ -66,7 +70,7 @@
         <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newGood">选购商品</a-button>
       </form>
     </div>
-    <a-form :form="form" @keydown.enter.native="handleSubmit">
+    <a-form :form="form">
       <sub-title title="支付信息" />
       <a-row :gutter="24">
         <a-col :span="12" style="padding-left: 2px; padding-right: 2px;">
@@ -88,30 +92,19 @@
       <a-row :gutter="24">
         <a-col :span="12">
           <div class="form-box">
-            <a-form-item label="收货人姓名" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback>
-              <a-input
-                placeholder="请输入..."
-                v-decorator="['receiverName', {
-                rules: [{required: true, message: '请输入收货人姓名'}]
-              }]"/>
-            </a-form-item>
-            <a-form-item label="收货地址" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback>
-              <a-cascader
-                :options="areaOptions"
-                placeholder="请选择..."
-                v-decorator="['regionInfo', { rules: [{ required: true, message: '请选择收货地址' }]}]"/>
-            </a-form-item>
-          </div>
-        </a-col>
-        <a-col :span="12">
-          <div class="form-box">
-            <a-form-item label="收货人电话" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback>
-              <a-input placeholder="请输入..." v-decorator="['receiverPhone',validatorRules.phone]" />
-            </a-form-item>
-            <a-form-item label="详细地址" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback>
-              <a-input placeholder="请输入..." v-decorator="['address',{
-                rules: [{required: true, message: '请输入详细收货地址'}]
-              }]" />
+            <a-form-item label="收获地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select
+                style="width: 100%"
+                placeholder="请选择收货地址"
+                optionFilterProp="children"
+                v-decorator="['mallShippingId',{ rules: [{required: true, message: '请请选择收货地址'}]}]"
+              >
+                <a-select-option
+                  v-for="(shipping,roleindex) in shippingList"
+                  :key="roleindex.toString()"
+                  :value="shipping.mallShippingId"
+                >{{ shipping.receiverAddress }}</a-select-option>
+              </a-select>
             </a-form-item>
           </div>
         </a-col>
@@ -141,6 +134,9 @@
                 @change="handleTableChangeAdd"
                 :rowKey="record => record.mallGoodId"
               >
+               <span slot="pic" slot-scope="text">
+                  <img class='img' alt="" :src="imgUrl+text" />
+                </span>
               </a-table>
             </div>
           </a-modal>
@@ -151,27 +147,34 @@
 <script>
 import * as good from '@/api/mall/mallGood'
 import * as order from '@/api/mall/mallOrder'
+import {shipingList} from '@/api/mall/shipping'
 import * as region from '@/api/region';
 import SubTitle from '@/components/basis/SubTItle'
 
 const columns = [{
     title: '商品名称',
+    width: '25%',
     dataIndex: 'name'
   },
   {
     title: '商品图片',
     dataIndex: 'pic',
+    width: '20%',
+    scopedSlots: { customRender: 'pic' }
   },
   {
     title: '单价',
+    width: '15%',
     dataIndex: 'price',
   },
   {
     title: '销量',
+    width: '15%',
     dataIndex: 'sale',
   },
   {
     title: '库存',
+    width: '15%',
     dataIndex: 'stock',
   },
 ];
@@ -180,22 +183,22 @@ const columns = [{
       title: '商品名称',
       dataIndex: 'goodName',
       key: 'goodName',
-      width: '30%',
-      
+      width: '25%',
       scopedSlots: { customRender: 'goodName' }
     },
     {
       title: '商品图片',
       dataIndex: 'goodPic',
       key: 'goodPic',
-      width: '20%',
+      align: 'center',
+      width: '25%',
       scopedSlots: { customRender: 'goodPic' }
     },
     {
       title: '售价',
       dataIndex: 'goodPrice',
       key: 'goodPrice',
-      width: '15%',
+      width: '20%',
       scopedSlots: { customRender: 'goodPrice' }
     },
     {
@@ -248,7 +251,9 @@ export default {
       columns_,
       tableData: [],
       newKey: '0',
-      chooseKey: '0'
+      chooseKey: '0',
+      shippingList: [],
+      imgUrl: process.env.VUE_APP_IMG,
     };
   },
 
@@ -267,6 +272,7 @@ export default {
   },
   mounted() {
     this.area();
+    this.initialShippingList()
   },
   methods: {
     // 添加商品
@@ -330,7 +336,8 @@ export default {
         current: current,
         size: pageSize,
         stockFlag: '1',
-        ...screenForm
+        ...screenForm,
+        state: 3
       };
       let { code, msg, data, page } = await good.page({...obj});
       if (code === 200) {
@@ -414,23 +421,14 @@ export default {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (err) return;
-        if (!new RegExp(/^1[3|4|5|6|7|8|9][0-9]\d{8}$/).test(values.receiverPhone)) {
-          this.$message.warning('联系人手机号格式不正确!');
-        } else {
           this.createOrder({...values});
-        }
       });
     },
     async createOrder(values) {
       try {
         this.submitting = true
-        let regionInfo = {
-          provinceCode: values.regionInfo[0],
-          cityCode: values.regionInfo[1],
-          areaCode: values.regionInfo[2]
-        };
         let goodsInfo = this.tableData
-        let obj = { ...values, ...regionInfo,goodsInfo };
+        let obj = { ...values,goodsInfo };
         let { code, data, msg } = await order.createOrder(obj);
         if (code !== 200) throw new Error(msg || '操作失败');
         this.$message.success('操作成功');
@@ -442,6 +440,16 @@ export default {
         this.submitting = false;
       }
     },
+    // 初始化收货地址
+    initialShippingList () {
+      shipingList().then(res => {
+        if (res.code === 200) {
+          this.shippingList = res.data
+        } else {
+          console.log(res.msg)
+        }
+      })
+    }
   }
 };
 </script>
@@ -488,5 +496,10 @@ export default {
   min-height: 100%;
   background-color: #fff;
   padding-top: 0 !important;
+}
+.img {
+  flex: none;
+  width: 60px;
+  height: 60px;
 }
 </style>

@@ -66,9 +66,14 @@
           <a-badge :status="text | confirmStateTypeFilter" :text="text | confirmStateFilter" />
         </span>
 
+      <span slot="action" slot-scope="text, record">
+        <a-button type="danger" @click="cancelOrder(record)" icon="stop">取消订单</a-button>&nbsp;
+      </span>
+
       </a-table>
     </div>
     <!-- table区域-end -->
+
   </a-card>
 </template>
 
@@ -150,6 +155,12 @@ const columns = [
     dataIndex: 'confirmState',
     scopedSlots: { customRender: 'confirmState' },
     width: 100
+  },{
+    title: '操作',
+    dataIndex: 'action',
+    align: 'center',
+    scopedSlots: { customRender: 'action' },
+    width: 200
   }
 ]
 
@@ -177,7 +188,6 @@ const confirmStateMap = {
 
 export default {
   name: 'mallGoodList_view',
-
   data() {
     return {
       dataSource: [],
@@ -268,6 +278,10 @@ export default {
     refresh() {
       this.loading = true
       this.loadData()
+    },
+    // 取消订单
+    cancelOrder (record) {
+      console.log(record)
     }
   }
 }
