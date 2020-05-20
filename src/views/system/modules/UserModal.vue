@@ -32,7 +32,23 @@
           <a-input placeholder="请输入身份证号" v-decorator="[ 'idCard',validatorRules.idCard]" />
         </a-form-item>
 
-      <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-upload
+            name="file"
+            listType="picture-card"
+            :showUploadList="false"
+            :action="appApi"
+            :beforeUpload="validImg"
+            @change="handleChangeBaseImg"
+          >
+            <img v-if="imgUrl" :src="imgUrl" alt="头像" style="width: 100px;height: 100px" />
+            <div v-else>
+              <a-icon :type="uploading ? 'loading' : 'plus'" />
+            </div>
+          </a-upload>
+        </a-form-item>
+
+        <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select
             mode="multiple"
             style="width: 100%"
@@ -144,8 +160,11 @@ export default {
       currentDeptId: '',
       confirmLoading: false,
       headers: {},
+      uploading: false,
       form: this.$form.createForm(this),
-      picUrl: '',
+      appApi: process.env.VUE_APP_API + '/upload/img/',
+      imgUrl: '',
+      headImg: '',
       validatorRules: {
         loginName: {
           rules: [
@@ -194,7 +213,6 @@ export default {
   methods: {
     // 调用add方法
     add() {
-      this.picUrl = ''
       this.refresh()
       this.edit({ activitiSync: '1' })
     },
@@ -207,9 +225,10 @@ export default {
       that.form.resetFields()
       if (record.hasOwnProperty('sysUserId')) {
         that.loadUserRoles(record.sysUserId)
-        this.picUrl = 'Has no pic url yet'
       }
       that.userId = record.sysUserId
+      that.imgUrl = process.env.VUE_APP_IMG + record.headImg
+      that.headImg = record.headImg
       that.visible = true
       that.model = Object.assign({}, record)
       if(this.model.jobs){
@@ -288,6 +307,7 @@ export default {
           formData.departId = this.currentDeptId
           formData.selectedroles = this.selectedRole.length > 0 ? this.selectedRole.join(',') : ''
           formData.jobs = this.selectedJob.length > 0 ? this.selectedJob.join(',') : '' 
+          formData.headImg = this.headImg
           let obj
           if (!this.model.sysUserId) {
             obj = addUser(formData)
@@ -327,7 +347,6 @@ export default {
         if (res.code === 200) {
           this.roleList = res.data
         } else {
-          console.log(res.msg)
         }
       })
     },
@@ -347,7 +366,6 @@ export default {
             })
           });
         } else {
-          console.log(res.msg)
         }
       })
     },
@@ -376,7 +394,25 @@ export default {
       const value = e.target.value
       this.confirmDirty = this.confirmDirty || !!value
     },
-
+    validImg(file) {
+      let size = file.size;
+      let limitSize = size / 1024 / 1024;
+      if (limitSize > 5) {
+        this.$message.warning('请上传少于5M的图片!');
+        return false;
+      }
+    },
+    handleChangeBaseImg(info) {
+      if (info.file.status === 'uploading') {
+        this.uploading = true;
+        return;
+      }
+      if (info.file.status === 'done') {
+        this.imgUrl = process.env.VUE_APP_IMG + info.file.response.data;
+        this.headImg = info.file.response.data;
+        this.uploading = false;
+      }
+    },
     // 根据屏幕变化,设置抽屉尺寸
     resetScreenSize() {
       let screenWidth = document.body.clientWidth

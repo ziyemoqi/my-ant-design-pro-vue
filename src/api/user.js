@@ -73,19 +73,6 @@ export {
   chatPage
 }
 
-/**
- * 临时接口 -- 测试websocket 推送
- * @param {*} params 
- */
-export function tempApi2(params) {
-  return axios({
-    url: '/remindMessage/sendUser',
-    method: 'post',
-    data: params
-  })
-}
-
-
 // 方法多种方式
 //   1、
 //       import { get,deleteAction,put,post} from '@/api/manage'

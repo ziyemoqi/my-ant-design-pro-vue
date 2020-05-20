@@ -69,15 +69,9 @@
           <a-badge :status="text | stateTypeFilter" :text="text | stateFilter" />
         </span>
         <span slot="action" slot-scope="text, record">
-          <a-button
-            type="primary"
-            icon="safety-certificate"
-            @click="resetPassword(record.sysUserId)"
-          >重置密码</a-button>&nbsp;&nbsp;
-          <a @click="handleEdit(record)">编辑</a>
+          <a-button @click="handleEdit(record)" type="primary" icon="edit" >编辑</a-button>
 
           <a-divider type="vertical" />
-
           <a-dropdown>
             <a class="ant-dropdown-link">
               更多
@@ -87,11 +81,13 @@
               <a-menu-item>
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
-
               <a-menu-item>
                 <a-popconfirm title="确定要删除此用户吗?" @confirm="() => handleDelete(record.sysUserId)">
                   <a>删除</a>
                 </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item>
+                <a href="javascript:;" @click="resetPassword(record.sysUserId)">重置密码</a>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
