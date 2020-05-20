@@ -1,4 +1,4 @@
-import { get, post,put,deleteAction } from '@/api/manage'
+import { get, post,put } from '@/api/manage'
 
 /**
  * 订单分页信息 
@@ -14,4 +14,12 @@ export function page(params) {
  */
 export function createOrder(params) {
     return post("/mallOrder/createOrder",params)
+}
+
+/**
+ * 取消订单
+ * @param {*} params 
+ */
+export function cancelOrder(params) {
+    return post("/mallOrder/cancelOrder",params)
 }

@@ -67,7 +67,7 @@
         </span>
 
       <span slot="action" slot-scope="text, record">
-        <a-button type="danger" @click="cancelOrder(record)" icon="stop">取消订单</a-button>&nbsp;
+        <a-button v-if="record.state === 10 " type="danger" @click="cancelOrder(record)" icon="stop">取消订单</a-button>&nbsp;
       </span>
 
       </a-table>
@@ -79,7 +79,7 @@
 
 <script>
 import Vue from 'vue'
-import { page } from '@/api/mall/mallOrder'
+import { page,cancelOrder } from '@/api/mall/mallOrder'
 import moment from 'moment'
 
 const columns = [
@@ -142,7 +142,7 @@ const columns = [
     dataIndex: 'orderType',
     scopedSlots: { customRender: 'orderType' },
     align: 'center',
-    width: 80
+    width: 90
   },
   {
     title: '支付时间',
@@ -160,7 +160,7 @@ const columns = [
     dataIndex: 'action',
     align: 'center',
     scopedSlots: { customRender: 'action' },
-    width: 200
+    width: 150
   }
 ]
 
@@ -281,7 +281,28 @@ export default {
     },
     // 取消订单
     cancelOrder (record) {
-      console.log(record)
+      let _this = this
+      _this.$confirm({
+        title: '提示',
+        content: '您确定要取消此订单吗?',
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        async onOk() {
+          let mallOrderId = record.mallOrderId
+          let obj ={
+            mallOrderId: record.mallOrderId
+          }
+          cancelOrder(obj).then(resp => {
+            if (resp.code === 200) {
+              _this.$message.success('操作成功!')
+              _this.loadData()
+            } else {
+              _this.$message.error(resp.msg || '操作失败!')
+            }
+          })
+        },
+      })
     }
   }
 }

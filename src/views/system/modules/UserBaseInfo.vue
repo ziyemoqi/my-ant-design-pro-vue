@@ -135,12 +135,6 @@ const columns = [
     width: 70
   },
   {
-    title: '登录次数',
-    align: 'center',
-    dataIndex: 'loginCount',
-    width: 80
-  },
-  {
     title: '状态',
     align: 'center',
     dataIndex: 'state',

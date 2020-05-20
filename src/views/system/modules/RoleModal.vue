@@ -27,7 +27,7 @@
           <a-input placeholder="请输入角色编码" :disabled="roleDisabled" v-decorator="[ 'roleCode', validatorRules.roleCode]" />
         </a-form-item>
 
-<a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="状态">
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="状态">
           <a-radio-group buttonStyle="solid" v-decorator="[ 'state', {'initialValue':0}]">
             <a-radio-button :value="0">正常</a-radio-button>
             <a-radio-button :value="1">停用</a-radio-button>
