@@ -233,7 +233,6 @@ export default {
       rankList,
       barData,
       logInfo: {},
-      num: 0
     }
   },
   created() {
@@ -302,14 +301,12 @@ export default {
       this.websock.onclose = this.websocketclose
     },
     websocketonopen: function() {
-      // console.log('WebSocket连接成功')
+      console.log('WebSocket连接成功')
     },
     websocketonerror: function(e) {
       console.log('WebSocket ERROR')
     },
     websocketonmessage: function(e) {
-      this.num ++
-      var data = eval('(' + e.data + ')')
       this.$notification.success({
         message: '系统消息',
         description: '您有新的消息,请及时查看'
