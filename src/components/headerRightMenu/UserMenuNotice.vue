@@ -1,5 +1,6 @@
 <template>
   <a-popover
+    v-model="hovered"
     trigger="click"
     placement="bottomRight"
     :autoAdjustOverflow="true"
@@ -149,14 +150,14 @@ export default {
       // })
       // this.hovered = false
       // this.$refs.ShowAnnouncement.detail(record)
-      this.$message.success('showAnnouncement接口调用成功！')
+      this.$message.warning("功能开发中，敬请期待！")
     },
     toMyAnnouncement () {
-      // this.$router.push({
-      //   path: '/isps/userAnnouncement',
-      //   name: 'isps-userAnnouncement'
-      // })
-      this.$message.warning("功能开发中，敬请期待！")
+      this.hovered = false
+      this.$router.push({
+        path: '/message',
+        name: 'message'
+      })
     },
     modalFormOk () {
     },

@@ -61,12 +61,14 @@
 
     <!-- form表单 -->
     <Dialog-Edit ref="dialogEdit" @ok="modalFormOk"></Dialog-Edit>
+    
 
     <dialog-create-order
       :key="dialogCreateOrderKey"
       :visible.sync="dialogCreateOrderVisible"
-      @submitted="loadData"
+      @submitted="createPay"
     ></dialog-create-order>
+
   </a-card>
 </template>
 
@@ -74,7 +76,7 @@
 import DialogEdit from './modules/dialogGoodEdit'
 import Vue from 'vue'
 import { page,delete_,updateGood } from '@/api/mall/mallGood'
-import dialogCreateOrder from './modules/dialogCreateOrder';
+import dialogCreateOrder from './modules/dialogCreateOrder'
 
 const columns = [
   {
@@ -138,7 +140,7 @@ export default {
   name: 'mallGoodList_view',
   components: {
     DialogEdit,
-    dialogCreateOrder
+    dialogCreateOrder,
   },
 
   data() {
@@ -250,6 +252,13 @@ export default {
     createOrder() {
       this.dialogCreateOrderVisible = true;
       this.dialogCreateOrderKey++;
+    },
+    // 结算
+    createPay() {
+      this.$router.push({
+        path: '/imall/pay',
+        name: 'imall-pay'
+      })
     },
     // 上下架
     upOrDown(mallGoodId, state) {

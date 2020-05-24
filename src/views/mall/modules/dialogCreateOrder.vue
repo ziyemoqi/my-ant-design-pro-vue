@@ -4,7 +4,7 @@
     :visible="visible"
     :width="1350"
     :confirmLoading="submitting"
-    okText="提交"
+    okText="去结算"
     cancelText="取消"
     @ok="handleSubmit"
     @cancel="$emit('update:visible', false)"
@@ -245,9 +245,6 @@ export default {
       },
       goodData: [],
       areaOptions: [],
-      validatorRules: {
-        phone: { rules: [{ required: true, validator: this.validatePhone }] },
-      },
       columns_,
       tableData: [],
       newKey: '0',
@@ -407,15 +404,6 @@ export default {
       }
       return tree
     },
-    //  验证手机号
-    validatePhone(rule, value, callback) {
-      if (!value || new RegExp(/^1[3|4|5|6|7|8|9][0-9]\d{8}$/).test(value)) {
-        callback();
-      } else {
-        // eslint-disable-next-line standard/no-callback-literal
-        callback('请输入正确格式的手机号码!');
-      }
-    },
     // 提交
     handleSubmit(e) {
       e.preventDefault();
@@ -430,8 +418,9 @@ export default {
         let goodsInfo = this.tableData
         let obj = { ...values,goodsInfo };
         let { code, data, msg } = await order.createOrder(obj);
-        if (code !== 200) throw new Error(msg || '操作失败');
-        this.$message.success('操作成功');
+        if (code !== 200) throw new Error(msg || '结算失败');
+        // 返回收货地址和支付金额
+        console.log(data)
         this.$emit('update:visible', false);
         this.$emit('submitted');
       } catch (e) {

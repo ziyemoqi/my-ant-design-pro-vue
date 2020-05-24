@@ -118,6 +118,7 @@ import * as region from '@/api/region';
         this.form.resetFields()
         this.visible = true
         if(record.mallShippingId) {
+          this.model = Object.assign({}, record)
           let regionInfo= [record.receiverProvinceCode,record.receiverCityCode,record.receiverAreaCode]
           let obj = {
             ...record,

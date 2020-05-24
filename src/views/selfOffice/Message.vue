@@ -40,9 +40,7 @@
         @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleDetail(record)">详情</a>
-          <a-divider type="vertical" v-if="record.readState == 0"/>
-          <a v-if="record.readState == 0" @click="handleEdit(record)">标注已读</a>
+          <a :disabled="record.readState != 0" @click="handleEdit(record)">标注已读</a>
         </span>
 
       </a-table>
