@@ -13,6 +13,7 @@
       <a-form-item label="所拥有的权限">
         <a-tree
           checkable
+          @check="onCheck"
           @expand="onExpand"
           :expandedKeys="expandedKeys"
           :autoExpandParent="autoExpandParent"
@@ -43,7 +44,7 @@ export default {
       checkedKeys: [],
       allTreeKeys: [],
       autoExpandParent: true,
-      title: '角色权限配置替换页',
+      title: '角色权限配置页',
       visible: false,
       loading: false,
       expandedKeys: [],
@@ -116,12 +117,15 @@ export default {
   },
   watch: {
     visible() {
+      console.log(1)
       if (this.visible) {
         permissionMapTree().then(res => {
+          console.log(2)
           this.treeData = res.data.treeList
           this.allTreeKeys = res.data.ids
           const keyLeafPairs = this.convertTreeListToKeyLeafPairs(this.treeData)
           queryRolePermission({ sysRoleId: this.roleId }).then(res => {
+            console.log(3)
             const checkedKeys = [...res.data].filter(key => {
               const keyLeafPair = keyLeafPairs.filter(item =>item.key === key)[0]
               return keyLeafPair  && keyLeafPair.leaf

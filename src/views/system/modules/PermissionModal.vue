@@ -175,8 +175,10 @@ export default {
       this.model = Object.assign({}, record)
       //--------------------------------------------------------------------------------------------------
       //根据菜单类型，动态展示页面字段
-      if (record.isRoute != null) {
-        this.routeSwitch = record.isRoute ? true : false
+      console.log(record)
+      if (record.route != null) {
+        console.log(record.isRoute)
+        this.routeSwitch = record.route ? true : false
       }
 
       if (record.keepAlive != null) {

@@ -4,12 +4,21 @@
       <!-- 搜索区域 -->
       <a-form layout="inline" :form="screenForm" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="8">
-            <a-form-item label="商品名称" :labelCol="{span: 5}" :wrapperCol="{span: 18, offset: 1}">
+          <a-col :md="6" :sm="12">
+            <a-form-item label="商品名称" >
               <a-input placeholder="请输入..." v-decorator="['name']"></a-input>
             </a-form-item>
           </a-col>
-          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+          <a-col :md="6" :sm="12">
+            <a-form-item label="商品类目"  >
+              <a-cascader
+                :options="classOptions"
+                placeholder="请选择..."
+                v-decorator="['goodClass']"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="12">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
               <a-button type="primary" icon="plus" @click="handleAdd">新增</a-button>
               <a-button type="primary" icon="search" style="margin-left:10px" @click="searchQuery">查询</a-button>
@@ -17,7 +26,8 @@
               <a-button type="default" icon="reload" style="margin-left: 8px" @click="refresh" :loading="loading">刷新</a-button>
               <a-button type='primary' ghost icon="shopping-cart" style="margin-left: 8px" @click="createOrder">购买</a-button>
             </a-col>
-          </span>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -66,7 +76,7 @@
     <dialog-create-order
       :key="dialogCreateOrderKey"
       :visible.sync="dialogCreateOrderVisible"
-      @submitted="createPay"
+      @submitted="createPay($event)"
     ></dialog-create-order>
 
   </a-card>
@@ -76,6 +86,7 @@
 import DialogEdit from './modules/dialogGoodEdit'
 import Vue from 'vue'
 import { page,delete_,updateGood } from '@/api/mall/mallGood'
+import { classList } from '@/api/mall/mallGoodClass'
 import dialogCreateOrder from './modules/dialogCreateOrder'
 
 const columns = [
@@ -142,7 +153,6 @@ export default {
     DialogEdit,
     dialogCreateOrder,
   },
-
   data() {
     return {
       dataSource: [],
@@ -163,15 +173,22 @@ export default {
       dialogCreateOrderKey: 0,
       dialogCreateOrderVisible: false,
       imgUrl: process.env.VUE_APP_IMG,
+      classOptions: [],
     }
   },
   mounted() {
     this.loadData()
+    this.initGoodClass()
   },
   methods: {
+    // 初始化数据
     async loadData() {
       let that = this
       let screenData = this.screenForm.getFieldsValue()
+      if(screenData.goodClass){
+        screenData.mallGoodClassId = screenData.goodClass[1]
+        delete screenData.goodClass
+      }
       let obj = {
         current: that.ipagination.current,
         size: that.ipagination.pageSize,
@@ -185,6 +202,28 @@ export default {
         }
         this.loading = false
       })
+    },
+    // 初始化商品类目
+    async initGoodClass() {
+      let { code, data } = await classList();
+        if (code === 200) {
+          this.classOptions = this.handleClassTreeData(data);
+        } else {
+          this.$message.warn('未获取到相关行政区域数据！');
+        }
+    },
+    // 处理商品类目
+    handleClassTreeData(tree) {
+      for (let node of tree) {
+        node.label = node.name
+        node.value = node.mallGoodClassId
+        node.scopedSlots = {
+          icon: 'icon',
+          title: 'title'
+        }
+        if (node.children) node.children = this.handleClassTreeData(node.children)
+      }
+      return tree
     },
     // 表单查询
     searchQuery(e) {
@@ -254,10 +293,10 @@ export default {
       this.dialogCreateOrderKey++;
     },
     // 结算
-    createPay() {
-      this.$router.push({
-        path: '/imall/pay',
-        name: 'imall-pay'
+    createPay(data) {
+     this.$router.push({
+        name: 'imall-pay',
+        params:{payAmount:data.payAmount,shipping:data.shipping,orderNo:data.orderNo,sysUserId:data.sysUserId}
       })
     },
     // 上下架

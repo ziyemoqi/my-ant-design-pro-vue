@@ -31,7 +31,7 @@ module.exports = {
   },
 
   devServer: {
-    port: 8080,
+    port: 5000,
     proxy: {
       '/deepLearning': {
         // target: 'http://192.168.0.243:8082', // 接口地址

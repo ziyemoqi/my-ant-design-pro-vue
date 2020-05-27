@@ -419,10 +419,8 @@ export default {
         let obj = { ...values,goodsInfo };
         let { code, data, msg } = await order.createOrder(obj);
         if (code !== 200) throw new Error(msg || '结算失败');
-        // 返回收货地址和支付金额
-        console.log(data)
         this.$emit('update:visible', false);
-        this.$emit('submitted');
+        this.$emit('submitted',data);
       } catch (e) {
         this.$message.error(e.message);
       } finally {

@@ -10,7 +10,7 @@
         </div>
         <div class="content">
           <div><p>收货信息:{{shipping}}</p></div>
-          <div><p>应付金额:{{payAmount}}</p></div>
+          <div><p>应付金额:￥{{payAmount}}</p></div>
         </div>
         <div class="action">
           <slot name="action"></slot>
@@ -20,8 +20,8 @@
         <sub-title title="选择以下支付方式付款"/>
         <a-row :gutter="24" style="margin-top:10px">
           <a-col :span="12">
-              <a-button @click="handleDelete()"  icon="alipay" size="large">支付宝</a-button>&nbsp;
-              <a-button @click="handleDelete()"  icon="wechat" size="large">微信</a-button>
+              <a-button @click="payByali()"  icon="alipay" size="large">支付宝</a-button>&nbsp;
+              <a-button @click="payByWx()"  icon="wechat" size="large">微信</a-button>
           </a-col>
           
         </a-row>
@@ -37,7 +37,7 @@ import * as region from '@/api/region';
 import SubTitle from '@/components/basis/SubTItle'
 
 export default {
-  name: 'dialogCreateOrder',
+  name: 'mallPay',
   components: {
     SubTitle
   },
@@ -56,33 +56,47 @@ export default {
       form,
       goodScreenForm: this.$form.createForm(this),
       isSuccess: true,
-      shipping: '',
       payAmount: '',
+      shipping: '',
+      orderNo:'',
+      sysUserId:'',
     };
   },
-
-  props: {
-    visible: Boolean,
+  mounted(){
+    this.payAmount = '0.01'
+    this.shipping = this.$route.params.shipping
+    this.sysUserId = this.$route.params.sysUserId
+    this.orderNo = this.$route.params.orderNo
   },
   methods: {
+    // 支付宝支付
+    payByali(){
+      //  "_blank"  新打开一个窗口
+      //  "_self"    覆盖当前的窗口
+      window.open('http://localhost:8080/aliPay/createForAliNative?orderNo='+this.orderNo+'&amount='+this.payAmount+'&sysUserId='+this.sysUserId,"_self")
+    },
+    //  微信支付
+    payByWx(){
+      window.open('http://localhost:8080/wxPay/createForWxNative?orderNo='+this.orderNo+'&amount='+this.payAmount+'&sysUserId='+this.sysUserId,"_self")
+    },
     // 提交
     handleSubmit(e) {
-      e.preventDefault();
+      e.preventDefault()
       this.form.validateFields((err, values) => {
-        if (err) return;
-          this.createOrder({...values});
+        if (err) return
+          this.createOrder({...values})
       });
     },
     async createOrder(values) {
       try {
         this.submitting = true
         let goodsInfo = this.tableData
-        let obj = { ...values,goodsInfo };
-        let { code, data, msg } = await order.createOrder(obj);
-        if (code !== 200) throw new Error(msg || '操作失败');
-        this.$message.success('操作成功');
-        this.$emit('update:visible', false);
-        this.$emit('submitted');
+        let obj = { ...values,goodsInfo }
+        let { code, data, msg } = await order.createOrder(obj)
+        if (code !== 200) throw new Error(msg || '操作失败')
+        this.$message.success('操作成功')
+        this.$emit('update:visible', false)
+        this.$emit('submitted')
       } catch (e) {
         this.$message.error(e.message);
       } finally {
