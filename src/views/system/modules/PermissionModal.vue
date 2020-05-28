@@ -86,6 +86,10 @@
             <a-switch checkedChildren="是" unCheckedChildren="否" v-model="routeSwitch" />
           </a-form-item>
 
+          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="是否隐藏菜单">
+            <a-switch checkedChildren="是" unCheckedChildren="否" v-model="hiddenSwitch" />
+          </a-form-item>
+
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="是否缓存路由">
             <a-switch checkedChildren="是" unCheckedChildren="否" v-model="isKeepalive" />
           </a-form-item>
@@ -125,6 +129,7 @@ export default {
       model: {},
       localMenuType: 0,
       routeSwitch: true, //是否路由菜单
+      hiddenSwitch: true, //是否路由菜单
       isKeepalive: true, //是否缓存路由
       isRequrie: true, // 是否需要验证
       labelCol: {
@@ -175,10 +180,11 @@ export default {
       this.model = Object.assign({}, record)
       //--------------------------------------------------------------------------------------------------
       //根据菜单类型，动态展示页面字段
-      console.log(record)
       if (record.route != null) {
-        console.log(record.isRoute)
         this.routeSwitch = record.route ? true : false
+      }
+      if (record.hidden != null) {
+        this.hiddenSwitch = record.hidden ? true : false
       }
 
       if (record.keepAlive != null) {
@@ -219,6 +225,7 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           this.model.isRoute = this.routeSwitch
+          this.model.isHidden = this.hiddenSwitch
           this.model.keepAlive = this.isKeepalive
           let formData = Object.assign(this.model, values)
           if ((formData.menuType == 1 || formData.menuType == 2) && !formData.parentId) {
@@ -279,6 +286,7 @@ export default {
         component: formData.component,
         icon: formData.icon,
         isRoute: formData.isRoute,
+        isHidden: formData.isHidden,
         keepAlive: formData.keepAlive,
         status: formData.status,
         sort: formData.sort

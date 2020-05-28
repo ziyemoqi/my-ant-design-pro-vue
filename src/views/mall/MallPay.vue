@@ -72,7 +72,7 @@ export default {
     // 支付宝支付
     payByali(){
       //  "_blank"  新打开一个窗口
-      //  "_self"    覆盖当前的窗口
+      //  "_self"   覆盖当前的窗口
       window.open('http://localhost:8080/aliPay/createForAliNative?orderNo='+this.orderNo+'&amount='+this.payAmount+'&sysUserId='+this.sysUserId,"_self")
     },
     //  微信支付
