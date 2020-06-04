@@ -1,0 +1,33 @@
+import { get, post,put,deleteAction } from '@/api/manage'
+
+/**
+ * 秒杀商品分页信息 
+ * @param {*} params 
+ */
+export function page(params) {
+    return get("/mallSeckill/page", params)
+}
+
+/**
+ * 添加秒杀商品
+ * @param {*} params 
+ */
+export function add(params) {
+    return post("/mallSeckill",params)
+}
+
+/**
+ * 修改秒杀商品信息
+ * @param {*} params 
+ */
+export function editById(params) {
+    return put("/mallSeckill",params)
+}
+
+/**
+ * 删除秒杀商品
+ * @param {*} params 
+ */
+export function deleteById(params) {
+    return deleteAction("/mallSeckill",params)
+}

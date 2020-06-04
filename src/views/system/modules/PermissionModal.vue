@@ -254,6 +254,7 @@ export default {
         icon: formData.icon,
         isRoute: formData.isRoute,
         keepAlive: formData.keepAlive,
+        isHidden: formData.isHidden,
         menuType: formData.menuType,
         name: formData.name,
         url: formData.url,
