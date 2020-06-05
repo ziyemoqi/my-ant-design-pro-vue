@@ -60,6 +60,7 @@ export default {
       shipping: '',
       orderNo:'',
       sysUserId:'',
+      outSideUrl: process.env.VUE_APP_OUTSIDE,
     };
   },
   mounted(){
@@ -73,11 +74,11 @@ export default {
     payByali(){
       //  "_blank"  新打开一个窗口
       //  "_self"   覆盖当前的窗口
-      window.open('http://localhost:8080/aliPay/createForAliNative?orderNo='+this.orderNo+'&amount='+this.payAmount+'&sysUserId='+this.sysUserId,"_self")
+      window.open(this.outSideUrl+'/aliPay/createForAliNative?orderNo='+this.orderNo+'&amount='+this.payAmount+'&sysUserId='+this.sysUserId,"_self")
     },
     //  微信支付
     payByWx(){
-      window.open('http://localhost:8080/wxPay/createForWxNative?orderNo='+this.orderNo+'&amount='+this.payAmount+'&sysUserId='+this.sysUserId,"_self")
+      window.open(this.outSideUrl+'/wxPay/createForWxNative?orderNo='+this.orderNo+'&amount='+this.payAmount+'&sysUserId='+this.sysUserId,"_self")
     },
     // 提交
     handleSubmit(e) {

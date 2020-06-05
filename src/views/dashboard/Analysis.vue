@@ -233,6 +233,7 @@ export default {
       rankList,
       barData,
       logInfo: {},
+      appUrl: process.env.VUE_APP_API,
     }
   },
   created() {
@@ -293,7 +294,7 @@ export default {
       // WebSocket与普通的请求所用协议有所不同，ws等同于http，wss等同于https
       var userId = this.userInfo().sysUserId
       var url =
-        window._CONFIG['domianURL'].replace('https://', 'ws://').replace('http://', 'ws://') + '/websocket/' + userId
+        this.appUrl.replace('https://', 'ws://').replace('http://', 'ws://') + '/websocket/' + userId
       this.websock = new WebSocket(url)
       this.websock.onopen = this.websocketonopen
       this.websock.onerror = this.websocketonerror

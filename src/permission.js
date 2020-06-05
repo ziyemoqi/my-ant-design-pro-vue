@@ -11,7 +11,6 @@ NProgress.configure({ showSpinner: true })
 const whiteList = ['/user/login']
 
 router.beforeEach((to, from, next) => {
-  console.log('------------------------路由守卫前置---------------------')
   NProgress.start()
   if (Vue.ls.get(ACCESS_TOKEN)) {
     if (to.path === '/user/login') {
@@ -63,6 +62,5 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach(() => {
-  console.log('------------------------路由守卫后置---------------------')
   NProgress.done()
 })

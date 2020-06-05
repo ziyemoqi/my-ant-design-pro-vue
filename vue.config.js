@@ -31,15 +31,14 @@ module.exports = {
   },
 
   devServer: {
-    port: 5000,
-    proxy: {
-      '/deepLearning': {
-        // target: 'http://192.168.0.243:8082', // 接口地址
-        target: 'http://127.0.0.1:8080', // 本地接口地址
-        ws: true,
-        changeOrigin: true
-      }
-    }
+    port: 5000
+    // proxy: {
+    //   '/deepLearning': {
+    //     target: 'http://127.0.0.1:8080', // 本地接口地址
+    //     ws: true,
+    //     changeOrigin: true
+    //   }
+    // }
   },
 
   lintOnSave: undefined
