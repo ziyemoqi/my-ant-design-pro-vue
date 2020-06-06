@@ -15,6 +15,7 @@ import './components'
 import './utils/filter'
 import VueApexCharts from 'vue-apexcharts'
 import VueRouter from 'vue-router'
+import './assets/icons/iconfont.css'
 
 import {
   ACCESS_TOKEN,

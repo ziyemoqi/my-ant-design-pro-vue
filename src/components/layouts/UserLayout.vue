@@ -4,7 +4,7 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <img src="~@/assets/icons/logo.svg" class="logo" alt="logo">
+            <img src="~@/assets/icons/svg/logo.svg" class="logo" alt="logo">
             <span class="title">Deep Learning</span>
           </a>
         </div>
@@ -65,7 +65,7 @@ export default {
     .container {
       width: 100%;
       min-height: 100%;
-      background: #f0f2f5 url(~@/assets/icons/background.svg) no-repeat 50%;
+      background: #f0f2f5 url(~@/assets/icons/svg/background.svg) no-repeat 50%;
       // background: url(~@/assets/image/background.jpg) no-repeat ;
       background-size: 100%;
       padding: 110px 0 144px;

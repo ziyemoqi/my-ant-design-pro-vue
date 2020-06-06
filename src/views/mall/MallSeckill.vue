@@ -30,7 +30,8 @@
 
       <span slot="action" slot-scope="text, record">
         <a-button @click="handleEdit(record)" type="primary" icon="edit">编辑</a-button>&nbsp;&nbsp;
-        <a-button type="danger" @click="handleDelete(record.mallSeckillId)" ghost icon="delete">删除</a-button>
+        <a-button type="danger" @click="handleDelete(record.mallSeckillId)" ghost icon="delete">删除</a-button>&nbsp;&nbsp;
+        <a-button type="primary" @click="toLink(record.mallSeckillId)" icon="link">LINK</a-button>
       </span>
 
       </a-table>
@@ -189,6 +190,13 @@ export default {
     // 新增/修改 成功时，重载列表
     modalFormOk() {
       this.loadData()
+    },
+    // toLink
+    toLink(id){
+      this.$router.push({
+        name: 'imall-seckillLink',
+        params:{mallSeckillId:id}
+      })
     },
   }
 }

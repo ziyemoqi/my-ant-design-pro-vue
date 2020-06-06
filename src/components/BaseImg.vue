@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     handleDefaultImg () {
-      return `this.src="${require('../icons/svg/img-default.svg')}"`
+      return `this.src="${require('../assets/icons/svg/img-default.svg')}"`
     }
   }
 }

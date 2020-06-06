@@ -42,7 +42,6 @@ export default {
     SubTitle
   },
   data() {
-    let form = this.$form.createForm(this);
     return {
       labelCol: {
         xs: { span: 24 },
@@ -52,9 +51,6 @@ export default {
         xs: { span: 24 },
         sm: { span: 16 }
       },
-      submitting: false,
-      form,
-      goodScreenForm: this.$form.createForm(this),
       isSuccess: true,
       payAmount: '',
       shipping: '',
@@ -79,30 +75,6 @@ export default {
     //  微信支付
     payByWx(){
       window.open(this.outSideUrl+'/wxPay/createForWxNative?orderNo='+this.orderNo+'&amount='+this.payAmount+'&sysUserId='+this.sysUserId,"_self")
-    },
-    // 提交
-    handleSubmit(e) {
-      e.preventDefault()
-      this.form.validateFields((err, values) => {
-        if (err) return
-          this.createOrder({...values})
-      });
-    },
-    async createOrder(values) {
-      try {
-        this.submitting = true
-        let goodsInfo = this.tableData
-        let obj = { ...values,goodsInfo }
-        let { code, data, msg } = await order.createOrder(obj)
-        if (code !== 200) throw new Error(msg || '操作失败')
-        this.$message.success('操作成功')
-        this.$emit('update:visible', false)
-        this.$emit('submitted')
-      } catch (e) {
-        this.$message.error(e.message);
-      } finally {
-        this.submitting = false;
-      }
     },
   }
 };

@@ -31,3 +31,12 @@ export function editById(params) {
 export function deleteById(params) {
     return deleteAction("/mallSeckill",params)
 }
+
+
+/**
+ * 秒杀商品Link 
+ * @param {*} params 
+ */
+export function linkInfo(params) {
+    return get("/mallSeckill/mallSeckill", params)
+}
