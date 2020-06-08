@@ -65,19 +65,19 @@ const columns = [
     title: '名称',
     align: 'center',
     dataIndex: 'title',
-    width: 200
+    width: 150
   },
   {
     title: '商品',
     align: 'center',
     dataIndex: 'mallGoodName',
-    width: 150
+    width: 100
   },
   {
     title: '库存',
     align: 'center',
     dataIndex: 'stock',
-    width: 150
+    width: 80
   },
   {
     title: '开始时间',
@@ -96,7 +96,7 @@ const columns = [
     dataIndex: 'action',
     align: 'center',
     scopedSlots: { customRender: 'action' },
-    width: 300
+    width: 200
   }
 ]
 

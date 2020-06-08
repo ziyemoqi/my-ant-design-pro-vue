@@ -179,40 +179,40 @@ const columns = [{
   },
 ];
 
- const columns_ = [{
-      title: '商品名称',
-      dataIndex: 'goodName',
-      key: 'goodName',
-      width: '25%',
-      scopedSlots: { customRender: 'goodName' }
-    },
-    {
-      title: '商品图片',
-      dataIndex: 'goodPic',
-      key: 'goodPic',
-      align: 'center',
-      width: '25%',
-      scopedSlots: { customRender: 'goodPic' }
-    },
-    {
-      title: '售价',
-      dataIndex: 'goodPrice',
-      key: 'goodPrice',
-      width: '20%',
-      scopedSlots: { customRender: 'goodPrice' }
-    },
-    {
-      title: '购买数量',
-      dataIndex: 'goodNum',
-      key: 'goodNum',
-      width: '20%',
-      scopedSlots: { customRender: 'goodNum' }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      scopedSlots: { customRender: 'operation' }
-    }];
+const columns_ = [{
+    title: '商品名称',
+    dataIndex: 'goodName',
+    key: 'goodName',
+    width: '25%',
+    scopedSlots: { customRender: 'goodName' }
+  },
+  {
+    title: '商品图片',
+    dataIndex: 'goodPic',
+    key: 'goodPic',
+    align: 'center',
+    width: '25%',
+    scopedSlots: { customRender: 'goodPic' }
+  },
+  {
+    title: '售价',
+    dataIndex: 'goodPrice',
+    key: 'goodPrice',
+    width: '20%',
+    scopedSlots: { customRender: 'goodPrice' }
+  },
+  {
+    title: '购买数量',
+    dataIndex: 'goodNum',
+    key: 'goodNum',
+    width: '20%',
+    scopedSlots: { customRender: 'goodNum' }
+  },
+  {
+    title: '操作',
+    key: 'action',
+    scopedSlots: { customRender: 'operation' }
+  }];
 export default {
   name: 'dialogCreateOrder',
   components: {

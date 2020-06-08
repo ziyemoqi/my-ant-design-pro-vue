@@ -32,11 +32,18 @@ export function deleteById(params) {
     return deleteAction("/mallSeckill",params)
 }
 
-
 /**
  * 秒杀商品Link 
  * @param {*} params 
  */
 export function linkInfo(params) {
     return get("/mallSeckill/mallSeckill", params)
+}
+
+/**
+ * 执行秒杀
+ * @param {*} params 
+ */
+export function execSeckill(params) {
+    return put("/mallSeckill/execSeckill",params)
 }
