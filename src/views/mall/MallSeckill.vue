@@ -193,9 +193,10 @@ export default {
     },
     // toLink
     toLink(id){
+      Vue.ls.set("mallSeckillId", id, 30 * 60 * 1000)
       this.$router.push({
-        name: 'imall-seckillLink',
-        params:{mallSeckillId:id}
+        path: '/imall/seckillLink',
+        name: 'imall-seckillLink'
       })
     },
   }

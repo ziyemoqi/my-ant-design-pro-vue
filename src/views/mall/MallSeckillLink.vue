@@ -11,6 +11,7 @@
 
 <script>
 import {linkInfo,execSeckill} from '@/api/mall/mallSeckill'
+import Vue from 'vue'
 
 export default {
   name: 'mallSeckillLink',
@@ -36,8 +37,8 @@ export default {
     };
   },
   mounted(){
-    this.mallSeckillId = this.$route.params.mallSeckillId
-    if(this.mallSeckillId){
+    this.mallSeckillId = Vue.ls.get("mallSeckillId")
+    if(this.mallSeckillId) {
       this.loadData()
     }
   },
@@ -55,7 +56,7 @@ export default {
           this.nowTime = data.localDateTime
           this.state = data.state
           this.md5Str = data.md5
-           // 状态(0:未开始 1:开始秒杀 2:已结束)
+          // 状态(0:未开始 1:开始秒杀 2:已结束)
           if(data.state === '0'){
             this.limitTime(data)
           }else if(data.state === '1') {

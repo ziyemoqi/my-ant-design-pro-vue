@@ -23,7 +23,6 @@
               <a-button @click="payByali()"  icon="alipay" size="large">支付宝</a-button>&nbsp;
               <a-button @click="payByWx()"  icon="wechat" size="large">微信</a-button>
           </a-col>
-          
         </a-row>
         </div>
 </div>

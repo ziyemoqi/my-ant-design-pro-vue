@@ -8,7 +8,7 @@
     @cancel="handleCancel"
     cancelText="关闭"
     wrapClassName="ant-modal-cust-warp"
-    style="top:15%;height: 60%;overflow-y: hidden">
+    style="top:15%;height: 70%;overflow-y: hidden">
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
