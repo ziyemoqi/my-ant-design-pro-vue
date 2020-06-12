@@ -158,7 +158,8 @@ export default {
       const that = this
       this.form.validateFields((err, values) => {
         if (!err) {
-          that.confirmLoading = true
+          try {
+            that.confirmLoading = true
           let formData = Object.assign(this.model, values)
           if (that.addFlag) {
             add(formData)
@@ -176,25 +177,30 @@ export default {
                 that.close()
               })
           } else {
-            let sysDictId = that.sysDictId
-            let editData = {
-              ...formData,
-              sysDictId
+              let sysDictId = that.sysDictId
+              let editData = {
+                ...formData,
+                sysDictId
+              }
+              edit(editData)
+                .then(res => {
+                  if (res.code === 200) {
+                    that.$message.success('操作成功!')
+                    that.loadTreeData()
+                    that.$emit('ok')
+                  } else {
+                    that.$message.warning(res.msg || '操作失败!')
+                  }
+                })
+                .finally(() => {
+                  that.confirmLoading = false
+                  that.close()
+                })
             }
-            edit(editData)
-              .then(res => {
-                if (res.code === 200) {
-                  that.$message.success('操作成功!')
-                  that.loadTreeData()
-                  that.$emit('ok')
-                } else {
-                  that.$message.warning(res.msg || '操作失败!')
-                }
-              })
-              .finally(() => {
-                that.confirmLoading = false
-                that.close()
-              })
+          } catch (e) {
+            this.$message.error(e.message);
+          } finally {
+            this.confirmLoading = false;
           }
         }
       })
