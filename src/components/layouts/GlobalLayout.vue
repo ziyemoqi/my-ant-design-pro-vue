@@ -1,67 +1,11 @@
 <template>
   <a-layout class="layout" :class="[device]">
-
     <template v-if="layoutMode === 'sidemenu'">
-      <a-drawer
-        v-if="device === 'mobile'"
-        :wrapClassName="'drawer-sider ' + navTheme"
-        placement="left"
-        @close="() => this.collapsed = false"
-        :closable="false"
-        :visible="collapsed"
-        width="200px"
-      >
-        <side-menu
-          mode="inline"
-          :menus="menus"
-          @menuSelect="menuSelect"
-          :theme="navTheme"
-          :collapsed="false"
-          :collapsible="true"></side-menu>
-      </a-drawer>
-
-      <side-menu
-        v-else
-        mode="inline"
-        :menus="menus"
-        @menuSelect="myMenuSelect"
-        :theme="navTheme"
-        :collapsed="collapsed"
-        :collapsible="true"></side-menu>
+      <side-menu mode="inline" :menus="menus" @menuSelect="myMenuSelect" :theme="navTheme" :collapsed="collapsed" :collapsible="true"></side-menu>
     </template>
-    <!-- 下次优化这些代码 -->
-    <template v-else>
-      <a-drawer
-        v-if="device === 'mobile'"
-        :wrapClassName="'drawer-sider ' + navTheme"
-        placement="left"
-        @close="() => this.collapsed = false"
-        :closable="false"
-        :visible="collapsed"
-        width="200px"
-      >
-        <side-menu
-          mode="inline"
-          :menus="menus"
-          @menuSelect="menuSelect"
-          :theme="navTheme"
-          :collapsed="false"
-          :collapsible="true"></side-menu>
-      </a-drawer>
-    </template>
-
-    <a-layout
-      :class="[layoutMode, `content-width-${contentWidth}`]"
-      :style="{ paddingLeft: fixSiderbar && isDesktop() ? `${sidebarOpened ? 200 : 80}px` : '0' }">
+    <a-layout :class="[layoutMode, `content-width-${contentWidth}`]" :style="{ paddingLeft: fixSiderbar && isDesktop() ? `${sidebarOpened ? 200 : 80}px` : '0' }">
       <!-- layout header -->
-      <global-header
-        :mode="layoutMode"
-        :menus="menus"
-        :theme="navTheme"
-        :collapsed="collapsed"
-        :device="device"
-        @toggle="toggle"
-      />
+      <global-header :mode="layoutMode" :menus="menus" :theme="navTheme" :collapsed="collapsed" :device="device" @toggle="toggle"/>
 
       <!-- layout content -->
       <a-layout-content :style="{ height: '100%', paddingTop: fixedHeader ? '59px' : '0' }">
@@ -122,11 +66,6 @@ export default {
       this.collapsed = !this.collapsed
       this.setSidebar(!this.collapsed)
       triggerWindowResizeEvent()
-    },
-    menuSelect () {
-      if (!this.isDesktop()) {
-        this.collapsed = false
-      }
     },
     // update-begin-author:taoyan date:20190430 for:动态路由title显示配置的菜单title而不是其对应路由的title
     myMenuSelect (value) {

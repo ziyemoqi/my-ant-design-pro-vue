@@ -1,21 +1,11 @@
 <template>
   <a-layout-sider
     :class="['sider', isDesktop() ? null : 'shadow', theme, fixSiderbar ? 'ant-fixed-sidemenu' : null ]"
-    width="200px"
-    :collapsible="collapsible"
-    v-model="collapsed"
-    :trigger="null">
+    width="200px" :collapsible="collapsible" v-model="collapsed" :trigger="null">
     <logo />
-    <s-menu
-      :collapsed="collapsed"
-      :menu="menus"
-      :theme="theme"
-      @select="onSelect"
-      :mode="mode"
-      :style="smenuStyle">
+    <s-menu :collapsed="collapsed" :menu="menus" :theme="theme" @select="onSelect" :mode="mode" :style="smenuStyle">
     </s-menu>
   </a-layout-sider>
-
 </template>
 
 <script>
@@ -73,7 +63,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
   /* update_begin author:sunjianlei date:20190509 for: 修改侧边导航栏滚动条的样式 */
   .sider {
     $scrollBarSize: 10px;
@@ -141,5 +130,4 @@ export default {
   }
 
   /* update_end author:sunjianlei date:20190509 for: 修改侧边导航栏滚动条的样式 */
-
 </style>

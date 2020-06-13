@@ -8,24 +8,13 @@
       @submit="handleSubmit"
     >
       <a-form-item>
-        <a-input
-          size="large"
-          v-decorator="['loginName',validatorRules.loginName]"
-          type="text"
-          placeholder="Account"
-        >
+        <a-input size="large" v-decorator="['loginName',validatorRules.loginName]" type="text" placeholder="Account">
         <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }" />
         </a-input>
       </a-form-item>
 
       <a-form-item>
-        <a-input
-          v-decorator="['password',validatorRules.password]"
-          size="large"
-          type="password"
-          autocomplete="false"
-          placeholder="Password"
-        >
+        <a-input v-decorator="['password',validatorRules.password]" size="large" type="password" autocomplete="false" placeholder="Password" >
         <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
         </a-input>
       </a-form-item>
@@ -33,15 +22,7 @@
       <a-row :gutter="0">
         <a-col :span="14">
           <a-form-item>
-            <a-input
-                ref="code"
-                 size="large"
-                v-decorator="[
-                  'verifyCode',
-                  {rules: [{ required: true, message: '请输入验证码' }]}
-                ]"
-                placeholder="请输入验证码"
-              ></a-input>
+            <a-input ref="code" size="large" v-decorator="[ 'verifyCode', {rules: [{ required: true, message: '请输入验证码' }]}]" placeholder="请输入验证码"></a-input>
           </a-form-item>
         </a-col>
         <a-col :span="10">
@@ -51,21 +32,15 @@
 
       <a-form-item>
         <a-checkbox v-model="rememberMe">自动登陆</a-checkbox>
-        <router-link
+        <!-- <router-link
           :to="{ name: 'recover', params: { user: 'aaa'} }"
           class="forge-password"
           style="float: right;"
-        >忘记密码</router-link>
+        >忘记密码</router-link> -->
       </a-form-item>
 
       <a-form-item style="margin-top:24px">
-        <a-button
-          size="large"
-          type="primary"
-          htmlType="submit"
-          class="login-button"
-          :loading="submitting"
-        >确定</a-button>
+        <a-button size="large" type="primary" htmlType="submit" class="login-button" :loading="submitting">确定</a-button>
       </a-form-item>
     </a-form>
   </div>
