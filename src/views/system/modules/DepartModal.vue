@@ -12,37 +12,19 @@
   >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="部门名称"
-          :hidden="false"
-          hasFeedback
-        >
-          <a-input
-            id="departName"
-            placeholder="请输入部门名称"
-            v-decorator="['departName', validatorRules.departName ]"
-          />
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="部门名称" :hidden="false" hasFeedback>
+          <a-input id="departName" placeholder="请输入部门名称" v-decorator="['departName', validatorRules.departName ]"/>
         </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="上级部门"
-          hasFeedback
-          v-if="dictDisabled"
-        >
-          <a-tree-select
-            style="width:100%"
-            :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
-            :treeData="departTree"
-            v-model="model.parentId"
-            :disabled="true"
-          ></a-tree-select>
+
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门" hasFeedback v-if="dictDisabled">
+          <a-tree-select style="width:100%" :dropdownStyle="{maxHeight:'200px',overflow:'auto'}" :treeData="departTree"
+            v-model="model.parentId" :disabled="true"></a-tree-select>
         </a-form-item>
+
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="办公电话">
           <a-input placeholder="请输入办公电话" v-decorator="['telephone',validatorRules.mobile]" />
         </a-form-item>
+
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="传真">
           <a-input placeholder="请输入传真" v-decorator="['fax', {}]" />
         </a-form-item>
@@ -50,18 +32,22 @@
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="地址">
           <a-input placeholder="请输入地址" v-decorator="['address', {}]" />
         </a-form-item>
+
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="状态">
           <a-radio-group buttonStyle="solid" v-decorator="[ 'state', {'initialValue':0}]">
             <a-radio-button :value="0">正常</a-radio-button>
             <a-radio-button :value="1">停用</a-radio-button>
           </a-radio-group>
         </a-form-item>
+
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
           <a-input-number v-decorator="[ 'sort',{'initialValue':100}]" style="width:100%" />
         </a-form-item>
+
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注">
           <a-textarea placeholder="请输入备注" v-decorator="['remark', {}]" />
         </a-form-item>
+        
       </a-form>
     </a-spin>
   </a-modal>

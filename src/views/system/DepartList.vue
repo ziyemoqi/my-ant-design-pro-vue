@@ -14,36 +14,18 @@
             <div slot="message">
               当前选择：
               <a v-if="this.currSelected.title">{{ getCurrSelectedTitle() }}</a>
-              <a
-                v-if="this.currSelected.title"
-                style="margin-left: 10px"
-                @click="onClearSelected"
-              >取消选择</a>
+              <a v-if="this.currSelected.title" style="margin-left: 10px" @click="onClearSelected">取消选择</a>
             </div>
           </a-alert>
-          <a-input-search
-            @search="onSearch"
-            style="width:100%;margin-top: 10px"
-            placeholder="请输入部门名称"
-          />
+          <a-input-search @search="onSearch" style="width:100%;margin-top: 10px" placeholder="请输入部门名称"/>
           <!-- 树-->
           <a-col :md="10" :sm="24">
             <template>
               <a-dropdown :trigger="[this.dropTrigger]">
                 <span style="user-select: none">
-                  <a-tree
-                    checkable
-                    multiple
-                    @select="onSelect"
-                    @check="onCheck"
-                    :selectedKeys="selectedKeys"
-                    :checkedKeys="checkedKeys"
-                    :treeData="treeData"
-                    :checkStrictly="checkStrictly"
-                    :expandedKeys="iExpandedKeys"
-                    :autoExpandParent="autoExpandParent"
-                    @expand="onExpand"
-                  />
+                  <a-tree checkable multiple @select="onSelect" @check="onCheck"
+                    :selectedKeys="selectedKeys" :checkedKeys="checkedKeys" :treeData="treeData"
+                    :checkStrictly="checkStrictly" :expandedKeys="iExpandedKeys" :autoExpandParent="autoExpandParent" @expand="onExpand"/>
                 </span>
               </a-dropdown>
             </template>
@@ -83,23 +65,10 @@
                       <a-input placeholder="请输入名称查询" v-decorator="['departName',{}]"></a-input>
                     </a-form-item>
                   </a-col>
-                  <span
-                    style="float: left;overflow: hidden;"
-                    class="table-page-search-submitButtons"
-                  >
+                  <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                     <a-col :md="6" :sm="24">
-                      <a-button
-                        type="primary"
-                        icon="search"
-                        style="margin-left: 18px"
-                        html-type="submit"
-                      >查询</a-button>
-                      <a-button
-                        type="primary"
-                        icon="reload"
-                        style="margin-left: 8px"
-                        @click="handleReset"
-                      >重置</a-button>
+                      <a-button type="primary" icon="search" style="margin-left: 18px" html-type="submit">查询</a-button>
+                      <a-button type="primary" icon="reload" style="margin-left: 8px" @click="handleReset">重置</a-button>
                     </a-col>
                   </span>
                   <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -108,9 +77,7 @@
                         <a-icon type="delete" />删除
                       </a-menu-item>
                     </a-menu>
-                    <a-button style="margin-left: 8px">
-                      批量操作
-                      <a-icon type="down" />
+                    <a-button style="margin-left: 8px">批量操作<a-icon type="down" />
                     </a-button>
                   </a-dropdown>
                 </a-row>
@@ -312,6 +279,9 @@ export default {
       for (let node of tree) {
         node.key = node.id
         node.value = node.id
+        if(node.value === 'root'){
+          node.disableCheckbox = true
+        }
         node.scopedSlots = {
           icon: 'icon',
           title: 'title'

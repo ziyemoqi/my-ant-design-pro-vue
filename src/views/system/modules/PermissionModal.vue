@@ -129,7 +129,7 @@ export default {
       model: {},
       localMenuType: 0,
       routeSwitch: true, //是否路由菜单
-      hiddenSwitch: true, //是否路由菜单
+      hiddenSwitch: false, //是否隐藏菜单
       isKeepalive: true, //是否缓存路由
       isRequrie: true, // 是否需要验证
       labelCol: {

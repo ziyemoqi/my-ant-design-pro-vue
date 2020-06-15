@@ -272,7 +272,7 @@ export default {
     // 详情
     handleDetail: function(record) {
       this.$refs.modalForm.title = '详情'
-      this.$refs.modalForm.edit(record)
+      this.$refs.modalForm.detail(record)
     },
     handleToggleSearch() {
       this.toggleSearchStatus = !this.toggleSearchStatus

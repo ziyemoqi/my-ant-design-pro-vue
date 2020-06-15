@@ -12,51 +12,51 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-form-item label="登录账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'loginName']" />
+          <a-input v-decorator="[ 'loginName']" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item label="用户名字" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'userName']" />
+          <a-input v-decorator="[ 'userName']" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="访问时间">
-          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" v-decorator="[ 'createTime', {}]" />
+          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" v-decorator="[ 'createTime', {}]" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item label="访问IP" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'ipAddress']" />
+          <a-input v-decorator="[ 'ipAddress']" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item label="操作类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'opType']" />
+          <a-input v-decorator="[ 'opType']" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item label="日志类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'logType']" />
+          <a-input v-decorator="[ 'logType']" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item label="日志内容" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'logContent']" />
+          <a-input v-decorator="[ 'logContent']" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item label="请求路径" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'requestUrl']" />
+          <a-input v-decorator="[ 'requestUrl']" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item label="请求方法" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'requestMethod']" />
+          <a-input v-decorator="[ 'requestMethod']" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item label="请求类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['requestType']" />
+          <a-input v-decorator="['requestType']" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item label="请求参数" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-textarea v-decorator="['requestParam']" :autosize="{ minRows: 2, maxRows: 10 }"/>
+          <a-textarea v-decorator="['requestParam']" :autosize="{ minRows: 2, maxRows: 10 }" :disabled="disabledFlag"/>
         </a-form-item>
 
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注">
-          <a-textarea v-decorator="['remark']" :autosize="{ minRows: 2, maxRows: 6 }"/>
+          <a-textarea v-decorator="['remark']" :autosize="{ minRows: 2, maxRows: 6 }" :disabled="disabledFlag"/>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -73,13 +73,9 @@ export default {
     return {
       modalWidth: 1800,
       drawerWidth: 700,
-      modaltoggleFlag: true,
-      confirmDirty: false,
       title: '操作',
       visible: false,
       model: {},
-      roleList: [],
-      selectedRole: [],
       confirmLoading: false,
       form: this.$form.createForm(this),
       labelCol: {
@@ -89,11 +85,12 @@ export default {
       wrapperCol: {
         xs: { span: 24 },
         sm: { span: 16 }
-      }
+      },
+      disabledFlag: true
     }
   },
   methods: {
-    edit(record) {
+    detail(record) {
       this.resetScreenSize()
       let that = this
       that.form.resetFields()

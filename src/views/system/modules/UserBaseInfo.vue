@@ -12,12 +12,7 @@
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
             <a-col :md="6" :sm="24">
               <a-button type="primary" icon="search" style="margin-left: 18px" html-type="submit">查询</a-button>
-              <a-button
-                type="primary"
-                icon="reload"
-                style="margin-left: 8px"
-                @click="handleReset"
-              >重置</a-button>
+              <a-button type="primary" icon="reload" style="margin-left: 8px" @click="handleReset">重置</a-button>
               <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left: 8px">新增</a-button>
               <a-dropdown v-if="selectedRowKeys.length > 0">
                 <a-menu slot="overlay">
@@ -25,10 +20,7 @@
                     <a-icon type="delete" />删除
                   </a-menu-item>
                 </a-menu>
-                <a-button style="margin-left: 8px">
-                  批量操作
-                  <a-icon type="down" />
-                </a-button>
+                <a-button style="margin-left: 8px">批量操作<a-icon type="down" /></a-button>
               </a-dropdown>
             </a-col>
           </span>
@@ -39,10 +31,7 @@
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择
-        <a style="font-weight: 600">
-          {{
-          selectedRowKeys.length }}
-        </a>项
+        <a style="font-weight: 600">{{selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
