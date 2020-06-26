@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import DialogEdit from './modules/dialogGoodEdit'
+import DialogEdit from './modules/dialogProductEdit'
 import Vue from 'vue'
 import { page,delete_,updateGood } from '@/api/mall/mallProduct'
 import { classList } from '@/api/mall/mallProductCategory'

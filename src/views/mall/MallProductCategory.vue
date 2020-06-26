@@ -102,7 +102,7 @@
   </a-row>
 </template>
 <script>
-import mallProductCategory from './modules/mallProductCategory'
+import mallProductCategory from './modules/dialogMallProductCategory'
 import pick from 'lodash.pick'
 import { classTree, childrenClass,delete_ } from '@/api/mall/mallProductCategory'
 const columns = [
