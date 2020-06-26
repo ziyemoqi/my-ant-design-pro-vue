@@ -48,7 +48,7 @@
 
 <script>
 import pick from 'lodash.pick'
-import {add,editById} from '@/api/mall/shipping'
+import {save} from '@/api/mall/shipping'
 import * as region from '@/api/region';
 
   export default {
@@ -148,13 +148,7 @@ import * as region from '@/api/region';
               regionCode: values.regionInfo[2]
             };
             let formData = Object.assign(this.model, values,{...regionInfo})
-            let obj
-            if(!this.model.mallShippingId){
-              obj=add(formData)
-            }else{
-              obj=editById(formData)
-            }
-            obj.then((res)=>{
+            let  obj= save(formData).then((res)=>{
               if(res.code === 200){
                 that.$message.success('操作成功!');
                 that.$emit('ok');

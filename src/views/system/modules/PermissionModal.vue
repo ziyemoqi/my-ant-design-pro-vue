@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import { addPermission, editPermission, queryTreeList } from '@/api/permission'
+import { savePermission, queryTreeList } from '@/api/permission'
 import Icons from './icon/Icons'
 import pick from 'lodash.pick'
 
@@ -260,7 +260,7 @@ export default {
         url: formData.url,
         sort: formData.sort
       }
-      addPermission(currData)
+      savePermission(currData)
         .then(res => {
           if (res.code === 200 ) {
             that.$message.success('操作成功！')
@@ -292,7 +292,7 @@ export default {
         status: formData.status,
         sort: formData.sort
       }
-      editPermission(currData)
+      savePermission(currData)
         .then(res => {
           if (res.code === 200) {
             that.$message.success('操作成功！')

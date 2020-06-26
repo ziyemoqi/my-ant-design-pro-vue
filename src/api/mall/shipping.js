@@ -12,17 +12,10 @@ export function page(params) {
  * 添加收货地址
  * @param {*} params 
  */
-export function add(params) {
+export function save(params) {
     return post("/mallShipping",params)
 }
 
-/**
- * 修改收货地址
- * @param {*} params 
- */
-export function editById(params) {
-    return put("/mallShipping",params)
-}
 
 /**
  * 删除收货地址

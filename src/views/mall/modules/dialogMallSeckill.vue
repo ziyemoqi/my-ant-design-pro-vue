@@ -26,7 +26,7 @@
           label="商品">
           <a-input
               :readOnly="true"
-              v-decorator="['mallGoodName',{}]"
+              v-decorator="['mallProductName',{}]"
               placeholder="请选择..."
               @click="selectGood()"
             />
@@ -67,7 +67,7 @@
                 :dataSource="goodData"
                 :pagination="pagination"
                 @change="handleTableChangeAdd"
-                :rowKey="record => record.mallGoodId"
+                :rowKey="record => record.mallProductId"
               >
                <span slot="pic" slot-scope="text">
                   <img class='img' alt="" :src="imgUrl+text" />
@@ -82,8 +82,8 @@
 <script>
 import pick from 'lodash.pick'
 import moment from 'moment'
-import {editById,add} from '@/api/mall/mallSeckill'
-import * as good from '@/api/mall/mallGood'
+import {save} from '@/api/mall/mallSeckill'
+import * as good from '@/api/mall/mallProduct'
 
 const columns = [{
     title: '商品名称',
@@ -147,7 +147,7 @@ const columns = [{
         },
         goodData: [],
         imgUrl: process.env.VUE_APP_IMG,
-        mallGoodId: ''
+        mallProductId: ''
       }
     },
 
@@ -174,14 +174,14 @@ const columns = [{
         if (record.seckillStartTime && record.seckillEndTime) {
           dateRange = [moment(record.seckillStartTime), moment(record.seckillEndTime)]
         }
-        this.mallGoodId = record.mallGoodId
+        this.mallProductId = record.mallProductId
         this.model = Object.assign({}, record)
         let obj = {
           ...this.model,
           dateRange,
         };
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(obj,'mallGoodName','title','stock','dateRange'))
+          this.form.setFieldsValue(pick(obj,'mallProductName','title','stock','dateRange'))
         });
       },
       close () {
@@ -226,8 +226,8 @@ const columns = [{
         return false;
       }
       this.selectGoodVisible = false
-      this.form.setFieldsValue({"mallGoodName":this.selectedGoodRowKeys[0].name})
-      this.mallGoodId = this.selectedGoodRowKeys[0].mallGoodId
+      this.form.setFieldsValue({"mallProductName":this.selectedGoodRowKeys[0].name})
+      this.mallProductId = this.selectedGoodRowKeys[0].mallProductId
     },
     // 查询商品
     handleScreenSubmit(e) {
@@ -248,17 +248,11 @@ const columns = [{
         if (!err) {
           that.confirmLoading = true;
           let formData = Object.assign(this.model, values)
-          formData['mallGoodId'] = this.mallGoodId
+          formData['mallProductId'] = this.mallProductId
           formData['seckillStartTime'] = formData.dateRange[0].format('YYYY-MM-DD HH:mm:ss')
           formData['seckillEndTime'] = formData.dateRange[1].format('YYYY-MM-DD HH:mm:ss')
           delete formData.dateRange
-          let obj
-          if(!this.model.mallSeckillId){
-            obj=add(formData)
-          }else{
-            obj=editById(formData)
-          }
-          obj.then((res)=>{
+          let obj = save(formData).then((res)=>{
             if(res.code === 200){
               that.$message.success('操作成功!');
               that.$emit('ok');

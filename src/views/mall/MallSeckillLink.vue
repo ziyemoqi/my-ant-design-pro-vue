@@ -1,7 +1,7 @@
 <template >
 <div>
     <div class="result">
-        <div class="title">{{mallGoodName}}</div>
+        <div class="title">{{mallProductName}}</div>
         <div v-if="state === '0' "><i class="iconfont icon-icon_shizhong-" style="color:red;font-size:29px"> 秒杀倒计时:{{day+"天"+hr+"小时"+min+"分钟"+sec+"秒"}}</i></div>
         <div v-if="state === '1' "><i class="iconfont icon-icon_shizhong-" style="color:red;font-size:33px;"></i> &nbsp;&nbsp;&nbsp;&nbsp;<a-button type="primary" @click="execSeckill()">开始秒杀</a-button></div>
         <div v-if="state === '2' "><i class="iconfont icon-icon_shizhong-" style="color:red;font-size:25px"> 秒杀结束,感谢您的参与</i></div>
@@ -26,7 +26,7 @@ export default {
         sm: { span: 16 }
       },
       mallSeckillId: '',
-      mallGoodName: '',
+      mallProductName: '',
       nowTime: '',
       day: 0,//天
       hr: 0,//时
@@ -52,7 +52,7 @@ export default {
       await linkInfo({ mallSeckillId: this.mallSeckillId }).then(res => {
         if (res.code === 200) {
           let data = res.data
-          this.mallGoodName = data.mallGoodName
+          this.mallProductName = data.mallProductName
           this.nowTime = data.localDateTime
           this.state = data.state
           this.md5Str = data.md5

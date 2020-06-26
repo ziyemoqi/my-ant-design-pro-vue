@@ -5,9 +5,7 @@ const roleList = (params)=>get("/sysRole/roleList",params)
 // 分页查询数据
 const rolePage = (params) => get("/sysRole/rolePage", params)
 // 角色添加
-const add = (params)=>post("/sysRole/add",params)
-// 角色修改
-const edit = (params)=>put("/sysRole/edit",params)
+const saveRole = (params)=>post("/sysRole",params)
 // 删除
 const deleteByRoleId  = (params)=>deleteAction("/sysRole/delete",params)
 // 批量删除
@@ -24,8 +22,7 @@ const saveRolePermission = (params)=>post("/sysRole/rolePermission",params)
 export {
     roleList,
     rolePage,
-    add,
-    edit,
+    saveRole,
     deleteByRoleId,
     duplicateCheck,
     queryRolePermission,

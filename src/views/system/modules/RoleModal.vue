@@ -52,7 +52,7 @@
 
 <script>
   import pick from 'lodash.pick'
-  import {add,edit,duplicateCheck } from '@/api/role'
+  import {saveRole,duplicateCheck } from '@/api/role'
 
   export default {
     name: "RoleModal",
@@ -122,13 +122,7 @@
           if (!err) {
             that.confirmLoading = true;
             let formData = Object.assign(this.model, values)
-            let obj
-            if(!this.model.sysRoleId){
-              obj=add(formData)
-            }else{
-              obj=edit(formData)
-            }
-            obj.then((res)=>{
+            let obj = saveRole(formData).then((res)=>{
               if(res.code === 200){
                 that.$message.success('操作成功!');
                 that.$emit('ok');

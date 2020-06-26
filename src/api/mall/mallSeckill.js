@@ -12,16 +12,8 @@ export function page(params) {
  * 添加秒杀商品
  * @param {*} params 
  */
-export function add(params) {
+export function save(params) {
     return post("/mallSeckill",params)
-}
-
-/**
- * 修改秒杀商品信息
- * @param {*} params 
- */
-export function editById(params) {
-    return put("/mallSeckill",params)
 }
 
 /**

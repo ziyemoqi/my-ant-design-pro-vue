@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { departTree, addDept, editByDeptId } from '@/api/dept'
+import { departTree, saveDept } from '@/api/dept'
 import pick from 'lodash.pick'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 export default {
@@ -153,7 +153,7 @@ export default {
           that.confirmLoading = true
           let formData = Object.assign(this.model, values)
           if (that.addFlag) {
-            addDept(formData)
+            saveDept(formData)
               .then(res => {
                 if (res.code === 200) {
                   that.$message.success('操作成功!')
@@ -173,7 +173,7 @@ export default {
               ...formData,
               sysDeptId
             }
-            editByDeptId(editData)
+            saveDept(editData)
               .then(res => {
                 if (res.code === 200) {
                   that.$message.success('操作成功!')

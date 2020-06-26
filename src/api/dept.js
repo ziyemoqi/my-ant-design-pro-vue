@@ -5,10 +5,8 @@ import { get,post,deleteAction,put} from '@/api/manage'
 const departTree = (params)=>get("/sysDept/departTree",params)
 // 查询子级部门
 const childrenDept = (params)=>get("/sysDept/childrenDept",params)
-// 编辑
-const editByDeptId = (params)=>put("/sysDept/edit",params)
 // 部门添加
-const addDept = (params)=>post("/sysDept/add",params)
+const saveDept = (params)=>post("/sysDept",params)
 // 删除
 const deleteByDepartId  = (params)=>deleteAction("/sysDept/delete",params)
 // 批量删除
@@ -19,8 +17,7 @@ export {
     departTree,
     childrenDept,
     deleteByDepartId,
-    editByDeptId,
-    addDept,
+    saveDept,
     deleteBatch
 }
 

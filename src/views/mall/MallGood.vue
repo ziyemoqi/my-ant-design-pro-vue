@@ -38,7 +38,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="mallGoodId"
+        rowKey="mallProductId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -61,9 +61,9 @@
       <span slot="action" slot-scope="text, record">
         <a-button @click="handleEdit(record)" type="primary" icon="edit" >编辑</a-button>&nbsp;
         <a-button v-if="record.state=== '0' " @click="checkGood(record)" type="primary" icon="check" >审核&nbsp;</a-button>
-        <a-button v-if="record.state=== '4' || record.state === '1' " @click="upOrDown(record.mallGoodId,'3')" icon="rise" >上架&nbsp;</a-button>
-        <a-button v-if="record.state=== '3' " @click="upOrDown(record.mallGoodId,'4')" type="dashed" icon="fall" >下架</a-button>&nbsp;
-        <a-button type="danger" @click="handleDelete(record.mallGoodId)" ghost icon="delete">删除</a-button>
+        <a-button v-if="record.state=== '4' || record.state === '1' " @click="upOrDown(record.mallProductId,'3')" icon="rise" >上架&nbsp;</a-button>
+        <a-button v-if="record.state=== '3' " @click="upOrDown(record.mallProductId,'4')" type="dashed" icon="fall" >下架</a-button>&nbsp;
+        <a-button type="danger" @click="handleDelete(record.mallProductId)" ghost icon="delete">删除</a-button>
       </span>
       </a-table>
     </div>
@@ -85,8 +85,8 @@
 <script>
 import DialogEdit from './modules/dialogGoodEdit'
 import Vue from 'vue'
-import { page,delete_,updateGood } from '@/api/mall/mallGood'
-import { classList } from '@/api/mall/mallGoodClass'
+import { page,delete_,updateGood } from '@/api/mall/mallProduct'
+import { classList } from '@/api/mall/mallProductCategory'
 import dialogCreateOrder from './modules/dialogCreateOrder'
 
 const columns = [
@@ -148,7 +148,7 @@ const columns = [
 ]
 
 export default {
-  name: 'mallGoodList_view',
+  name: 'mallProductList_view',
   components: {
     DialogEdit,
     dialogCreateOrder,
@@ -186,7 +186,7 @@ export default {
       let that = this
       let screenData = this.screenForm.getFieldsValue()
       if(screenData.goodClass){
-        screenData.mallGoodClassId = screenData.goodClass[1]
+        screenData.mallProductClassId = screenData.goodClass[1]
         delete screenData.goodClass
       }
       let obj = {
@@ -216,7 +216,7 @@ export default {
     handleClassTreeData(tree) {
       for (let node of tree) {
         node.label = node.name
-        node.value = node.mallGoodClassId
+        node.value = node.mallProductClassId
         node.scopedSlots = {
           icon: 'icon',
           title: 'title'
@@ -271,7 +271,7 @@ export default {
         title: '确认删除',
         content: '是否删除当前数据?',
         onOk: function() {
-          delete_({ mallGoodId: id }).then(res => {
+          delete_({ mallProductId: id }).then(res => {
             if (res.code === 200) {
               that.$message.success('操作成功!')
               that.loadData()
@@ -300,7 +300,7 @@ export default {
       })
     },
     // 上下架
-    upOrDown(mallGoodId, state) {
+    upOrDown(mallProductId, state) {
       let msg = '上架'
       if (state === '4') {
         msg = '下架'
@@ -314,7 +314,7 @@ export default {
         cancelText: '取消',
         async onOk() {
           let obj = {
-            mallGoodId,
+            mallProductId,
             state
           }
           updateGood(obj).then(resp => {

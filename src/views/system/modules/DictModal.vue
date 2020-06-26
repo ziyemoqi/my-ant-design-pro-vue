@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import {dictTree, add, edit} from '@/api/dict'
+import {dictTree, saveDict} from '@/api/dict'
 import pick from 'lodash.pick'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 
@@ -162,7 +162,7 @@ export default {
             that.confirmLoading = true
           let formData = Object.assign(this.model, values)
           if (that.addFlag) {
-            add(formData)
+            saveDict(formData)
               .then(res => {
                 if (res.code === 200) {
                   that.$message.success('操作成功!')
@@ -182,7 +182,7 @@ export default {
                 ...formData,
                 sysDictId
               }
-              edit(editData)
+              saveDict(editData)
                 .then(res => {
                   if (res.code === 200) {
                     that.$message.success('操作成功!')

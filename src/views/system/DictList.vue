@@ -130,7 +130,7 @@
   </a-row>
 </template>
 <script>
-import { dictTree, childrenDict, deleteById,deleteBatch, edit } from '@/api/dict'
+import { dictTree, childrenDict, deleteById,deleteBatch, saveDict } from '@/api/dict'
 import DictModal from './modules/DictModal'
 import pick from 'lodash.pick'
 
@@ -514,7 +514,7 @@ export default {
             sysDictId,
             state
           }
-          edit(obj).then(resp => {
+          saveDict(obj).then(resp => {
             if (resp.code === 200) {
               _this.$message.success('操作成功!')
               _this.queryChildrenDict({ parentId: _this.currSelected.key })

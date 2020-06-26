@@ -12,17 +12,10 @@ export function list(params) {
  * 添加信息
  * @param {*} params 
  */
-export function add(params) {
+export function save(params) {
     return post("/workBench",params)
 }
 
-/**
- * 修改信息
- * @param {*} params 
- */
-export function update(params) {
-    return put("/workBench",params)
-}
 
 /**
  * 删除信息

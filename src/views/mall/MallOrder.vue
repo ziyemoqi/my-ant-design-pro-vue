@@ -187,7 +187,7 @@ const confirmStateMap = {
 }
 
 export default {
-  name: 'mallGoodList_view',
+  name: 'mallProductList_view',
   data() {
     return {
       dataSource: [],

@@ -98,7 +98,7 @@ import RoleModal from './modules/RoleModal'
 import UserRoleModal from './modules/UserRoleModal'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { rolePage, deleteByRoleId,edit, deleteBatch } from '@/api/role'
+import { rolePage, deleteByRoleId,saveRole, deleteBatch } from '@/api/role'
 const columns = [
   {
     title: '#',
@@ -343,7 +343,7 @@ export default {
             sysRoleId,
             state
           }
-          edit(obj).then(resp => {
+          saveRole(obj).then(resp => {
             if (resp.code === 200) {
               _this.$message.success('操作成功!')
               _this.loadData()

@@ -38,7 +38,7 @@
 
 <script>
 import pick from 'lodash.pick'
-import {update,add} from '@/api/selfOffice/workBench'
+import {save} from '@/api/selfOffice/workBench'
 
   export default {
     name: "dialogWorkBench",
@@ -84,13 +84,7 @@ import {update,add} from '@/api/selfOffice/workBench'
           if (!err) {
             that.confirmLoading = true;
             let formData = Object.assign(this.model, values)
-            let obj
-            if(!this.model.workBenchId){
-              obj=add(formData)
-            }else{
-              obj=update(formData)
-            }
-            obj.then((res)=>{
+            let obj= save(formData).then((res)=>{
               if(res.code === 200){
                 that.$message.success('操作成功!');
                 that.$emit('ok');

@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import * as good from '@/api/mall/mallGood'
+import * as good from '@/api/mall/mallProduct'
 import * as order from '@/api/mall/mallOrder'
 import {shipingList} from '@/api/mall/shipping'
 import * as region from '@/api/region';

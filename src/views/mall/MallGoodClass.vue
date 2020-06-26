@@ -79,7 +79,7 @@
                 ref="table"
                 size="middle"
                 :bordered="true"
-                rowKey="mallGoodClassId"
+                rowKey="mallProductCategoryId"
                 :columns="columns"
                 :dataSource="listDataSource"
                 :pagination="ipagination"
@@ -90,7 +90,7 @@
                 <span slot="action" slot-scope="text, record">
                   <a @click="handleEdit(record)">编辑</a>
                   <a-divider type="vertical" />
-                  <a href="javascript:;" @click="handleDelete(record.mallGoodClassId)">删除</a>
+                  <a href="javascript:;" @click="handleDelete(record.mallProductCategoryId)">删除</a>
                 </span>
               </a-table>
             </div>
@@ -98,13 +98,13 @@
         </a-tabs>
       </a-card>
     </a-col>
-    <mall-good-class-modal ref="classModal" @ok="add_loadTree"></mall-good-class-modal>
+    <mall-product-category ref="classModal" @ok="add_loadTree"></mall-product-category>
   </a-row>
 </template>
 <script>
-import MallGoodClassModal from './modules/MallGoodClassModal'
+import mallProductCategory from './modules/mallProductCategory'
 import pick from 'lodash.pick'
-import { classTree, childrenClass,delete_ } from '@/api/mall/mallGoodClass'
+import { classTree, childrenClass,delete_ } from '@/api/mall/mallProductCategory'
 const columns = [
   {
     title: '类目名称',
@@ -128,9 +128,9 @@ const columns = [
 ]
 
 export default {
-  name: 'DepartList_view',
+  name: 'MallProductCategoryList_view',
   components: {
-    MallGoodClassModal
+    mallProductCategory
   },
   data() {
     return {
@@ -358,7 +358,7 @@ export default {
       this.$refs.classModal.edit(record)
     },
     // 删除单条信息
-    handleDelete(mallGoodClassId) {
+    handleDelete(mallProductCategoryId) {
       let _this = this
       _this.$confirm({
         title: '提示',
@@ -367,7 +367,7 @@ export default {
         okType: 'danger',
         cancelText: '取消',
         async onOk() {
-          delete_({ mallGoodClassId: mallGoodClassId }).then(resp => {
+          delete_({ mallProductCategoryId: mallProductCategoryId }).then(resp => {
             if (resp.code === 200) {
               _this.$message.success('删除成功!')
               _this.loadTree()

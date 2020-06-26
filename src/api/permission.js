@@ -24,19 +24,11 @@ export function getPermissionList() {
 const queryTreeList = (params)=>get("/sysPermission/queryTreeList",params)
 
 /**
- * 编辑
- * @param {*} params 
- */
-export function editPermission(params) {
-    return put("/sysPermission/edit",params)
-}
-
-/**
  * 新增
  * @param {*} params 
  */
-export function addPermission(params) {
-    return post("/sysPermission/add",params)
+export function savePermission(params) {
+    return post("/sysPermission",params)
 }
 
 /**

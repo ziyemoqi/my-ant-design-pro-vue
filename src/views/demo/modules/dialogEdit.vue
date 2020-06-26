@@ -66,7 +66,7 @@
 
 <script>
   import pick from 'lodash.pick'
-  import {editById,add} from '@/api/demo'
+  import {add} from '@/api/demo'
 
   export default {
     name: "dialogEdit",
@@ -153,12 +153,7 @@
             that.confirmLoading = true;
             let formData = Object.assign(this.model, values,{'documentUrl':this.documentUrl,'documentName':this.documentName})
             let obj
-            if(!this.model.demoId){
-              obj=add(formData)
-            }else{
-              obj=editById(formData)
-            }
-            obj.then((res)=>{
+            obj=save(formData).then((res)=>{
               if(res.code === 200){
                 that.$message.success('操作成功!');
                 that.$emit('ok');

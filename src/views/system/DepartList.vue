@@ -145,7 +145,7 @@
 <script>
 import DepartModal from './modules/DepartModal'
 import pick from 'lodash.pick'
-import { departTree, childrenDept, deleteByDepartId, deleteBatch, editByDeptId } from '@/api/dept'
+import { departTree, childrenDept, deleteByDepartId, deleteBatch, saveDept } from '@/api/dept'
 const columns = [
   {
     title: '部门名称',
@@ -526,7 +526,7 @@ export default {
             sysDeptId,
             state
           }
-          editByDeptId(obj).then(resp => {
+          saveDept(obj).then(resp => {
             if (resp.code === 200) {
               _this.$message.success('操作成功!')
               _this.queryChildrenDept({ parentId: _this.currSelected.key })

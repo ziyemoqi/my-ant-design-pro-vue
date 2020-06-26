@@ -86,8 +86,8 @@
 
 <script>
 import pick from 'lodash.pick'
-import {updateGood,add} from '@/api/mall/mallGood'
-import {classList} from '@/api/mall/mallGoodClass'
+import {updateGood,add} from '@/api/mall/mallProduct'
+import {classList} from '@/api/mall/mallProductCategory'
 
   export default {
     name: "dialogEdit",
@@ -138,7 +138,7 @@ import {classList} from '@/api/mall/mallGoodClass'
       handleClassTreeData(tree) {
         for (let node of tree) {
           node.label = node.name
-          node.value = node.mallGoodClassId
+          node.value = node.mallProductCategoryId
           node.scopedSlots = {
             icon: 'icon',
             title: 'title'
@@ -154,7 +154,7 @@ import {classList} from '@/api/mall/mallGoodClass'
         this.confirmLoading = false
         this.form.resetFields()
         this.visible = true
-        if(record.mallGoodId){
+        if(record.mallProductId){
           this.model = Object.assign({}, record)
           this.imgUrl = process.env.VUE_APP_IMG + this.model.pic
           this.goodImg = this.model.pic
@@ -188,7 +188,7 @@ import {classList} from '@/api/mall/mallGoodClass'
               let classId = values.classArr[1]
               let formData = Object.assign(this.model, values,{"pic" : this.goodImg,'classId':classId})
               let obj
-              if(!this.model.mallGoodId){
+              if(!this.model.mallProductId){
                 obj=add(formData)
               }else{
                 obj=updateGood(formData)

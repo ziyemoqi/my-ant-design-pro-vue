@@ -10,12 +10,8 @@ export function page(params) {
     return get("/demo/page", params)
 }
 
-// 编辑
-export function editById (params)  {
-    return put("/demo",params)
-}
-// 添加
-export function add(params) {
+// 添加/更新
+export function save(params) {
     return post("/demo", params)
 }
 // 删除

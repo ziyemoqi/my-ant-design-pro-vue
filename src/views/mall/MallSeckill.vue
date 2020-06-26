@@ -70,7 +70,7 @@ const columns = [
   {
     title: '商品',
     align: 'center',
-    dataIndex: 'mallGoodName',
+    dataIndex: 'mallProductName',
     width: 100
   },
   {

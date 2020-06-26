@@ -132,7 +132,7 @@
                 :dataSource="goodData"
                 :pagination="pagination"
                 @change="handleTableChangeAdd"
-                :rowKey="record => record.mallGoodId"
+                :rowKey="record => record.mallProductId"
               >
                <span slot="pic" slot-scope="text">
                   <img class='img' alt="" :src="imgUrl+text" />
@@ -145,7 +145,7 @@
 </template>
 
 <script>
-import * as good from '@/api/mall/mallGood'
+import * as good from '@/api/mall/mallProduct'
 import * as order from '@/api/mall/mallOrder'
 import {shipingList} from '@/api/mall/shipping'
 import * as region from '@/api/region';
@@ -359,7 +359,7 @@ export default {
       const newData = [...this.tableData]
       const target = newData.filter(item => this.chooseKey === item.key)[0]
       if (target) {
-        target['goodId'] = this.selectedGoodRowKeys.map(x => (x = x.mallGoodId))[0]
+        target['goodId'] = this.selectedGoodRowKeys.map(x => (x = x.mallProductId))[0]
         target['goodName'] = this.selectedGoodRowKeys.map(x => (x = x.name))[0]
         target['goodPic'] = this.selectedGoodRowKeys.map(x => (x = x.pic))[0]
         target['goodPrice'] = this.selectedGoodRowKeys.map(x => (x = x.price))[0]

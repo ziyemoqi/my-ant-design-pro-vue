@@ -5,10 +5,8 @@ import { get,post,deleteAction,put} from '@/api/manage'
 const dictTree = (params)=>get("/sysDict/dictTree",params)
 // 查询子级字典
 const childrenDict = (params)=>get("/sysDict/childrenDict",params)
-// 编辑
-const edit = (params)=>put("/sysDict/edit",params)
 // 字典添加
-const add = (params)=>post("/sysDict/add",params)
+const saveDict = (params)=>post("/sysDict",params)
 // 删除
 const deleteById  = (params)=>deleteAction("/sysDict/delete",params)
 // 批量删除
@@ -20,8 +18,7 @@ export {
     dictTree,
     childrenDict,
     deleteById,
-    edit,
-    add,
+    saveDict,
     deleteBatch,
     dictList
 }
