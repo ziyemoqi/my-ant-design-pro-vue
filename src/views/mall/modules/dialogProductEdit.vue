@@ -121,9 +121,6 @@ import {classList} from '@/api/mall/mallProductCategory'
         goodClassOptions: [],
       }
     },
-    mounted() {
-      this.classInit();
-    },
     methods: {
       // 获取商品类目
       async classInit() {
@@ -148,9 +145,11 @@ import {classList} from '@/api/mall/mallProductCategory'
         return tree
       },
       add () {
+        this.classInit();
         this.edit({});
       },
       edit (record) {
+        this.classInit();
         this.confirmLoading = false
         this.form.resetFields()
         this.visible = true

@@ -54,7 +54,8 @@ const columns = [
   {
     title: '菜单名称',
     dataIndex: 'name',
-    key: 'name'
+    key: 'name',
+    width: 250,
   },
   {
     title: '菜单类型',
@@ -88,25 +89,11 @@ const columns = [
     scopedSlots: { customRender: 'component' }
   },
   {
-    title: '权限编码',
-    dataIndex: 'permsCode',
-    key: 'permsCode',
-    align: 'center',
-    width: 300,
-    scopedSlots: { customRender: 'permsCode' }
-  },
-  {
-    title: '排序',
-    align: 'center',
-    dataIndex: 'sort',
-    key: 'sort'
-  },
-  {
     title: '操作',
     dataIndex: 'action',
     scopedSlots: { customRender: 'action' },
     align: 'center',
-    width: 350
+    width: 300
   }
 ]
 

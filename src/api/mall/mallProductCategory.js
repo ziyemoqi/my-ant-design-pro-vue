@@ -5,7 +5,7 @@ import { get, post,put,deleteAction } from '@/api/manage'
  * @param {*} params 
  */
 export function classTree(params) {
-    return get("/mallProductCategory/classTree", params)
+    return get("/mallProductCategory/tree", params)
 }
 
 /**
@@ -13,7 +13,7 @@ export function classTree(params) {
  * @param {*} params 
  */
 export function childrenClass(params) {
-    return get("/mallProductCategory/childrenClass", params)
+    return get("/mallProductCategory/children", params)
 }
 
 /**
@@ -38,5 +38,5 @@ export function delete_(params) {
  * @param {*} params 
  */
 export function classList(params) {
-    return get("/mallProductCategory/classList", params)
+    return get("/mallProductCategory/list", params)
 }

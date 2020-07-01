@@ -9,7 +9,7 @@ export function page(params) {
 }
 
 /**
- * 添加秒杀商品
+ * 添加/更新秒杀商品
  * @param {*} params 
  */
 export function save(params) {

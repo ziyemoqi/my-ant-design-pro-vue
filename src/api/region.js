@@ -5,5 +5,5 @@ import { get, post,put,deleteAction } from '@/api/manage'
  * @param {*} params 
  */
 export function regionList(params) {
-    return get("/region/regionList", params)
+    return get("/region/list", params)
 }

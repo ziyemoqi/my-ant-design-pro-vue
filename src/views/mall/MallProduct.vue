@@ -72,7 +72,6 @@
     <!-- form表单 -->
     <Dialog-Edit ref="dialogEdit" @ok="modalFormOk"></Dialog-Edit>
     
-
     <dialog-create-order
       :key="dialogCreateOrderKey"
       :visible.sync="dialogCreateOrderVisible"
@@ -186,7 +185,7 @@ export default {
       let that = this
       let screenData = this.screenForm.getFieldsValue()
       if(screenData.goodClass){
-        screenData.mallProductClassId = screenData.goodClass[1]
+        screenData.mallProductCategoryId = screenData.goodClass[1]
         delete screenData.goodClass
       }
       let obj = {
@@ -209,14 +208,14 @@ export default {
         if (code === 200) {
           this.classOptions = this.handleClassTreeData(data);
         } else {
-          this.$message.warn('未获取到相关行政区域数据！');
+          this.$message.warn('未获取到商品类目数据！');
         }
     },
     // 处理商品类目
     handleClassTreeData(tree) {
       for (let node of tree) {
         node.label = node.name
-        node.value = node.mallProductClassId
+        node.value = node.mallProductCategoryId
         node.scopedSlots = {
           icon: 'icon',
           title: 'title'

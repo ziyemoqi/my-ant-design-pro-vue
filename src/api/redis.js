@@ -20,7 +20,7 @@ const expireState = (params) => get("/redisPractice/redisUser/expireState", para
 
 // ========== redis pub sub ==========
 // 分页查询数据
-const pubSubPage = (params) => get("/redisPractice/redisPubSub/pubSubPage", params)
+const pubSubPage = (params) => get("/redisPractice/redisPubSub/page", params)
 // 发布消息
 const sendMessage = (params) => post("/redisPractice/redisPubSub/sendMessage", params)
 
