@@ -14,6 +14,8 @@
               <a-button type="primary" icon="search" style="margin-left: 18px" html-type="submit">查询</a-button>
               <a-button type="primary" icon="reload" style="margin-left: 8px" @click="handleReset">重置</a-button>
               <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left: 8px">新增</a-button>
+              <!-- <a-button type="primary" icon="export" @click="exportExcel"  :loading="excelloading" style="margin-left: 8px" >导出Excel</a-button>
+              <a-button type="primary" icon="download" @click="exportWord"  :loading="exporting" style="margin-left: 8px" >导出word</a-button> -->
               <a-dropdown v-if="selectedRowKeys.length > 0">
                 <a-menu slot="overlay">
                   <a-menu-item key="1" @click="batchDel">
@@ -93,6 +95,7 @@
 <script>
 import { userList, deleteBatch, delete_, resetPassword } from '@/api/user'
 import UserModal from './UserModal'
+import download from '@/utils/download'
 const columns = [
   {
     title: '用户名称',
@@ -172,6 +175,8 @@ export default {
       },
       loading: false,
       screenForm: this.$form.createForm(this),
+      exporting: false,
+      excelloading: false,
     }
   },
   filters: {
@@ -341,7 +346,24 @@ export default {
           })
         }
       })
-    }
+    },
+    // 导出word
+    async exportWord() {
+      this.exporting = true
+      await download(
+        '/demo/export/exportWord',
+        false,
+        false
+      )
+      this.exporting = false
+    },
+    //  导出excel
+    async exportExcel () {
+      this.excelloading = true
+      let payload = {}
+      await download('/demo/export/exportExcel', payload, false)
+      this.excelloading = false
+    },
   }
 }
 </script>

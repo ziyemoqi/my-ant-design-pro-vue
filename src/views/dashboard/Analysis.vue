@@ -264,7 +264,7 @@ export default {
             this.$notification['warning']({
               message: '温馨提醒',
               description:
-                '您的密码非常常用，会被几乎瞬间破解！',
+                '您的密码非常常用，几乎会被瞬间破解！',
               duration: 5,
               style : {
                 height: '100px'

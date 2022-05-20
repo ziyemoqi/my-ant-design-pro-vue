@@ -65,7 +65,7 @@ export default {
             this.state = '2'
           }
         } else {
-          that.$message.warning(res.msg || '操作失败!')
+          this.$message.warning(res.msg || '操作失败!')
         }
         this.loading = false
       })
@@ -111,10 +111,11 @@ export default {
         };
         let { code, data, msg } = await execSeckill(obj)
         if (code === 200){
-          this.$router.push({
-            path: '/mall/seckill',
-            name: 'mall-seckill'
-          })
+          // this.$router.push({
+          //   path: '/mall/seckill',
+          //   name: 'mall-seckill'
+          // })
+          this.$message.success("秒杀成功");
         } else {
           throw new Error(msg || '操作失败');
         }
